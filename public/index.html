@@ -769,6 +769,128 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx .ms-segredo .lin > span:first-child{color:#e0b46a;min-width:6.5em}
 .fx .ms-segredo select{max-width:100%}
 
+/* ================================================================ tabuleiro */
+.page.tb-page{max-width:min(1560px,100%)}
+.fx .tb-topo{margin:0 0 12px;align-items:center}
+.fx .tb{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1100px){.fx .tb{grid-template-columns:minmax(0,1fr) 330px;align-items:start}}
+.fx .tb-palco{display:flex;flex-direction:column;gap:8px;min-width:0}
+.fx .tb-ferr{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fx .tb-f{font-family:var(--f-body);font-size:1rem;padding:6px 12px;border:1px solid var(--dw-line);background:linear-gradient(#253034,#1a2326);color:var(--dw-bone);cursor:pointer;border-radius:2px;transition:border-color .15s,color .15s}
+.fx .tb-f:hover{border-color:var(--dw-brass)}
+.fx .tb-f[aria-pressed="true"]{border-color:var(--dw-brass);color:#13191b;background:linear-gradient(#e2c98f,#c9aa6c)}
+.fx .tb-sep{flex:1 1 8px}
+.fx .tb-opc{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;min-height:32px}
+.fx .tb-opc .chips{display:flex;flex-wrap:wrap;gap:6px}
+.fx .tb-opc .fx-hint{margin:0}
+
+.fx .tb-vez{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 12px;border:1px solid var(--dw-line-2);background:linear-gradient(90deg,rgba(201,170,108,.14),rgba(201,170,108,.03));color:var(--dw-bone);font-family:var(--f-body)}
+.fx .tb-vez > b{font-family:var(--f-display);font-weight:400;letter-spacing:.06em;color:#f1d79c}
+.fx .tb-vez > span{color:var(--dw-dim);font-style:italic}
+.fx .tb-vez-l{display:flex;flex-wrap:wrap;gap:6px;font-style:normal!important}
+.fx .tb-vez-a{border:1px solid var(--c);border-radius:999px;padding:2px 10px;color:var(--dw-bone);background:rgba(0,0,0,.3)}
+.fx .tb-vez-a i{font-style:normal;color:#eaa94b;letter-spacing:.1em;font-size:.8em}
+.fx .tb-vez-a.feito{opacity:.45}
+.fx .tb-vez-a.minha{box-shadow:inset 0 0 0 1px var(--c)}
+
+.fx .tb-vista{position:relative;overflow:hidden;height:min(72vh,820px);min-height:320px;border:1px solid var(--dw-line);background:#0c1113;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;outline:none;contain:strict}
+.fx .tb-vista:focus-visible{box-shadow:0 0 0 2px var(--dw-brass)}
+.fx .tb-vista[data-tool="regua"],.fx .tb-vista[data-tool="area"],.fx .tb-vista[data-tool="terreno"],.fx .tb-vista[data-tool="nevoa"]{cursor:crosshair}
+@media (max-width:700px){.fx .tb-vista{height:62vh}}
+.fx .tb-mundo{position:absolute;left:0;top:0;transform-origin:0 0}
+.fx .tb-mundo.mexendo{will-change:transform}
+.fx .tb-mundo > *{position:absolute;left:0;top:0}
+.fx .tb-fundo{width:100%;height:100%;z-index:0;object-fit:fill;pointer-events:none;-webkit-user-drag:none}
+.fx .tb-terreno{z-index:1;pointer-events:none}
+.fx .tb-areas{z-index:2;pointer-events:none;overflow:visible}
+.fx .tb-areas .marca{animation:tb-surge .3s ease-out}
+.fx .tb-pecas{width:0;height:0}
+.fx .tb-nevoa{z-index:4;pointer-events:none;image-rendering:auto}
+.fx .tb-regua{z-index:6;pointer-events:none;overflow:visible}
+.fx .tb-dica{position:absolute;left:10px;bottom:10px;z-index:8;max-width:calc(100% - 20px);padding:5px 10px;background:rgba(10,14,16,.86);border:1px solid var(--dw-line);color:var(--dw-bone);font-family:var(--f-body);pointer-events:none;opacity:0;transition:opacity .2s}
+.fx .tb-dica.on{opacity:1}
+.fx .tb-dica.longe{border-color:#c0392d;color:#ffcabf}
+
+/* peças */
+.fx .tb-peca{position:absolute;left:0;top:0;z-index:3;width:calc(var(--tam,1) * 48px);height:calc(var(--tam,1) * 48px);transition:transform .24s cubic-bezier(.22,1,.36,1);cursor:pointer;touch-action:none}
+.fx .tb-peca.minha{z-index:5}
+.fx .tb-peca.arrastando{transition:none;z-index:7;cursor:grabbing}
+.fx .tb-peca.arrastando .tb-disco{transform:scale(1.08)}
+.fx .tb-disco{position:absolute;inset:7%;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 35%,#34434a,#151c1f 72%);border:2.5px solid var(--c);box-shadow:0 0 0 2px rgba(5,8,10,.75),0 6px 12px -6px #000;transition:transform .15s}
+.fx .tb-disco b{font-family:var(--f-display);font-weight:400;color:#f4ecd8;font-size:calc(var(--tam,1) * 15px);letter-spacing:.04em;line-height:1}
+.fx .t-inimigo .tb-disco{background:radial-gradient(circle at 50% 35%,#4a2b27,#1c1311 72%)}
+.fx .t-aliado .tb-disco{background:radial-gradient(circle at 50% 35%,#24453c,#111c19 72%)}
+.fx .t-objeto .tb-disco{border-radius:6px;background:linear-gradient(#2a3236,#171d20)}
+.fx .tb-nome{position:absolute;left:50%;top:100%;transform:translate(-50%,-4px);white-space:nowrap;font-family:var(--f-body);font-size:13px;color:#f4ecd8;background:rgba(8,12,14,.86);border:1px solid var(--dw-line);padding:1px 7px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
+.fx .tb-peca:hover .tb-nome,.fx .tb-peca.sel .tb-nome,.fx .tb-peca.arrastando .tb-nome{opacity:1}
+.fx .tb-vida{position:absolute;left:14%;right:14%;bottom:2%;height:5px;background:rgba(5,8,10,.85);border:1px solid rgba(0,0,0,.6);overflow:hidden}
+.fx .tb-vida > i{position:absolute;inset:0;transform-origin:0 50%;background:linear-gradient(90deg,#7d1d16,#e0503e);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.fx .t-pj .tb-vida > i{background:linear-gradient(90deg,#7d1d16,#c0392d)}
+.fx .tb-peca.sel .tb-disco{box-shadow:0 0 0 2px #0b0f11,0 0 0 4px var(--dw-brass),0 0 18px -2px var(--dw-brass)}
+.fx .tb-peca.vez::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #eaa94b;box-shadow:0 0 16px -2px #eaa94b;pointer-events:none;animation:tb-vez 1.6s ease-in-out infinite}
+.fx .tb-peca.oculta{opacity:.5}
+.fx .tb-peca.oculta .tb-disco{border-style:dashed}
+.fx .tb-peca.caida .tb-disco{filter:grayscale(1) brightness(.55)}
+
+/* painéis */
+.fx .tb-lado{display:flex;flex-direction:column;gap:14px;min-width:0}
+.fx .tb-lado .fx-box{margin:0}
+.fx .tb-lado h3 small{font-style:italic}
+.fx .tb-fase{border-left:2px solid var(--dw-line);padding:4px 0 4px 10px;margin:8px 0}
+.fx .tb-fase.agora{border-left-color:#eaa94b;background:linear-gradient(90deg,rgba(234,169,75,.08),transparent)}
+.fx .tb-fase.passou{opacity:.55}
+.fx .tb-fase h4{margin:0 0 6px;font-family:var(--f-display);font-weight:400;letter-spacing:.05em;color:var(--dw-bone);font-size:1.02rem}
+.fx .tb-fase h4 small{color:#eaa94b;font-style:italic;font-family:var(--f-body)}
+.fx .tb-atores{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.fx .tb-ator{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;color:var(--dw-bone);font-family:var(--f-body)}
+.fx .tb-ator.feito .tb-an{opacity:.5;text-decoration:line-through;text-decoration-color:rgba(233,224,203,.4)}
+.fx .tb-ator.minha .tb-an{color:#fff}
+.fx .tb-ponto{width:14px;height:14px;border-radius:50%;border:2px solid var(--c);background:#151c1f;padding:0;cursor:pointer;flex:0 0 auto}
+.fx .tb-an{flex:1 1 7em;min-width:0}
+.fx .tb-an small{display:block;color:var(--dw-dim);font-style:italic;font-size:.85em}
+.fx .tb-pa{display:inline-flex;gap:6px}
+.fx .tb-pip{width:14px;height:14px;transform:rotate(45deg);border:1.5px solid rgba(233,224,203,.45);background:rgba(0,0,0,.25);padding:0;cursor:pointer;border-radius:2px;transition:background .15s,border-color .15s}
+.fx .tb-pip[aria-pressed="true"]{background:#eaa94b;border-color:#ffe2a8}
+.fx .tb-pip:disabled{cursor:default}
+.fx .tb-ok{color:var(--dw-dim);font-style:italic}
+.fx .tb-esquenta{color:#eaa94b}
+.fx .tb-campos{grid-template-columns:repeat(auto-fill,minmax(min(130px,100%),1fr))}
+.fx .tb-campos input[type=color]{width:100%;height:32px;border:1px solid var(--dw-line);background:transparent;padding:0}
+.fx .tb-chk{display:inline-flex;gap:6px;align-items:center;color:var(--dw-dim);font-family:var(--f-body)}
+.fx .tb-chk input{accent-color:var(--dw-brass)}
+.fx .tb-novo{margin-top:10px}
+.fx .tb-novo summary{cursor:pointer}
+.fx .tb-dano{align-items:center}
+.fx .tb-mlista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.fx .tb-mlista li{display:flex;gap:8px;align-items:flex-start;color:var(--dw-bone);font-family:var(--f-body)}
+.fx .tb-mlista li > span:nth-child(2){flex:1;min-width:0}
+.fx .tb-mlista small{display:block;color:var(--dw-dim);font-style:italic}
+.fx .tb-mc{width:12px;height:12px;margin-top:5px;border-radius:2px;background:var(--c);flex:0 0 auto;opacity:.85}
+.fx .tb-lado .bars{margin:6px 0}
+
+@keyframes tb-vez{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes tb-surge{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.fx .tb-peca,.fx .tb-vida > i{transition:none}.fx .tb-peca.vez::after,.fx .tb-areas .marca{animation:none}}
+.fx.tb-largo{max-width:1600px}
+.fx .tb-lado .bars{display:grid;grid-template-columns:auto 1fr auto;gap:4px 8px;align-items:center;font-size:.92rem}
+.fx .tb-lado .bars .fx-bar{height:8px;margin:0}
+.fx .tb-lado .bars span{color:var(--dw-dim)}
+.fx .tb-lado .bars .fx-bar i{background:linear-gradient(90deg,#7d1d16,var(--dw-blood))!important}
+.fx .tb-lado .bars .fx-bar:nth-of-type(2) i{background:linear-gradient(90deg,#8a6d25,var(--dw-post))!important}
+.fx .tb-lado .bars .fx-bar:nth-of-type(3) i{background:linear-gradient(90deg,#145c74,var(--dw-ether))!important}
+.page.tb-page{padding-top:clamp(14px,2.5vw,36px);padding-bottom:clamp(14px,2.5vw,36px)}
+@media (max-width:700px){
+  .page.tb-page{padding-left:12px;padding-right:12px}
+  .page.tb-page > .folio{display:none}
+  .page.tb-page #pg-h{font-size:1.45rem;margin-bottom:4px}
+  .fx .tb-topo .fx-hint,.fx #tb-opc[data-tool="mover"] .fx-hint{display:none}
+  .fx .tb-f{padding:6px 10px}
+}
+@media (max-width:700px){.fx #tb-opc[data-tool="mover"]{display:none}}
+.fx #tb-img{color:var(--dw-dim);font-family:var(--f-body);max-width:100%}
+.fx #tb-img::file-selector-button{font-family:var(--f-body);font-size:.95rem;padding:5px 12px;margin-right:10px;border:1px solid var(--dw-line);background:linear-gradient(#253034,#1a2326);color:var(--dw-bone);cursor:pointer;border-radius:2px}
+
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
 </style>
@@ -980,6 +1102,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <div class="rulebox"><p><b>Pontos de Ação.</b> Toda criatura tem 3 PA por rodada, renovados no começo do seu turno. Os PA que você não gastar ficam <i>guardados</i> até o seu próximo turno e servem para se Defender, ou para qualquer coisa que diga "com PA guardado". Não existe Reação: tudo o que você faz fora do seu turno sai desses PA. Uma <i>ação livre</i> é qualquer coisa que não custa PA, como falar uma frase curta ou soltar o que segura.</p>
 <p><b>Quem começa.</b> Ninguém rola iniciativa. Na primeira rodada, compare a sua Iniciativa com a do inimigo mais rápido: se for igual ou maior, você age antes dos inimigos, com os 3 PA; se for menor, age depois deles. Numa emboscada, quem embosca rola Furtividade contra a Atenção de cada alvo, e quem não percebeu nada não age na primeira rodada.</p>
 <p><b>Rápido ou lento.</b> Da segunda rodada em diante, cada jogador escolhe, toda rodada, se vai agir rápido ou devagar. A rodada tem três fases, nesta ordem: primeiro agem os rápidos, com só 2 PA; depois agem os inimigos; por último agem os lentos, com os 3 PA. Dentro de cada fase, o grupo combina a ordem: quem termina descreve o que fez e passa a vez.</p>
+<p><b>No tabuleiro.</b> Num mapa em quadrados, cada quadrado tem 1,5 m, e andar na diagonal também custa 1,5 m. Nas áreas, o <i>raio</i> conta do centro do ponto escolhido; o <i>cone</i> sai de quem lança e, na ponta, é tão largo quanto é comprido; a <i>linha</i> tem 1,5 m de largura. Um quadrado está dentro da área quando o centro dele está.</p>
 <div class="twrap"><table class="wtable"><thead><tr><th>Ação</th><th>PA</th><th>Detalhe</th></tr></thead><tbody>
 <tr><td>Mover</td><td>1</td><td>até o seu movimento</td></tr>
 <tr><td>Atacar</td><td>1</td><td>o segundo ataque no turno sofre −3 no acerto, e o terceiro, −6</td></tr>
@@ -3440,7 +3563,7 @@ async function pollFicha() {
     }
   } catch (e) {}
 }
-function stopPolls() { clearInterval(pollT); pollT = null; clearInterval(mesaT); mesaT = null; }
+function stopPolls() { clearInterval(pollT); pollT = null; clearInterval(mesaT); mesaT = null; pararTabuleiro(); }
 async function openFicha(id) {
   stopPolls(); root.innerHTML = '<p class="fx-empty">abrindo a ficha…</p>';
   try {
@@ -3464,6 +3587,7 @@ function patchHead() {
   const a = $('.fx-actions', root); if (!a || $('[data-act="voltar"]', a)) return;
   a.insertAdjacentHTML('afterbegin', `<button class="fx-btn" type="button" data-act="voltar">← ${CUR && CUR.mesa_id && CUR.dono !== me() ? 'Mesa' : 'Fichas'}</button>`);
   const code = $('[data-act="code"]', a); if (code) code.remove();
+  if (CUR && CUR.mesa_id) $('[data-act="voltar"]', a).insertAdjacentHTML('afterend', `<a class="fx-btn" href="#tabuleiro/${esc(CUR.mesa_id)}">Tabuleiro</a>`);
 }
 function showCode() {}
 function copyCode() {}
@@ -3627,7 +3751,7 @@ function summary(f) {
   const cur = (k, mx) => S[k].atual === '' ? mx : num(S[k].atual);
   const out = { nome: S.nome || 'sem nome', jogador: S.jogador, nivel: c.lvl, aspecto: a ? a.nome : '', estilo: st ? st.nome : '', sintonia: t ? t.nome : '',
     pv: cur('pv', c.pvMax), pvMax: c.pvMax, postura: cur('postura', c.postMax), postMax: c.postMax, san: cur('san', c.sanMax), sanMax: c.sanMax,
-    ether: cur('ether', c.etMax), etMax: c.etMax, defesa: c.defesa, rd: c.rd, atencao: c.atencao, condicoes: S.condicoes, itens: S.itens.length, armas: S.armas.length };
+    ether: cur('ether', c.etMax), etMax: c.etMax, defesa: c.defesa, rd: c.rd, atencao: c.atencao, ini: c.ini, mov: c.mov, condicoes: S.condicoes, itens: S.itens.length, armas: S.armas.length };
   S = keep; return out;
 }
 const bar = (a, b) => { const r = b > 0 ? Math.max(0, Math.min(1, a / b)) : 0; return `<div class="fx-bar${r <= .25 ? ' bad' : r <= .5 ? ' warn' : ''}"><i style="width:${r * 100}%"></i></div>`; };
@@ -3726,7 +3850,7 @@ async function renderMesa(id) {
     MESA = { m, mestre, cat: catalogo(custom || []), fichas: [], nomes: {} };
     root.innerHTML = pageWrap('Maré Baixa', 'a mesa', mestre ? 'Você é o Mestre' : 'Mesa', esc(m.nome), `
       ${mestre ? `<p class="fx-hint" style="margin:0 0 14px">Código para os jogadores entrarem: <b style="font-size:1.25em;letter-spacing:.14em;color:var(--ink)">${esc(m.codigo)}</b></p>` : ''}
-      <div class="fx-add" style="margin:0 0 14px"><a class="fx-btn" href="#mesas">← Mesas</a>${mestre ? '' : '<button class="fx-btn red small" type="button" data-act="sair-mesa">Sair da mesa</button>'}</div>
+      <div class="fx-add" style="margin:0 0 14px"><a class="fx-btn" href="#mesas">← Mesas</a><a class="fx-btn" href="#tabuleiro/${esc(id)}">Abrir o tabuleiro</a>${mestre ? '' : '<button class="fx-btn red small" type="button" data-act="sair-mesa">Sair da mesa</button>'}</div>
       <h3 class="fx-lbl">Fichas na mesa</h3>
       <div class="party" id="ms-fichas"><p class="fx-empty">carregando…</p></div>
       ${mestre ? `
@@ -3878,14 +4002,812 @@ root.addEventListener('click', async e => {
   if (t.dataset.nao !== undefined) { const box = $('#fx-confirm', root); box.hidden = true; box.innerHTML = ''; }
 });
 
+
+/* ---------- tabuleiro de combate ---------- */
+// Um quadrado = 1,5 m. Peças, névoa, terreno e turno ficam no Supabase; a tela pergunta a cada 1,2 s
+// só a versão do tabuleiro e baixa o resto quando ela muda.
+const TQ = 48, METRO = 1.5;
+const TERRENOS = [['a', 'Água'], ['d', 'Difícil'], ['c', 'Cobertura'], ['p', 'Parede'], ['.', 'Apagar']];
+const FORMAS = [['circulo', 'Raio'], ['cone', 'Cone'], ['linha', 'Linha']];
+const TAMANHOS_AREA = [3, 4.5, 6, 9, 12, 18];
+const FASES = ['Antes dos inimigos', 'Inimigos e aliados', 'Depois dos inimigos'];
+const COR_TIPO = { pj: '#3fb3d2', inimigo: '#c0392d', aliado: '#5fd6b0', objeto: '#a9a597' };
+let TB = null, tbT = null, tbFT = null, tbRaf = 0;
+const tbJobs = new Set();
+const fm = m => String(Math.round(m * 10) / 10).replace('.', ',') + ' m';
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const corOk = c => /^#[0-9a-f]{6}$/i.test(String(c || '')) ? c : '#c0392d';
+function sigla(n) {
+  const w = String(n || '?').trim().split(/\s+/), d = w.find(x => /^\d+$/.test(x)), l = w.filter(x => !/^\d+$/.test(x));
+  const a = (l[0] || '?')[0], b = d || (l[1] ? l[1][0] : (l[0] || '').slice(1, 2));
+  return (a + b).toUpperCase();
+}
+function pararTabuleiro() { clearInterval(tbT); clearInterval(tbFT); tbT = tbFT = null; if (TB) TB.fim = true; TB = null; root.classList.remove('tb-largo'); }
+function agendar(fn) { tbJobs.add(fn); if (!tbRaf) tbRaf = requestAnimationFrame(() => { tbRaf = 0; const js = [...tbJobs]; tbJobs.clear(); if (TB) js.forEach(f => f()); }); }
+
+function norm(t) {
+  const n = t.cols * t.linhas;
+  const pad = (s, ch) => (String(s || '') + ch.repeat(n)).slice(0, n);
+  return { ...t, terreno: pad(t.terreno, '.'), nevoa: pad(t.nevoa, '0'), turno: t.turno && typeof t.turno === 'object' ? t.turno : {} };
+}
+const turno = () => (TB && TB.t.turno) || {};
+const minha = p => !!(p && p.ficha_id && TB.minhas.has(p.ficha_id));
+const tbPode = p => TB.mestre || minha(p);
+const nomeDe = p => (p.tipo === 'pj' && p.ficha_id && TB.sum[p.ficha_id] && TB.sum[p.ficha_id].nome) || p.nome || 'sem nome';
+const iniDe = p => { const s = p.ficha_id && TB.sum[p.ficha_id]; return s ? s.ini : 0; };
+function vidaDe(p) {
+  if (p.tipo === 'pj') { const s = p.ficha_id && TB.sum[p.ficha_id]; return s && s.pvMax > 0 ? clamp(s.pv / s.pvMax, 0, 1) : null; }
+  return p.pv_max > 0 ? clamp((p.pv ?? p.pv_max) / p.pv_max, 0, 1) : null;
+}
+// o que esta tela está gravando (ou gravou depois que a consulta saiu) vale mais que a resposta da consulta
+function seguro(chave, t0) { return (TB.pend[chave] || 0) > 0 || (TB.fim[chave] || 0) > t0; }
+
+/* ---------- abrir ---------- */
+async function renderTabuleiro(id) {
+  stopPolls(); CUR = null;
+  root.innerHTML = pageWrap('Maré Baixa', 'o tabuleiro', 'Tabuleiro', '…', '<p class="fx-empty">carregando…</p>');
+  try {
+    const ms = await api('GET', 'mesas?select=id,nome,mestre&id=eq.' + id);
+    if (!ms || !ms.length) { root.innerHTML = pageWrap('Maré Baixa', 'o tabuleiro', 'Tabuleiro', 'Não achei', '<p class="fx-empty">Essa mesa não existe ou você não está nela.</p>'); return; }
+    const m = ms[0], mestre = m.mestre === me();
+    let rows;
+    try { rows = await api('GET', 'tabuleiros?select=*&mesa_id=eq.' + id); }
+    catch (e) {
+      if (/tabuleiro|relation|schema cache|does not exist|find the table/i.test(e.message)) {
+        root.innerHTML = pageWrap('Maré Baixa', 'o tabuleiro', 'Tabuleiro', esc(m.nome), `<div class="fx-add" style="margin:0 0 14px"><a class="fx-btn" href="#mesa/${esc(id)}">← Mesa</a></div><p class="fx-empty">${mestre ? 'Para usar o tabuleiro, rode o arquivo <b>supabase/tabuleiro.sql</b> no SQL Editor do Supabase e abra de novo.' : 'O tabuleiro ainda não foi ligado nesta mesa. Peça ao Mestre.'}</p>`);
+        return;
+      }
+      throw e;
+    }
+    let t = rows && rows[0];
+    if (!t) {
+      if (!mestre) { root.innerHTML = pageWrap('Maré Baixa', 'o tabuleiro', 'Tabuleiro', esc(m.nome), `<div class="fx-add" style="margin:0 0 14px"><a class="fx-btn" href="#mesa/${esc(id)}">← Mesa</a></div><p class="fx-empty">O Mestre ainda não montou o tabuleiro desta mesa.</p>`); return; }
+      const n = 24 * 16;
+      t = (await api('POST', 'tabuleiros', { mesa_id: id, cols: 24, linhas: 16, terreno: '.'.repeat(n), nevoa: '0'.repeat(n) }, 'return=representation'))[0];
+    }
+    TB = { id, m, mestre, t: norm(t), versao: t.versao, fundoV: -1, pecas: [], marcas: [], fichas: [], sum: {}, sig: {}, minhas: new Set(),
+      sel: null, tool: 'mover', pincel: 'a', nevoaModo: '1', area: { forma: 'circulo', m: 3 }, vista: { x: 0, y: 0, z: 1 },
+      ocupado: 0, pend: {}, fim: {}, previa: null, regua: null, els: new Map(), autoKey: '' };
+    root.innerHTML = pageWrap('Maré Baixa', 'o tabuleiro', mestre ? 'Tabuleiro · você é o Mestre' : 'Tabuleiro', esc(m.nome), tbHtml());
+    const pg = $('.page', root); if (pg) pg.classList.add('tb-page');
+    root.classList.add('tb-largo');
+    ligarTabuleiro();
+    await Promise.all([tbFichas(), tbCarregar(true)]);
+    tbCentralizar();
+    tbT = setInterval(tbPoll, 1200);
+    tbFT = setInterval(() => { if (!document.hidden) tbFichas(); }, 6000);
+  } catch (e) { pst('erro: ' + e.message); }
+}
+
+function tbHtml() {
+  const f = (tool, rot) => `<button class="tb-f" type="button" data-tool="${tool}" aria-pressed="${tool === 'mover'}">${rot}</button>`;
+  return `<div class="fx-add tb-topo"><a class="fx-btn" href="#mesa/${esc(TB.id)}">← Mesa</a><span class="fx-hint">1 quadrado = 1,5 m</span></div>
+  <div class="tb">
+    <div class="tb-palco">
+      <div class="tb-ferr" role="toolbar" aria-label="Ferramentas do tabuleiro">
+        ${f('mover', 'Mover')}${f('regua', 'Régua')}${f('area', 'Área')}${TB.mestre ? f('terreno', 'Terreno') + f('nevoa', 'Névoa') : ''}
+        <span class="tb-sep"></span>
+        <button class="tb-f" type="button" data-tb="zoom" data-d="-1" aria-label="Afastar">−</button><button class="tb-f" type="button" data-tb="zoom" data-d="1" aria-label="Aproximar">+</button>
+        <button class="tb-f" type="button" data-tb="centro">Centralizar</button>
+      </div>
+      <div class="tb-opc" id="tb-opc"></div>
+      <div class="tb-vez" id="tb-vez" hidden></div>
+      <div class="tb-vista" id="tb-vista" tabindex="0" aria-label="Tabuleiro. Arraste para olhar o mapa ou mover a sua peça; setas movem a peça escolhida.">
+        <div class="tb-mundo" id="tb-mundo">
+          <img class="tb-fundo" id="tb-fundo" alt="" hidden>
+          <canvas class="tb-terreno" id="tb-terreno"></canvas>
+          <svg class="tb-areas" id="tb-areas" aria-hidden="true"></svg>
+          <div class="tb-pecas" id="tb-pecas"></div>
+          <canvas class="tb-nevoa" id="tb-nevoa"></canvas>
+          <svg class="tb-regua" id="tb-regua" aria-hidden="true"></svg>
+        </div>
+        <div class="tb-dica" id="tb-dica" role="status"></div>
+      </div>
+    </div>
+    <aside class="tb-lado">
+      <section class="fx-box" id="tb-turno" aria-label="Ordem dos turnos"></section>
+      <section class="fx-box" id="tb-sel" hidden aria-label="Peça escolhida"></section>
+      ${TB.mestre ? '<section class="fx-box" id="tb-add" aria-label="Pôr peças"></section><section class="fx-box" id="tb-cena" aria-label="Cenário"></section>' : ''}
+      <section class="fx-box" id="tb-marcas" aria-label="Áreas"></section>
+    </aside>
+  </div>`;
+}
+
+/* ---------- dados ---------- */
+async function tbFichas() {
+  if (!TB) return;
+  try {
+    const fs = await api('GET', 'fichas?select=id,nome,dados,dono&mesa_id=eq.' + TB.id + '&order=nome.asc');
+    if (!TB) return;
+    let mudou = fs.length !== TB.fichas.length;
+    fs.forEach(f => {
+      const sig = ((f.dados && f.dados.atualizado) || 0) + ':' + f.nome;
+      if (TB.sig[f.id] !== sig) { TB.sig[f.id] = sig; TB.sum[f.id] = summary(f.dados); mudou = true; }
+    });
+    TB.fichas = fs.map(f => ({ id: f.id, dono: f.dono, nome: f.nome }));
+    TB.minhas = new Set(fs.filter(f => f.dono === me()).map(f => f.id));
+    if (mudou) { desenharPecas(); desenharLado(); }
+  } catch (e) {}
+}
+async function tbCarregar(forcar) {
+  if (!TB) return;
+  const tb = TB; tb.ocupado++;
+  try {
+    const t0 = Date.now();
+    const [ts, ps, mk] = await Promise.all([
+      api('GET', 'tabuleiros?select=cols,linhas,terreno,nevoa,turno,versao,fundo_versao&mesa_id=eq.' + tb.id),
+      api('GET', 'pecas?select=*&mesa_id=eq.' + tb.id + '&order=atualizado.asc'),
+      api('GET', 'marcas?select=*&mesa_id=eq.' + tb.id + '&order=criado.asc')]);
+    if (TB !== tb || !ts || !ts[0]) return;
+    const t = norm(ts[0]), o = tb.t;
+    // o que esta tela acabou de mudar vale mais que uma resposta que saiu antes da mudança chegar
+    if (seguro('terreno', t0)) t.terreno = o.terreno;
+    if (seguro('nevoa', t0)) t.nevoa = o.nevoa;
+    if (seguro('turno', t0)) t.turno = o.turno;
+    const grade = forcar || t.cols !== o.cols || t.linhas !== o.linhas || t.terreno !== o.terreno;
+    const nev = grade || t.nevoa !== o.nevoa;
+    tb.t = t; tb.versao = t.versao;
+    const velhas = new Map(tb.pecas.map(p => [p.id, p]));
+    tb.pecas = ps.map(p => { const v = velhas.get(p.id); return v && seguro('p' + p.id, t0) ? { ...p, x: v.x, y: v.y } : p; });
+    if (tb.arrasto) { const p = tb.pecas.find(x => x.id === tb.arrasto.id); if (p) Object.assign(p, { x: tb.arrasto.x, y: tb.arrasto.y }); }
+    tb.marcas = mk.concat(tb.marcas.filter(m => String(m.id).startsWith('tmp')));
+    if (tb.sel && !tb.pecas.some(p => p.id === tb.sel)) tb.sel = null;
+    if (grade) desenharTerreno();
+    if (!forcar && (t.cols !== o.cols || t.linhas !== o.linhas)) tbCentralizar();
+    if (nev) desenharNevoa();
+    if (t.fundo_versao !== tb.fundoV) tbFundo(t.fundo_versao);
+    desenharTudo();
+    tbAuto();
+  } catch (e) { tbDica('sem conexão: ' + e.message); }
+  finally { tb.ocupado--; }
+}
+async function tbPoll() {
+  if (!TB || document.hidden || TB.ocupado || TB.gesto) return;
+  const tb = TB;
+  try {
+    const r = await api('GET', 'tabuleiros?select=versao,fundo_versao&mesa_id=eq.' + tb.id);
+    if (TB === tb && r && r[0] && (r[0].versao !== tb.versao || r[0].fundo_versao !== tb.fundoV)) await tbCarregar();
+  } catch (e) {}
+}
+async function tbFundo(v) {
+  const tb = TB; tb.fundoV = v;
+  try {
+    const r = await api('GET', 'tabuleiro_fundo?select=imagem&mesa_id=eq.' + tb.id);
+    if (TB !== tb) return;
+    const src = r && r[0] && /^data:image\/(jpeg|png|webp);base64,/.test(r[0].imagem) ? r[0].imagem : '';
+    const img = $('#tb-fundo', root); if (!img) return;
+    if (src) { img.src = src; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
+    tb.temFundo = !!src; desenharTerreno(); desenharCena();
+  } catch (e) {}
+}
+// toda escrita passa aqui: segura a consulta enquanto grava e, se der erro, recarrega do servidor
+async function tbEscreve(fn, ok, chaves = []) {
+  const tb = TB; if (!tb) return;
+  tb.ocupado++; chaves.forEach(k => { tb.pend[k] = (tb.pend[k] || 0) + 1; });
+  try { await fn(); if (ok) tbDica(ok); }
+  catch (e) { tbDica('não deu: ' + e.message); tb.versao = -1; }
+  finally { tb.ocupado--; chaves.forEach(k => { tb.pend[k]--; tb.fim[k] = Date.now(); }); }
+}
+
+/* ---------- vista: arrastar e aproximar ---------- */
+function aplicarVista() {
+  const v = TB.vista, mu = $('#tb-mundo', root); if (!mu) return;
+  mu.style.transform = `translate3d(${v.x.toFixed(1)}px,${v.y.toFixed(1)}px,0) scale(${v.z.toFixed(4)})`;
+  mu.classList.add('mexendo'); clearTimeout(TB.mexT); TB.mexT = setTimeout(() => mu.classList.remove('mexendo'), 220);
+}
+function tbCentralizar() {
+  const vi = $('#tb-vista', root); if (!vi || !TB) return;
+  const W = TB.t.cols * TQ, H = TB.t.linhas * TQ, vw = vi.clientWidth, vh = vi.clientHeight;
+  const z = clamp(Math.min(vw / W, vh / H) * .96, .15, 1.6);
+  TB.vista = { z, x: (vw - W * z) / 2, y: (vh - H * z) / 2 }; aplicarVista();
+}
+function zoomEm(cx, cy, f) {
+  const v = TB.vista, z = clamp(v.z * f, .15, 4), r = $('#tb-vista', root).getBoundingClientRect();
+  const px = cx - r.left, py = cy - r.top;
+  v.x = px - (px - v.x) * z / v.z; v.y = py - (py - v.y) * z / v.z; v.z = z; aplicarVista();
+}
+function noMundo(cx, cy) { const r = $('#tb-vista', root).getBoundingClientRect(), v = TB.vista; return { x: (cx - r.left - v.x) / v.z / TQ, y: (cy - r.top - v.y) / v.z / TQ }; }
+const celula = w => ({ x: Math.floor(w.x), y: Math.floor(w.y) });
+const dentroDaGrade = c => c.x >= 0 && c.y >= 0 && c.x < TB.t.cols && c.y < TB.t.linhas;
+const passos = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+
+function ligarTabuleiro() {
+  const vi = $('#tb-vista', root), box = $('.tb', root);
+  const ptrs = new Map();
+  vi.addEventListener('pointerdown', e => {
+    if (!TB || e.button > 0) return;
+    vi.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 2) {
+      if (TB.gesto && TB.gesto.tipo === 'peca') soltarPeca(false);
+      const [a, b] = [...ptrs.values()];
+      TB.gesto = { tipo: 'pinca', d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, z0: TB.vista.z, cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
+      return;
+    }
+    if (ptrs.size > 2) return;
+    const w = noMundo(e.clientX, e.clientY), c = celula(w);
+    const pel = e.target.closest && e.target.closest('.tb-peca');
+    const pe = pel && TB.pecas.find(p => p.id === pel.dataset.peca);
+    if (TB.tool === 'mover') {
+      if (pe) { selecionar(pe.id); if (tbPode(pe)) { TB.arrasto = { id: pe.id, x: pe.x, y: pe.y }; TB.gesto = { tipo: 'peca', pe, ox: w.x - pe.x, oy: w.y - pe.y, x0: pe.x, y0: pe.y }; pel.classList.add('arrastando'); return; } }
+      TB.gesto = { tipo: 'pan', sx: e.clientX, sy: e.clientY, vx: TB.vista.x, vy: TB.vista.y, moveu: false, peca: !!pe };
+    } else if (TB.tool === 'regua') {
+      TB.gesto = { tipo: 'regua' }; TB.regua = { a: c, b: c }; clearTimeout(TB.reguaT); desenharRegua();
+    } else if (TB.tool === 'area') {
+      const o = { x: c.x + .5, y: c.y + .5 };
+      TB.gesto = { tipo: 'area' }; TB.previa = { forma: TB.area.forma, metros: TB.area.m, x: o.x, y: o.y, ax: o.x, ay: o.y }; agendar(desenharAreas);
+    } else if (TB.tool === 'terreno' || TB.tool === 'nevoa') {
+      const k = TB.tool === 'terreno' ? 'terreno' : 'nevoa';
+      TB.gesto = { tipo: 'pinta', k, arr: TB.t[k].split(''), ult: null, sujo: false }; pintar(c);
+    }
+  });
+  vi.addEventListener('pointermove', e => {
+    if (!TB) return;
+    if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const g = TB.gesto;
+    if (!g) { if (TB.tool === 'area' && e.pointerType === 'mouse' && TB.area.forma === 'circulo') { const c = celula(noMundo(e.clientX, e.clientY)); const o = { x: c.x + .5, y: c.y + .5 }; if (!TB.previa || TB.previa.x !== o.x || TB.previa.y !== o.y) { TB.previa = { forma: 'circulo', metros: TB.area.m, x: o.x, y: o.y, ax: o.x, ay: o.y, flutua: true }; agendar(desenharAreas); } } return; }
+    if (g.tipo === 'pinca') {
+      if (ptrs.size < 2) return;
+      const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y), cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+      TB.vista.x += cx - g.cx; TB.vista.y += cy - g.cy; g.cx = cx; g.cy = cy;
+      zoomEm(cx, cy, (g.z0 * d / g.d0) / TB.vista.z); return;
+    }
+    const w = noMundo(e.clientX, e.clientY), c = celula(w);
+    if (g.tipo === 'pan') {
+      const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
+      if (!g.moveu && Math.hypot(dx, dy) < 5) return;
+      g.moveu = true; TB.vista.x = g.vx + dx; TB.vista.y = g.vy + dy; aplicarVista();
+    } else if (g.tipo === 'peca') {
+      const p = g.pe, nx = clamp(Math.round(w.x - g.ox), 0, TB.t.cols - p.tam), ny = clamp(Math.round(w.y - g.oy), 0, TB.t.linhas - p.tam);
+      if (nx === TB.arrasto.x && ny === TB.arrasto.y) return;
+      TB.arrasto.x = nx; TB.arrasto.y = ny;
+      const el = TB.els.get(p.id); if (el) el.style.transform = `translate3d(${nx * TQ}px,${ny * TQ}px,0)`;
+      const d = passos({ x: g.x0, y: g.y0 }, { x: nx, y: ny }) * METRO, s = p.ficha_id && TB.sum[p.ficha_id];
+      tbDica(`${nomeDe(p)}: ${fm(d)}${s && s.mov ? ' de ' + fm(s.mov) : ''}`, s && s.mov && d > s.mov ? 'longe' : '');
+    } else if (g.tipo === 'regua') {
+      if (TB.regua.b.x !== c.x || TB.regua.b.y !== c.y) { TB.regua.b = c; agendar(desenharRegua); }
+    } else if (g.tipo === 'area') {
+      const pv = TB.previa;
+      if (pv.forma === 'circulo') { pv.x = pv.ax = c.x + .5; pv.y = pv.ay = c.y + .5; }
+      else { pv.ax = w.x; pv.ay = w.y; }
+      agendar(desenharAreas);
+    } else if (g.tipo === 'pinta') pintar(c);
+  });
+  const fim = e => {
+    if (!TB) return;
+    ptrs.delete(e.pointerId);
+    const g = TB.gesto; if (!g) return;
+    if (g.tipo === 'pinca') { if (ptrs.size === 0) TB.gesto = null; return; }
+    TB.gesto = null;
+    if (g.tipo === 'pan') { if (!g.moveu && !g.peca && e.type === 'pointerup') selecionar(null); }
+    else if (g.tipo === 'peca') soltarPeca(e.type === 'pointerup');
+    else if (g.tipo === 'regua') { desenharRegua(); TB.reguaT = setTimeout(() => { if (TB) { TB.regua = null; desenharRegua(); } }, 6000); }
+    else if (g.tipo === 'area') {
+      const pv = TB.previa; TB.previa = null;
+      const longe = Math.hypot(pv.ax - pv.x, pv.ay - pv.y);
+      if (e.type === 'pointerup' && (pv.forma === 'circulo' || longe > .3)) novaMarca(pv); else agendar(desenharAreas);
+    } else if (g.tipo === 'pinta') {
+      if (g.sujo) {
+        const v = g.arr.join(''); TB.t[g.k] = v;
+        tbEscreve(() => api('PATCH', 'tabuleiros?mesa_id=eq.' + TB.id, { [g.k]: v }), '', [g.k]);
+      }
+    }
+  };
+  vi.addEventListener('pointerup', fim); vi.addEventListener('pointercancel', fim);
+  vi.addEventListener('pointerleave', e => { if (TB && !TB.gesto && TB.previa && TB.previa.flutua) { TB.previa = null; agendar(desenharAreas); } });
+  vi.addEventListener('wheel', e => { if (!TB) return; e.preventDefault(); zoomEm(e.clientX, e.clientY, Math.exp(-e.deltaY * (e.ctrlKey ? .01 : .0015))); }, { passive: false });
+  vi.addEventListener('keydown', e => {
+    if (!TB) return;
+    const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    const p = TB.pecas.find(x => x.id === TB.sel);
+    if (d && p && tbPode(p)) { e.preventDefault(); moverPeca(p, clamp(p.x + d[0], 0, TB.t.cols - p.tam), clamp(p.y + d[1], 0, TB.t.linhas - p.tam)); }
+    else if (e.key === '+' || e.key === '=') { const r = vi.getBoundingClientRect(); zoomEm(r.left + r.width / 2, r.top + r.height / 2, 1.25); }
+    else if (e.key === '-') { const r = vi.getBoundingClientRect(); zoomEm(r.left + r.width / 2, r.top + r.height / 2, .8); }
+    else if (e.key === 'Escape') selecionar(null);
+  });
+  box.addEventListener('click', tbClique);
+  box.addEventListener('change', tbMuda);
+  box.addEventListener('input', tbDigita);
+  desenharOpcoes();
+}
+function soltarPeca(valeu) {
+  const a = TB.arrasto; TB.arrasto = null;
+  const el = a && TB.els.get(a.id); if (el) el.classList.remove('arrastando');
+  const p = a && TB.pecas.find(x => x.id === a.id); if (!p) return;
+  if (valeu && (a.x !== p.x || a.y !== p.y)) moverPeca(p, a.x, a.y);
+  else if (el) el.style.transform = `translate3d(${p.x * TQ}px,${p.y * TQ}px,0)`;
+  setTimeout(() => { if (TB && !TB.gesto) tbDica(''); }, 1600);
+}
+function moverPeca(p, x, y) {
+  p.x = x; p.y = y;
+  desenharPecas(); desenharAreas(); desenharMarcasLista();
+  tbEscreve(() => api('POST', 'rpc/mover_peca', { p: p.id, nx: x, ny: y }), '', ['p' + p.id]);
+}
+function pintar(c) {
+  const g = TB.gesto; if (!g || g.tipo !== 'pinta') return;
+  const val = g.k === 'terreno' ? TB.pincel : TB.nevoaModo, cols = TB.t.cols;
+  const marca = q => { if (!dentroDaGrade(q)) return; const i = q.y * cols + q.x; if (g.arr[i] !== val) { g.arr[i] = val; g.sujo = true; } };
+  // liga o quadrado anterior ao atual para o pincel não pular quadrados num arrasto rápido
+  const a = g.ult || c; let x = a.x, y = a.y; const dx = Math.abs(c.x - x), dy = -Math.abs(c.y - y), sx = x < c.x ? 1 : -1, sy = y < c.y ? 1 : -1; let er = dx + dy;
+  for (let k = 0; k < 400; k++) { marca({ x, y }); if (x === c.x && y === c.y) break; const e2 = 2 * er; if (e2 >= dy) { er += dy; x += sx; } if (e2 <= dx) { er += dx; y += sy; } }
+  g.ult = c;
+  if (g.sujo) { TB.t[g.k] = g.arr.join(''); agendar(g.k === 'terreno' ? desenharTerreno : desenharNevoa); }
+}
+
+/* ---------- desenho ---------- */
+function tamanhoMundo() {
+  const W = TB.t.cols * TQ, H = TB.t.linhas * TQ, mu = $('#tb-mundo', root);
+  if (mu) { mu.style.width = W + 'px'; mu.style.height = H + 'px'; }
+  return [W, H];
+}
+function desenharTerreno() {
+  const cv = $('#tb-terreno', root); if (!cv || !TB) return;
+  const [W, H] = tamanhoMundo(), { cols, linhas, terreno } = TB.t;
+  const k = Math.min(2, window.devicePixelRatio || 1, Math.sqrt(12e6 / (W * H)));
+  if (cv.width !== Math.round(W * k) || cv.height !== Math.round(H * k)) { cv.width = Math.round(W * k); cv.height = Math.round(H * k); }
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const g = cv.getContext('2d'); g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, W, H);
+  if (!TB.temFundo) { const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, '#1b2629'); gr.addColorStop(1, '#121a1c'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
+  for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) {
+    const t = terreno[y * cols + x]; if (t === '.') continue;
+    const px = x * TQ, py = y * TQ;
+    if (t === 'a') {
+      g.fillStyle = 'rgba(46,124,164,.45)'; g.fillRect(px, py, TQ, TQ);
+      g.strokeStyle = 'rgba(170,220,240,.35)'; g.lineWidth = 1.2; g.beginPath();
+      for (const yy of [.35, .7]) { g.moveTo(px + 8, py + TQ * yy); g.quadraticCurveTo(px + TQ * .3, py + TQ * yy - 5, px + TQ * .5, py + TQ * yy); g.quadraticCurveTo(px + TQ * .7, py + TQ * yy + 5, px + TQ - 8, py + TQ * yy); }
+      g.stroke();
+    } else if (t === 'd') {
+      g.fillStyle = 'rgba(128,94,54,.40)'; g.fillRect(px, py, TQ, TQ);
+      g.strokeStyle = 'rgba(214,180,120,.32)'; g.lineWidth = 1.2; g.beginPath();
+      for (let s = -TQ; s < TQ; s += 12) { g.moveTo(px + Math.max(0, s), py + Math.max(0, -s)); g.lineTo(px + Math.min(TQ, s + TQ), py + Math.min(TQ, TQ - s)); }
+      g.stroke();
+    } else if (t === 'c') {
+      g.fillStyle = 'rgba(190,180,146,.24)'; g.fillRect(px, py, TQ, TQ);
+      g.fillStyle = 'rgba(233,224,203,.55)'; g.beginPath(); g.moveTo(px + TQ / 2, py + TQ * .3); g.lineTo(px + TQ * .7, py + TQ / 2); g.lineTo(px + TQ / 2, py + TQ * .7); g.lineTo(px + TQ * .3, py + TQ / 2); g.closePath(); g.fill();
+    } else if (t === 'p') {
+      g.fillStyle = 'rgba(9,11,13,.9)'; g.fillRect(px, py, TQ, TQ);
+      g.strokeStyle = 'rgba(201,170,108,.35)'; g.lineWidth = 1; g.strokeRect(px + 3.5, py + 3.5, TQ - 7, TQ - 7);
+    }
+  }
+  g.strokeStyle = TB.temFundo ? 'rgba(10,14,16,.35)' : 'rgba(233,224,203,.09)'; g.lineWidth = 1; g.beginPath();
+  for (let x = 0; x <= cols; x++) { g.moveTo(x * TQ + .5, 0); g.lineTo(x * TQ + .5, H); }
+  for (let y = 0; y <= linhas; y++) { g.moveTo(0, y * TQ + .5); g.lineTo(W, y * TQ + .5); }
+  g.stroke();
+  if (TB.temFundo) { g.strokeStyle = 'rgba(233,224,203,.14)'; g.beginPath(); for (let x = 0; x <= cols; x++) { g.moveTo(x * TQ + 1.5, 0); g.lineTo(x * TQ + 1.5, H); } for (let y = 0; y <= linhas; y++) { g.moveTo(0, y * TQ + 1.5); g.lineTo(W, y * TQ + 1.5); } g.stroke(); }
+}
+// a névoa é desenhada pequena (4 pontos por quadrado) e esticada: as bordas ficam macias sem filtro nenhum
+function desenharNevoa() {
+  const cv = $('#tb-nevoa', root); if (!cv || !TB) return;
+  const [W, H] = tamanhoMundo(), { cols, linhas, nevoa } = TB.t, R = 4;
+  cv.width = cols * R; cv.height = linhas * R; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const g = cv.getContext('2d'), img = g.createImageData(cols * R, linhas * R), a = TB.mestre ? 140 : 255;
+  for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) {
+    if (nevoa[y * cols + x] !== '1') continue;
+    for (let yy = 0; yy < R; yy++) for (let xx = 0; xx < R; xx++) { const i = ((y * R + yy) * cols * R + x * R + xx) * 4; img.data[i] = 6; img.data[i + 1] = 10; img.data[i + 2] = 12; img.data[i + 3] = a; }
+  }
+  g.putImageData(img, 0, 0);
+}
+function desenharPecas() {
+  const box = $('#tb-pecas', root); if (!box || !TB) return;
+  const t = turno(), vivos = new Set(), agora = t.on && t.fase >= 0 ? new Set(atores(t.fase).filter(p => !(t.feito || {})[p.id]).map(p => p.id)) : new Set();
+  for (const p of TB.pecas) {
+    vivos.add(p.id);
+    let el = TB.els.get(p.id);
+    if (!el) { el = document.createElement('div'); el.dataset.peca = p.id; el.innerHTML = '<span class="tb-disco"><b></b></span><span class="tb-nome"></span><i class="tb-vida"><i></i></i>'; box.appendChild(el); TB.els.set(p.id, el); el.style.transform = `translate3d(${p.x * TQ}px,${p.y * TQ}px,0)`; }
+    const nome = nomeDe(p), vida = vidaDe(p), cor = corOk(p.cor || COR_TIPO[p.tipo]);
+    const cls = 'tb-peca t-' + p.tipo + (p.id === TB.sel ? ' sel' : '') + (agora.has(p.id) ? ' vez' : '') + (p.oculta ? ' oculta' : '') + (minha(p) ? ' minha' : '') + (vida === 0 ? ' caida' : '') + (el.classList.contains('arrastando') ? ' arrastando' : '');
+    if (el.className !== cls) el.className = cls;
+    const sig = nome + '|' + cor + '|' + p.tam + '|' + (vida === null ? '' : vida.toFixed(3));
+    if (el._sig !== sig) {
+      el._sig = sig; el.style.setProperty('--tam', p.tam); el.style.setProperty('--c', cor);
+      $('b', el).textContent = sigla(nome); $('.tb-nome', el).textContent = nome; el.title = nome;
+      const vi = $('.tb-vida', el); vi.hidden = vida === null; if (vida !== null) vi.firstChild.style.transform = `scaleX(${vida})`;
+    }
+    if (!(TB.arrasto && TB.arrasto.id === p.id)) { const tr = `translate3d(${p.x * TQ}px,${p.y * TQ}px,0)`; if (el.style.transform !== tr) el.style.transform = tr; }
+  }
+  for (const [id, el] of TB.els) if (!vivos.has(id)) { el.remove(); TB.els.delete(id); }
+}
+
+/* ---------- áreas ---------- */
+// um quadrado está na área se o centro dele estiver dentro. Cone: na ponta, tão largo quanto comprido. Linha: 1,5 m de largura.
+function naArea(mk, cx, cy) {
+  const dx = (cx - mk.x) * METRO, dy = (cy - mk.y) * METRO, L = mk.metros + 1e-6;
+  if (mk.forma === 'circulo') return Math.hypot(dx, dy) <= L;
+  const ax = mk.ax - mk.x, ay = mk.ay - mk.y, al = Math.hypot(ax, ay) || 1, ux = ax / al, uy = ay / al;
+  const t = dx * ux + dy * uy, perp = Math.abs(-dx * uy + dy * ux);
+  if (t <= 0 || t > L) return false;
+  return mk.forma === 'linha' ? perp <= METRO / 2 + 1e-6 : perp <= t / 2 + 1e-6;
+}
+function celulasDa(mk) {
+  const r = mk.metros / METRO + 1, out = [];
+  for (let y = Math.max(0, Math.floor(mk.y - r)); y <= Math.min(TB.t.linhas - 1, Math.ceil(mk.y + r)); y++)
+    for (let x = Math.max(0, Math.floor(mk.x - r)); x <= Math.min(TB.t.cols - 1, Math.ceil(mk.x + r)); x++)
+      if (naArea(mk, x + .5, y + .5)) out.push([x, y]);
+  return out;
+}
+function atingidos(mk, cel) {
+  const s = new Set(cel.map(([x, y]) => x + ',' + y));
+  return TB.pecas.filter(p => { for (let y = p.y; y < p.y + p.tam; y++) for (let x = p.x; x < p.x + p.tam; x++) if (s.has(x + ',' + y)) return true; return false; });
+}
+function formaSvg(mk, cor, previa) {
+  const P = v => (v * TQ).toFixed(1), L = mk.metros / METRO;
+  const fill = `fill="${cor}" fill-opacity="${previa ? .12 : .1}" stroke="${cor}" stroke-opacity=".85" stroke-width="2"${previa ? ' stroke-dasharray="6 5"' : ''}`;
+  if (mk.forma === 'circulo') return `<circle cx="${P(mk.x)}" cy="${P(mk.y)}" r="${P(L)}" ${fill}/>`;
+  const ax = mk.ax - mk.x, ay = mk.ay - mk.y, al = Math.hypot(ax, ay) || 1, ux = ax / al, uy = ay / al, nx = -uy, ny = ux;
+  const ex = mk.x + ux * L, ey = mk.y + uy * L, w = mk.forma === 'linha' ? .5 : L / 2;
+  const pts = mk.forma === 'linha'
+    ? [[mk.x + nx * w, mk.y + ny * w], [ex + nx * w, ey + ny * w], [ex - nx * w, ey - ny * w], [mk.x - nx * w, mk.y - ny * w]]
+    : [[mk.x, mk.y], [ex + nx * w, ey + ny * w], [ex - nx * w, ey - ny * w]];
+  return `<polygon points="${pts.map(([x, y]) => P(x) + ',' + P(y)).join(' ')}" ${fill}/>`;
+}
+function desenharAreas() {
+  const sv = $('#tb-areas', root); if (!sv || !TB) return;
+  const [W, H] = tamanhoMundo();
+  sv.setAttribute('width', W); sv.setAttribute('height', H); sv.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const parte = (mk, previa) => {
+    const cor = corOk(mk.cor || (TB.mestre ? '#e06a4f' : '#3fb3d2')), cel = celulasDa(mk);
+    return `<g class="${previa ? 'previa' : 'marca'}">${cel.map(([x, y]) => `<rect x="${x * TQ + 2}" y="${y * TQ + 2}" width="${TQ - 4}" height="${TQ - 4}" rx="3" fill="${cor}" fill-opacity=".22"/>`).join('')}${formaSvg(mk, cor, previa)}</g>`;
+  };
+  sv.innerHTML = TB.marcas.map(m => parte(m, false)).join('') + (TB.previa ? parte(TB.previa, true) : '');
+  if (TB.previa && !TB.previa.flutua) {
+    const at = atingidos(TB.previa, celulasDa(TB.previa));
+    tbDica(`${FORMAS.find(f => f[0] === TB.previa.forma)[1]} de ${fm(TB.previa.metros)}: ${at.length ? 'pega ' + at.map(nomeDe).join(', ') : 'não pega ninguém'}`);
+  }
+}
+function novaMarca(pv) {
+  const nome = (sess && sess.user && sess.user.nome) || '';
+  const o = { mesa_id: TB.id, forma: pv.forma, x: pv.x, y: pv.y, ax: pv.ax, ay: pv.ay, metros: pv.metros, cor: TB.mestre ? '#e06a4f' : '#3fb3d2',
+    rotulo: `${FORMAS.find(f => f[0] === pv.forma)[1]} de ${fm(pv.metros)}${nome ? ' · ' + nome : ''}` };
+  const tmp = { ...o, id: 'tmp' + Date.now(), autor: me() };
+  TB.marcas.push(tmp); desenharAreas(); desenharMarcasLista();
+  tbEscreve(async () => {
+    let r;
+    try { r = await api('POST', 'marcas', o, 'return=representation'); }
+    catch (e) { if (TB) { TB.marcas = TB.marcas.filter(m => m !== tmp); desenharAreas(); desenharMarcasLista(); } throw e; }
+    if (TB) { const i = TB.marcas.indexOf(tmp); if (i >= 0) TB.marcas.splice(i, 1, r[0]); desenharMarcasLista(); }
+  });
+}
+function desenharRegua() {
+  const sv = $('#tb-regua', root); if (!sv || !TB) return;
+  const [W, H] = tamanhoMundo();
+  sv.setAttribute('width', W); sv.setAttribute('height', H); sv.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const r = TB.regua; if (!r) { sv.innerHTML = ''; return; }
+  const ax = (r.a.x + .5) * TQ, ay = (r.a.y + .5) * TQ, bx = (r.b.x + .5) * TQ, by = (r.b.y + .5) * TQ, d = passos(r.a, r.b) * METRO;
+  const z = TB.vista.z, fs = clamp(16 / z, 12, 44);
+  sv.innerHTML = `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#0b0f11" stroke-width="${7 / z}" stroke-linecap="round" opacity=".6"/>
+    <line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#e6c77a" stroke-width="${3 / z}" stroke-linecap="round" stroke-dasharray="${10 / z} ${6 / z}"/>
+    <circle cx="${ax}" cy="${ay}" r="${5 / z}" fill="#e6c77a"/><circle cx="${bx}" cy="${by}" r="${5 / z}" fill="#e6c77a"/>
+    <text x="${bx}" y="${by - 14 / z}" text-anchor="middle" font-size="${fs}" fill="#f4ecd8" stroke="#0b0f11" stroke-width="${4 / z}" paint-order="stroke">${fm(d)}</text>`;
+  tbDica(`Régua: ${fm(d)} (${passos(r.a, r.b)} quadrados)`);
+}
+function tbDica(t, cls = '') { const el = $('#tb-dica', root); if (!el) return; el.textContent = t; el.className = 'tb-dica' + (t ? ' on' : '') + (cls ? ' ' + cls : ''); }
+
+/* ---------- turnos ---------- */
+// rodada 1: quem tem Iniciativa igual ou maior que a do inimigo mais rápido age antes, com 3 PA; os outros, depois.
+// da rodada 2 em diante: rápido age antes com 2 PA, lento age depois com 3. O Chefe age duas vezes: com os rápidos (2 PA) e na vez dos inimigos (3 PA).
+function atores(f, t = turno()) {
+  const r = t.rodada || 1, ini = num(t.ini), rit = t.ritmo || {};
+  const ps = TB.pecas.filter(p => p.tipo !== 'objeto');
+  if (f === 0) return ps.filter(p => p.tipo === 'pj' ? (r === 1 ? iniDe(p) >= ini : rit[p.id] === 'rapido') : p.chefe);
+  if (f === 1) return ps.filter(p => p.tipo !== 'pj');
+  return ps.filter(p => p.tipo === 'pj' && (r === 1 ? iniDe(p) < ini : rit[p.id] !== 'rapido'));
+}
+const paInicial = (p, f, t = turno()) => f === 0 ? (p.tipo === 'pj' && (t.rodada || 1) === 1 ? 3 : 2) : 3;
+const paDe = (f, t) => Object.fromEntries(atores(f, t).map(p => [p.id, paInicial(p, f, t)]));
+function mudarTurno(chaves, ok) {
+  TB.t.turno = { ...turno(), ...chaves }; desenharTudo();
+  tbEscreve(() => api('POST', 'rpc/turno_mudar', { m: TB.id, chaves }), ok, ['turno']);
+}
+function turnoPeca(p, campos) {
+  const t = turno(), k = p.id, n = { ...t };
+  if ('ritmo' in campos) n.ritmo = { ...(t.ritmo || {}), [k]: campos.ritmo };
+  if ('pa' in campos) n.pa = { ...(t.pa || {}), [k]: campos.pa };
+  if ('feito' in campos) n.feito = { ...(t.feito || {}), [k]: campos.feito };
+  TB.t.turno = n; desenharTudo();
+  tbEscreve(() => api('POST', 'rpc/turno_peca', { p: k, ...campos }), '', ['turno']);
+}
+function iniciarCombate() {
+  const ini = num(($('#tb-ini', root) || {}).value);
+  const base = { on: true, rodada: 1, ini, ritmo: {}, feito: {} };
+  let f = 0; while (f < 2 && !atores(f, base).length) f++;
+  const todos = Object.fromEntries(TB.pecas.filter(p => p.tipo !== 'objeto').map(p => [p.id, 3]));
+  mudarTurno({ ...base, fase: f, pa: { ...todos, ...paDe(f, base) } }, 'Combate começou: rodada 1.');
+}
+function avancar() {
+  const t = turno(); let r = t.rodada || 1, f = t.fase === -1 ? 0 : t.fase + 1;
+  while (f <= 2 && !atores(f, t).length) f++;
+  if (f > 2) { r++; return mudarTurno({ rodada: r, fase: -1, ritmo: {}, feito: {} }, `Rodada ${r}: cada um escolhe rápido ou lento.`); }
+  mudarTurno({ fase: f, pa: { ...(t.pa || {}), ...paDe(f, t) }, feito: {} });
+}
+// o Mestre passa de fase sozinho quando todo mundo da fase terminou (ou quando todos escolheram o ritmo)
+function tbAuto() {
+  if (!TB || !TB.mestre) return;
+  const t = turno(); if (!t.on) return;
+  let pronto = false;
+  if (t.fase === -1) { const pjs = TB.pecas.filter(p => p.tipo === 'pj'); pronto = pjs.every(p => (t.ritmo || {})[p.id]); }
+  else { const at = atores(t.fase); pronto = at.length > 0 && at.every(p => (t.feito || {})[p.id]); }
+  const key = (t.rodada || 1) + ':' + t.fase;
+  if (!pronto || TB.autoKey === key) return;
+  TB.autoKey = key;
+  setTimeout(() => { if (TB && turno().on && (turno().rodada || 1) + ':' + turno().fase === key) avancar(); }, 900);
+}
+function paPips(p, t, ativa) {
+  const max = ativa ? paInicial(p, t.fase, t) : 3, n = Math.min(max, (t.pa || {})[p.id] ?? max), pode = tbPode(p) && !(ativa && (t.feito || {})[p.id]);
+  return `<span class="tb-pa" aria-label="${n} de ${max} PA">${Array.from({ length: max }, (_, i) => `<button class="tb-pip" type="button" data-tb="pa" data-p="${esc(p.id)}" data-v="${i < n ? n - 1 : n + 1}" aria-pressed="${i < n}" aria-label="PA ${i + 1}"${pode ? '' : ' disabled'}></button>`).join('')}</span>`;
+}
+function linhaAtor(p, t, ativa) {
+  const feito = (t.feito || {})[p.id], r = t.rodada || 1;
+  const extra = p.tipo === 'pj' && r === 1 ? `<small>Iniciativa ${sign(iniDe(p))}</small>` : p.chefe ? '<small>Chefe</small>' : '';
+  return `<li class="tb-ator${feito ? ' feito' : ''}${minha(p) ? ' minha' : ''}" style="--c:${corOk(p.cor || COR_TIPO[p.tipo])}"><button class="tb-ponto" type="button" data-tb="sel" data-p="${esc(p.id)}" aria-label="Mostrar ${esc(nomeDe(p))}"></button>
+    <span class="tb-an">${esc(nomeDe(p))}${extra}</span>${paPips(p, t, ativa)}${ativa ? (feito ? `<span class="tb-ok">${tbPode(p) ? `<button class="fx-btn small" type="button" data-tb="feito" data-p="${esc(p.id)}" data-v="0">desfazer</button>` : 'pronto'}</span>` : tbPode(p) ? `<button class="fx-btn small" type="button" data-tb="feito" data-p="${esc(p.id)}" data-v="1">Passar a vez</button>` : '') : ''}</li>`;
+}
+function desenharTurno() {
+  const box = $('#tb-turno', root); if (!box || box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
+  const t = turno();
+  if (!t.on) {
+    const pjs = TB.pecas.filter(p => p.tipo === 'pj');
+    box.innerHTML = `<h3>Combate</h3>${TB.mestre ? `
+      <label class="fx-f"><span>Iniciativa do inimigo mais rápido</span><input class="fx-in" id="tb-ini" type="number" value="${esc(t.ini ?? 2)}"></label>
+      <p class="fx-hint">${pjs.length ? 'Iniciativa dos personagens: ' + pjs.map(p => esc(nomeDe(p)) + ' ' + sign(iniDe(p))).join(' · ') + '. Quem empata ou passa age antes dos inimigos na primeira rodada.' : 'Ponha os personagens no tabuleiro antes de começar.'}</p>
+      <div class="fx-add"><button class="fx-btn" type="button" data-tb="iniciar">Começar combate</button></div>` : '<p class="fx-hint">Fora de combate. Quando o Mestre começar, a ordem aparece aqui e em cima do mapa.</p>'}`;
+    return;
+  }
+  const r = t.rodada || 1;
+  let corpo = '';
+  if (t.fase === -1) {
+    const pjs = TB.pecas.filter(p => p.tipo === 'pj');
+    corpo = `<p class="fx-hint">Cada jogador escolhe: <b>rápido</b> age antes dos inimigos com 2 PA; <b>lento</b> age depois deles com 3 PA.</p>
+      <ul class="tb-atores">${pjs.map(p => { const v = (t.ritmo || {})[p.id], pode = tbPode(p); return `<li class="tb-ator${minha(p) ? ' minha' : ''}" style="--c:${corOk(p.cor || COR_TIPO.pj)}"><button class="tb-ponto" type="button" data-tb="sel" data-p="${esc(p.id)}" aria-label="Mostrar ${esc(nomeDe(p))}"></button><span class="tb-an">${esc(nomeDe(p))}</span>
+        <span class="chips"><button class="chip" type="button" data-tb="ritmo" data-p="${esc(p.id)}" data-v="rapido" aria-pressed="${v === 'rapido'}"${pode ? '' : ' disabled'}>Rápido</button><button class="chip" type="button" data-tb="ritmo" data-p="${esc(p.id)}" data-v="lento" aria-pressed="${v === 'lento'}"${pode ? '' : ' disabled'}>Lento</button></span></li>`; }).join('') || '<li class="fx-hint">Nenhum personagem no tabuleiro.</li>'}</ul>
+      ${TB.mestre ? '<div class="fx-add"><button class="fx-btn" type="button" data-tb="avancar">Começar a rodada</button></div>' : ''}`;
+  } else {
+    corpo = [0, 1, 2].map(f => {
+      const at = atores(f, t); if (!at.length) return '';
+      return `<div class="tb-fase${f === t.fase ? ' agora' : f < t.fase ? ' passou' : ''}"><h4>${FASES[f]}${f === t.fase ? ' <small>agora</small>' : ''}</h4><ul class="tb-atores">${at.map(p => linhaAtor(p, t, f === t.fase)).join('')}</ul></div>`;
+    }).join('') + '<p class="fx-hint">Os PA que sobram ficam guardados para Defender até a próxima vez de cada um.</p>' + (TB.mestre ? '<div class="fx-add"><button class="fx-btn" type="button" data-tb="avancar">Próxima fase</button></div>' : '');
+  }
+  box.innerHTML = `<h3>Rodada ${r} <small>${t.fase === -1 ? 'escolhas' : FASES[t.fase] || ''}</small></h3>
+    ${r >= 3 ? '<p class="fx-hint tb-esquenta">A luta esquenta: quem começa a rodada sem Ímpeto ganha 1.</p>' : ''}${corpo}
+    ${TB.mestre ? '<div class="fx-add"><button class="fx-btn red small" type="button" data-tb="encerrar">Encerrar combate</button></div>' : ''}`;
+}
+function desenharVez() {
+  const el = $('#tb-vez', root); if (!el) return;
+  const t = turno();
+  if (!t.on) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  const r = t.rodada || 1;
+  if (t.fase === -1) {
+    const meus = TB.pecas.filter(p => p.tipo === 'pj' && minha(p));
+    el.innerHTML = `<b>Rodada ${r}</b><span>escolham rápido ou lento</span>${meus.map(p => { const v = (t.ritmo || {})[p.id]; return `<span class="chips"><button class="chip" type="button" data-tb="ritmo" data-p="${esc(p.id)}" data-v="rapido" aria-pressed="${v === 'rapido'}">${esc(nomeDe(p))}: rápido</button><button class="chip" type="button" data-tb="ritmo" data-p="${esc(p.id)}" data-v="lento" aria-pressed="${v === 'lento'}">lento</button></span>`; }).join('')}`;
+    return;
+  }
+  const at = atores(t.fase, t), meu = at.find(p => minha(p) && !(t.feito || {})[p.id]);
+  el.innerHTML = `<b>Rodada ${r}</b><span>${FASES[t.fase]}</span><span class="tb-vez-l">${at.map(p => `<span class="tb-vez-a${(t.feito || {})[p.id] ? ' feito' : ''}${minha(p) ? ' minha' : ''}" style="--c:${corOk(p.cor || COR_TIPO[p.tipo])}">${esc(nomeDe(p))} <i>${'◆'.repeat((t.pa || {})[p.id] ?? paInicial(p, t.fase, t))}</i></span>`).join('')}</span>${meu ? `<button class="fx-btn small" type="button" data-tb="feito" data-p="${esc(meu.id)}" data-v="1">Passar a vez</button>` : ''}`;
+}
+
+/* ---------- painéis ---------- */
+function selecionar(id) { if (!TB) return; TB.sel = id; desenharPecas(); desenharSel(); }
+function desenharSel() {
+  const box = $('#tb-sel', root); if (!box) return;
+  if (box.contains(document.activeElement) && /INPUT|SELECT/.test(document.activeElement.tagName)) return;
+  const p = TB.pecas.find(x => x.id === TB.sel);
+  if (!p) { box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  const s = p.ficha_id && TB.sum[p.ficha_id], tipoN = { pj: 'personagem', inimigo: 'inimigo', aliado: 'aliado', objeto: 'objeto' }[p.tipo];
+  let corpo = '';
+  if (p.tipo === 'pj' && s) {
+    corpo = `<div class="bars"><span>PV</span>${bar(s.pv, s.pvMax)}<span>${s.pv}/${s.pvMax}</span><span>Postura</span>${bar(s.postura, s.postMax)}<span>${s.postura}/${s.postMax}</span><span>Ether</span>${bar(s.ether, s.etMax)}<span>${s.ether}/${s.etMax}</span></div>
+      <p class="fx-hint">Defesa ${s.defesa} · RD ${s.rd} · Movimento ${fm(s.mov)} · Iniciativa ${sign(s.ini)}</p>
+      ${s.condicoes && s.condicoes.length ? `<div class="chips">${s.condicoes.map(c => `<span class="chip" aria-pressed="true">${esc(c)}</span>`).join('')}</div>` : ''}
+      ${tbPode(p) ? `<div class="fx-add"><a class="fx-btn small" href="#ficha/${esc(p.ficha_id)}">Abrir a ficha</a></div>` : ''}`;
+  } else if (TB.mestre && p.tipo !== 'pj') {
+    corpo = `<div class="fx-fields tb-campos">
+        <label class="fx-f"><span>Nome</span><input class="fx-in" data-tbc="nome" value="${esc(p.nome)}"></label>
+        <label class="fx-f"><span>PV</span><input class="fx-in" type="number" data-tbc="pv" value="${esc(p.pv ?? '')}"></label>
+        <label class="fx-f"><span>PV máx.</span><input class="fx-in" type="number" data-tbc="pv_max" value="${esc(p.pv_max ?? '')}"></label>
+        <label class="fx-f"><span>Tamanho</span><select data-tbc="tam">${[1, 2, 3, 4].map(n => `<option value="${n}"${n === p.tam ? ' selected' : ''}>${n}×${n}</option>`).join('')}</select></label>
+        <label class="fx-f"><span>Tipo</span><select data-tbc="tipo">${['inimigo', 'aliado', 'objeto'].map(n => `<option${n === p.tipo ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
+        <label class="fx-f"><span>Cor</span><input type="color" data-tbc="cor" value="${corOk(p.cor)}"></label>
+      </div>
+      ${p.pv_max ? `<div class="fx-add tb-dano"><span class="fx-hint">PV</span>${[-5, -1, 1, 5].map(d => `<button class="fx-btn small" type="button" data-tb="pv" data-d="${d}">${d > 0 ? '+' : '−'}${Math.abs(d)}</button>`).join('')}</div>` : ''}
+      <div class="fx-add"><label class="tb-chk"><input type="checkbox" data-tbc="oculta"${p.oculta ? ' checked' : ''}> escondida dos jogadores</label>
+        <label class="tb-chk"><input type="checkbox" data-tbc="chefe"${p.chefe ? ' checked' : ''}> Chefe (age duas vezes)</label></div>
+      <div class="fx-add"><button class="fx-btn small" type="button" data-tb="duplicar">Duplicar</button><button class="fx-btn red small" type="button" data-tb="tirar">Tirar do tabuleiro</button></div>`;
+  } else if (TB.mestre && p.tipo === 'pj') {
+    corpo = `<p class="fx-hint">A ficha deste personagem não está mais na mesa.</p><div class="fx-add"><button class="fx-btn red small" type="button" data-tb="tirar">Tirar do tabuleiro</button></div>`;
+  } else {
+    const v = vidaDe(p);
+    corpo = v === null ? '' : `<div class="bars"><span>Vida</span>${bar(v * 100, 100)}<span></span></div>`;
+  }
+  if (TB.mestre && p.tipo === 'pj' && s) corpo += `<div class="fx-add"><button class="fx-btn red small" type="button" data-tb="tirar">Tirar do tabuleiro</button></div>`;
+  box.innerHTML = `<h3>${esc(nomeDe(p))} <small>${tipoN}${p.oculta ? ' · escondida' : ''}</small></h3>${corpo}`;
+}
+function desenharAdd() {
+  const box = $('#tb-add', root); if (!box) return;
+  const fora = TB.fichas.filter(f => !TB.pecas.some(p => p.ficha_id === f.id));
+  // o formulário de inimigo é desenhado uma vez só: redesenhar fechava o painel e apagava o que o Mestre tinha escrito
+  if (!$('#tb-add-pjs', box)) box.innerHTML = `<h3>Peças</h3><div id="tb-add-pjs"></div>
+    <details class="tb-novo"><summary class="fx-lbl">Inimigo, aliado ou objeto</summary>
+      <div class="fx-fields tb-campos">
+        <label class="fx-f"><span>Nome</span><input class="fx-in" id="tbn-nome" placeholder="Bandido"></label>
+        <label class="fx-f"><span>Tipo</span><select id="tbn-tipo"><option>inimigo</option><option>aliado</option><option>objeto</option></select></label>
+        <label class="fx-f"><span>Tamanho</span><select id="tbn-tam">${[1, 2, 3, 4].map(n => `<option value="${n}">${n}×${n}</option>`).join('')}</select></label>
+        <label class="fx-f"><span>PV</span><input class="fx-in" id="tbn-pv" type="number" min="0" placeholder="opcional"></label>
+        <label class="fx-f"><span>Quantos</span><input class="fx-in" id="tbn-qt" type="number" min="1" max="12" value="1"></label>
+      </div>
+      <div class="fx-add"><label class="tb-chk"><input type="checkbox" id="tbn-chefe"> Chefe</label><label class="tb-chk"><input type="checkbox" id="tbn-oculta"> escondido</label></div>
+      <div class="fx-add"><button class="fx-btn" type="button" data-tb="por-novo">Pôr no tabuleiro</button></div>
+    </details>`;
+  const sig = fora.map(f => f.id + ':' + ((TB.sum[f.id] && TB.sum[f.id].nome) || f.nome)).join('|');
+  const el = $('#tb-add-pjs', box); if (el.dataset.sig === sig && el.childElementCount) return; el.dataset.sig = sig;
+  el.innerHTML = fora.length ? `<p class="fx-hint">Personagens da mesa fora do mapa:</p><div class="fx-add">${fora.map(f => `<button class="fx-btn small" type="button" data-tb="por-pj" data-f="${esc(f.id)}">Pôr ${esc((TB.sum[f.id] && TB.sum[f.id].nome) || f.nome || 'sem nome')}</button>`).join('')}${fora.length > 1 ? '<button class="fx-btn small" type="button" data-tb="por-todos">Pôr todos</button>' : ''}</div>` : '<p class="fx-hint">Todos os personagens da mesa estão no mapa.</p>';
+}
+function desenharCena() {
+  const box = $('#tb-cena', root); if (!box || box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
+  box.innerHTML = `<h3>Cenário</h3>
+    <label class="fx-f"><span>Imagem de fundo</span><input type="file" id="tb-img" accept="image/*"></label>
+    <p class="fx-hint">A imagem é reduzida para 2000 px e esticada sobre a grade; as linhas se ajustam ao formato dela.</p>
+    ${TB.temFundo ? '<div class="fx-add"><button class="fx-btn small" type="button" data-tb="sem-img">Tirar a imagem</button></div>' : ''}
+    <div class="fx-fields tb-campos">
+      <label class="fx-f"><span>Colunas</span><input class="fx-in" id="tb-cols" type="number" min="4" max="80" value="${TB.t.cols}"></label>
+      <label class="fx-f"><span>Linhas</span><input class="fx-in" id="tb-lin" type="number" min="4" max="80" value="${TB.t.linhas}"></label>
+    </div>
+    <div class="fx-add"><button class="fx-btn small" type="button" data-tb="grade">Mudar a grade</button></div>
+    <p class="fx-hint">Se o mapa já tem quadrados desenhados, conte quantos ele tem de largura e use esse número de colunas.</p>`;
+}
+function desenharMarcasLista() {
+  const box = $('#tb-marcas', root); if (!box) return;
+  const ms = TB.marcas;
+  box.innerHTML = `<h3>Áreas</h3>${ms.length ? `<ul class="tb-mlista">${ms.map(m => {
+    const at = atingidos(m, celulasDa(m)), pode = TB.mestre || m.autor === me();
+    return `<li style="--c:${corOk(m.cor)}"><span class="tb-mc"></span><span><b>${esc(m.rotulo || 'Área')}</b><small>${at.length ? 'pega ' + esc(at.map(nomeDe).join(', ')) : 'não pega ninguém'}</small></span>${pode && !String(m.id).startsWith('tmp') ? `<button class="x" type="button" data-tb="tirar-marca" data-m="${esc(m.id)}" aria-label="Tirar ${esc(m.rotulo)}">×</button>` : ''}</li>`;
+  }).join('')}</ul>${TB.mestre ? '<div class="fx-add"><button class="fx-btn small" type="button" data-tb="limpar-marcas">Tirar todas</button></div>' : ''}` : '<p class="fx-hint">Nenhuma área no mapa. Use a ferramenta Área para ver quem um mantra pega.</p>'}`;
+}
+function desenharOpcoes() {
+  const box = $('#tb-opc', root); if (!box) return;
+  $$('[data-tool]', root).forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === TB.tool));
+  const ch = (grupo, v, rot, on) => `<button class="chip" type="button" data-tb="${grupo}" data-v="${v}" aria-pressed="${on}">${rot}</button>`;
+  const o = {
+    mover: '<span class="fx-hint">Arraste a sua peça para andar. Arraste o chão para olhar o mapa; roda do mouse ou dois dedos aproximam.</span>',
+    regua: '<span class="fx-hint">Arraste de um quadrado a outro. Cada quadrado vale 1,5 m, inclusive na diagonal.</span>',
+    area: `<span class="chips">${FORMAS.map(([v, r]) => ch('forma', v, r, TB.area.forma === v)).join('')}</span><span class="chips">${TAMANHOS_AREA.map(m => ch('metros', m, fm(m), TB.area.m === m)).join('')}</span>
+      <span class="fx-hint">${TB.area.forma === 'circulo' ? 'Toque no centro do raio.' : 'Arraste de onde sai até para onde aponta.'}</span>`,
+    terreno: `<span class="chips">${TERRENOS.map(([v, r]) => ch('pincel', v, r, TB.pincel === v)).join('')}</span><span class="fx-hint">Pinte arrastando.</span>`,
+    nevoa: `<span class="chips">${ch('nevoa-modo', '1', 'Cobrir', TB.nevoaModo === '1')}${ch('nevoa-modo', '0', 'Revelar', TB.nevoaModo === '0')}</span>
+      <button class="fx-btn small" type="button" data-tb="nevoa-tudo" data-v="1">Cobrir tudo</button><button class="fx-btn small" type="button" data-tb="nevoa-tudo" data-v="0">Revelar tudo</button>
+      <span class="fx-hint">Os jogadores não veem o que está coberto, nem as peças que estão ali.</span>`,
+  }[TB.tool];
+  box.innerHTML = o || ''; box.dataset.tool = TB.tool;
+  const vi = $('#tb-vista', root); if (vi) vi.dataset.tool = TB.tool;
+}
+function desenharLado() { desenharTurno(); desenharSel(); desenharAdd(); desenharMarcasLista(); }
+function desenharTudo() { desenharPecas(); desenharAreas(); desenharVez(); desenharLado(); }
+
+/* ---------- ações dos painéis ---------- */
+function celulaLivre(tam = 1, perto) {
+  const vi = $('#tb-vista', root), r = vi.getBoundingClientRect();
+  const c = perto || celula(noMundo(r.left + r.width / 2, r.top + r.height / 2));
+  const ocupado = (x, y) => TB.pecas.some(p => x < p.x + p.tam && x + tam > p.x && y < p.y + p.tam && y + tam > p.y)
+    || [...Array(tam * tam).keys()].some(i => TB.t.terreno[(y + Math.floor(i / tam)) * TB.t.cols + x + (i % tam)] === 'p');
+  for (let raio = 0; raio < 40; raio++)
+    for (let dy = -raio; dy <= raio; dy++) for (let dx = -raio; dx <= raio; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) !== raio) continue;
+      const x = c.x + dx, y = c.y + dy;
+      if (x < 0 || y < 0 || x + tam > TB.t.cols || y + tam > TB.t.linhas || ocupado(x, y)) continue;
+      return { x, y };
+    }
+  return { x: 0, y: 0 };
+}
+async function porPecas(lista) {
+  await tbEscreve(async () => {
+    for (const o of lista) { const c = celulaLivre(o.tam || 1); const r = await api('POST', 'pecas', { mesa_id: TB.id, ...o, ...c }, 'return=representation'); if (TB) TB.pecas.push(r[0]); }
+    if (TB) desenharTudo();
+  }, lista.length === 1 ? `${lista[0].nome || 'peça'} no tabuleiro` : `${lista.length} peças no tabuleiro`);
+}
+function nomeLivre(base) {
+  const raiz = String(base).replace(/\s+\d+$/, ''); let n = 2;
+  while (TB.pecas.some(p => p.nome === raiz + ' ' + n)) n++;
+  return raiz + ' ' + n;
+}
+function mudarPeca(p, campos) {
+  Object.assign(p, campos); desenharTudo();
+  tbEscreve(() => api('PATCH', 'pecas?id=eq.' + p.id, campos));
+}
+async function redimensionar(cols, linhas) {
+  cols = clamp(Math.round(cols) || 24, 4, 80); linhas = clamp(Math.round(linhas) || 16, 4, 80);
+  const o = TB.t, novo = (s, ch) => { let out = ''; for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) out += x < o.cols && y < o.linhas ? s[y * o.cols + x] : ch; return out; };
+  const terreno = novo(o.terreno, '.'), nevoa = novo(o.nevoa, '0');
+  TB.t = { ...o, cols, linhas, terreno, nevoa };
+  desenharTerreno(); desenharNevoa(); desenharTudo(); desenharCena(); tbCentralizar();
+  await tbEscreve(() => api('PATCH', 'tabuleiros?mesa_id=eq.' + TB.id, { cols, linhas, terreno, nevoa }), `grade de ${cols} × ${linhas}`, ['terreno', 'nevoa']);
+  for (const p of TB.pecas) if (p.x + p.tam > cols || p.y + p.tam > linhas) moverPeca(p, clamp(p.x, 0, cols - p.tam), clamp(p.y, 0, linhas - p.tam));
+}
+async function tbImagem(file) {
+  if (!file || !/^image\//.test(file.type)) return tbDica('escolha um arquivo de imagem');
+  tbDica('preparando a imagem…');
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('imagem que o navegador não abre')); i.src = url; });
+    const k = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight));
+    const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(img.naturalWidth * k)); cv.height = Math.max(1, Math.round(img.naturalHeight * k));
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    let q = .82, data = cv.toDataURL('image/jpeg', q);
+    while (data.length > 3.5e6 && q > .4) { q -= .12; data = cv.toDataURL('image/jpeg', q); }
+    const linhas = clamp(Math.round(TB.t.cols * cv.height / cv.width), 4, 80);
+    await tbEscreve(() => api('POST', 'tabuleiro_fundo', { mesa_id: TB.id, imagem: data, atualizado: new Date().toISOString() }, 'resolution=merge-duplicates'), 'imagem no tabuleiro');
+    if (!TB) return;
+    const el = $('#tb-fundo', root); el.src = data; el.hidden = false; TB.temFundo = true;
+    if (linhas !== TB.t.linhas) await redimensionar(TB.t.cols, linhas); else { desenharTerreno(); desenharCena(); }
+  } catch (e) { tbDica('não deu: ' + e.message); }
+  finally { URL.revokeObjectURL(url); }
+}
+function tbClique(e) {
+  if (!TB) return;
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.tool) { TB.tool = b.dataset.tool; TB.previa = null; desenharOpcoes(); desenharAreas(); return; }
+  const a = b.dataset.tb; if (!a) return;
+  const p = b.dataset.p ? TB.pecas.find(x => x.id === b.dataset.p) : TB.pecas.find(x => x.id === TB.sel);
+  const vi = $('#tb-vista', root), r = vi.getBoundingClientRect();
+  if (a === 'zoom') return zoomEm(r.left + r.width / 2, r.top + r.height / 2, +b.dataset.d > 0 ? 1.25 : .8);
+  if (a === 'centro') return tbCentralizar();
+  if (a === 'forma') { TB.area.forma = b.dataset.v; return desenharOpcoes(); }
+  if (a === 'metros') { TB.area.m = +b.dataset.v; return desenharOpcoes(); }
+  if (a === 'pincel') { TB.pincel = b.dataset.v; return desenharOpcoes(); }
+  if (a === 'nevoa-modo') { TB.nevoaModo = b.dataset.v; return desenharOpcoes(); }
+  if (a === 'nevoa-tudo') { const v = b.dataset.v.repeat(TB.t.cols * TB.t.linhas); TB.t.nevoa = v; desenharNevoa(); return tbEscreve(() => api('PATCH', 'tabuleiros?mesa_id=eq.' + TB.id, { nevoa: v }), b.dataset.v === '1' ? 'mapa todo coberto' : 'mapa todo à vista', ['nevoa']); }
+  if (a === 'sel' && p) { selecionar(p.id); const vr = vi.getBoundingClientRect(), v = TB.vista; TB.vista.x = vr.width / 2 - (p.x + p.tam / 2) * TQ * v.z; TB.vista.y = vr.height / 2 - (p.y + p.tam / 2) * TQ * v.z; return aplicarVista(); }
+  if (a === 'iniciar') return iniciarCombate();
+  if (a === 'avancar') return avancar();
+  if (a === 'encerrar') return mudarTurno({ on: false }, 'combate encerrado');
+  if (a === 'ritmo' && p) return turnoPeca(p, { ritmo: b.dataset.v });
+  if (a === 'pa' && p) return turnoPeca(p, { pa: +b.dataset.v });
+  if (a === 'feito' && p) return turnoPeca(p, { feito: b.dataset.v === '1' });
+  if (a === 'pv' && p) return mudarPeca(p, { pv: clamp((p.pv ?? p.pv_max ?? 0) + +b.dataset.d, 0, p.pv_max || 9999) });
+  if (a === 'duplicar' && p) return porPecas([{ nome: nomeLivre(p.nome), tipo: p.tipo, cor: p.cor, tam: p.tam, oculta: p.oculta, chefe: p.chefe, pv: p.pv_max ?? null, pv_max: p.pv_max ?? null }]);
+  if (a === 'tirar' && p) { TB.pecas = TB.pecas.filter(x => x !== p); TB.sel = null; desenharTudo(); return tbEscreve(() => api('DELETE', 'pecas?id=eq.' + p.id), 'peça tirada'); }
+  if (a === 'por-pj' || a === 'por-todos') {
+    const fs = a === 'por-pj' ? TB.fichas.filter(f => f.id === b.dataset.f) : TB.fichas.filter(f => !TB.pecas.some(x => x.ficha_id === f.id));
+    return porPecas(fs.map(f => ({ ficha_id: f.id, nome: (TB.sum[f.id] && TB.sum[f.id].nome) || f.nome || '', tipo: 'pj', cor: COR_TIPO.pj, tam: 1 })));
+  }
+  if (a === 'por-novo') {
+    const nome = $('#tbn-nome', root).value.trim() || 'Inimigo', tipo = $('#tbn-tipo', root).value, tam = +$('#tbn-tam', root).value || 1;
+    const pv = $('#tbn-pv', root).value === '' ? null : Math.max(0, Math.round(num($('#tbn-pv', root).value)));
+    const qt = clamp(Math.round(num($('#tbn-qt', root).value)) || 1, 1, 12);
+    const lista = [];
+    for (let i = 0; i < qt; i++) lista.push({ nome: qt > 1 ? nome + ' ' + (i + 1) : nome, tipo, tam, cor: COR_TIPO[tipo], pv, pv_max: pv, chefe: $('#tbn-chefe', root).checked, oculta: $('#tbn-oculta', root).checked });
+    $('#tbn-nome', root).value = '';
+    return porPecas(lista);
+  }
+  if (a === 'grade') return redimensionar(num($('#tb-cols', root).value), num($('#tb-lin', root).value));
+  if (a === 'sem-img') { TB.temFundo = false; const el = $('#tb-fundo', root); el.hidden = true; el.removeAttribute('src'); desenharTerreno(); desenharCena(); return tbEscreve(() => api('DELETE', 'tabuleiro_fundo?mesa_id=eq.' + TB.id), 'imagem tirada'); }
+  if (a === 'tirar-marca') { const id = b.dataset.m; TB.marcas = TB.marcas.filter(m => m.id !== id); desenharAreas(); desenharMarcasLista(); return tbEscreve(() => api('DELETE', 'marcas?id=eq.' + id)); }
+  if (a === 'limpar-marcas') { TB.marcas = []; desenharAreas(); desenharMarcasLista(); return tbEscreve(() => api('DELETE', 'marcas?mesa_id=eq.' + TB.id), 'áreas tiradas'); }
+}
+function tbMuda(e) {
+  if (!TB) return;
+  const t = e.target;
+  if (t.id === 'tb-img') { const f = t.files && t.files[0]; t.value = ''; return tbImagem(f); }
+  const campo = t.dataset.tbc; if (!campo) return;
+  const p = TB.pecas.find(x => x.id === TB.sel); if (!p) return;
+  let v = t.type === 'checkbox' ? t.checked : t.value;
+  if (campo === 'tam') v = clamp(+v || 1, 1, 4);
+  if (campo === 'pv' || campo === 'pv_max') v = v === '' ? null : Math.max(0, Math.round(num(v)));
+  if (campo === 'nome') v = String(v).trim().slice(0, 60);
+  if (campo === 'cor') v = corOk(v);
+  const campos = { [campo]: v };
+  if (campo === 'pv_max' && v !== null && (p.pv == null || p.pv > v)) campos.pv = v;
+  if (campo === 'tam') { campos.x = clamp(p.x, 0, TB.t.cols - v); campos.y = clamp(p.y, 0, TB.t.linhas - v); }
+  mudarPeca(p, campos);
+}
+function tbDigita(e) { if (TB && e.target.dataset.tbc === 'nome') { const p = TB.pecas.find(x => x.id === TB.sel); const el = p && TB.els.get(p.id); if (el) $('.tb-nome', el).textContent = e.target.value; } }
+
 /* ---------- abas ---------- */
 const views = { livro: $('#view-livro'), app: $('#view-app') };
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
   const [v, id] = h.split('/');
-  const app = ['fichas', 'ficha', 'mesas', 'mesa', 'entrar'].includes(v);
+  const app = ['fichas', 'ficha', 'mesas', 'mesa', 'tabuleiro', 'entrar'].includes(v);
   views.livro.hidden = app; views.app.hidden = !app;
-  const tab = v === 'ficha' ? (CUR && CUR.mesa_id && CUR.dono !== me() ? 'mesas' : 'fichas') : v === 'mesa' ? 'mesas' : app ? v : 'livro';
+  const tab = v === 'ficha' ? (CUR && CUR.mesa_id && CUR.dono !== me() ? 'mesas' : 'fichas') : v === 'mesa' || v === 'tabuleiro' ? 'mesas' : app ? v : 'livro';
   $$('.tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.view === tab ? 'page' : 'false'));
   if (!app) { stopPolls(); if (h) { const t = document.getElementById(h); if (t) requestAnimationFrame(() => t.scrollIntoView()); } return; }
   window.scrollTo(0, 0);
@@ -3896,6 +4818,7 @@ function route() {
   if (v === 'ficha' && id) return openFicha(id);
   if (v === 'mesas') return renderMesas();
   if (v === 'mesa' && id) return renderMesa(id);
+  if (v === 'tabuleiro' && id) return renderTabuleiro(id);
   renderFichas();
 }
 window.addEventListener('hashchange', () => { if (CUR && saveT) save(); if (/(^|&)(access_token|error_description|error_code)=/.test(location.hash.slice(1))) return authFromHash().then(route); route(); });
