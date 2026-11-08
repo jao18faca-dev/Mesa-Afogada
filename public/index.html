@@ -2482,7 +2482,7 @@ let lastSaved = 0, saving = false, pollT = null, mesaT = null;
 /* ---------- conexão ---------- */
 function loadSess() { try { sess = JSON.parse(localStorage.getItem(AUTH_KEY)) || null; } catch (e) { sess = null; } }
 function keepSess(s) { sess = s; try { s ? localStorage.setItem(AUTH_KEY, JSON.stringify(s)) : localStorage.removeItem(AUTH_KEY); } catch (e) {} }
-const slug = n => String(n || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '');
+const slug = n => String(n || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '');
 const emailOf = n => (slug(n) || 'sem.nome') + '@mare-baixa.app';
 async function authPost(path, body) {
   let r;
