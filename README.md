@@ -18,3 +18,4 @@ Site da mesa de **Deep Tales**: o Livro Profano (versão dos jogadores), fichas 
 - **Mãos de talento:** a ficha conta os talentos que faltam e sorteia a mão de 4 cartas (3 Comuns e 1 Rara) com os requisitos já conferidos.
 
 `public/index.html` é gerado a partir do livro; não edite à mão.
+- **Juramento e Badaladas:** só o Mestre anota, pela mesa ou abrindo a ficha do jogador. O jogador vê o Juramento depois que o Mestre anota, e nunca vê as Badaladas. Rode `supabase/segredos.sql` uma vez no SQL Editor (já está no fim do `setup.sql` para quem for instalar do zero).
