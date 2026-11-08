@@ -15,7 +15,7 @@ Site da mesa de **Deep Tales**: o Livro Profano (versão dos jogadores), fichas 
 - **Mesas:** o Mestre cria a mesa e passa o código. Na mesa ele vê as fichas de todos, abre qualquer uma para mexer, e dá itens do catálogo (armas, Trajes, Peças, consumíveis e itens que ele mesmo criar).
 - As telas se atualizam sozinhas a cada poucos segundos.
 - Senha esquecida: **Esqueci a senha** manda um link por e-mail (precisa do SMTP do passo 4). Sem SMTP, o Mestre pode apagar a conta em *Authentication → Users*, e a pessoa cria de novo (as fichas da conta apagada somem junto).
-- **Mãos de talento:** a ficha conta os talentos que faltam e sorteia a mão de 4 cartas (3 Comuns e 1 Rara) com os requisitos já conferidos.
+- **Mãos de talento:** a ficha conta os talentos que faltam e sorteia duas mãos de 5 cartas por nível (4 Comuns e 1 Rara em cada) com os requisitos já conferidos.
 
 `public/index.html` é gerado a partir do livro; não edite à mão.
 - **Juramento e Badaladas:** só o Mestre anota, pela mesa ou abrindo a ficha do jogador. O jogador vê o Juramento depois que o Mestre anota, e nunca vê as Badaladas. Rode `supabase/segredos.sql` uma vez no SQL Editor (já está no fim do `setup.sql` para quem for instalar do zero).

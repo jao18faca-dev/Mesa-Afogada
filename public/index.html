@@ -669,7 +669,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx .fx-maos-aviso .fx-btn{border-color:var(--dw-lend);animation:dw-chama 2.2s ease-in-out infinite}
 .fx .fx-maos-t{color:var(--dw-dim)}
 .fx .fx-mao{border-bottom:1px solid var(--dw-line)}
-.fx .fx-mao .fx-cards{perspective:1000px;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr))}
+.fx .fx-mao .fx-cards{perspective:1000px;grid-template-columns:repeat(auto-fit,minmax(min(168px,100%),1fr))}
 .fx .carta{min-height:220px;padding-top:26px;transform-origin:50% 100%;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s,box-shadow .35s,filter .35s}
 .fx .carta:hover{transform:translateY(-4px)}
 .fx .carta .gema{position:absolute;top:10px;left:12px;width:10px;height:10px;transform:rotate(45deg);background:#cfc6b2;box-shadow:0 0 8px rgba(207,198,178,.6)}
@@ -2040,8 +2040,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">não dá para aprender tudo. escolhi as minhas pelo que me manteve vivo, não pelo que parecia mais forte.</p>
       <div class="rulebox">
         <p><b>Marcas do Catalogador.</b> Cada mantra e cada talento traz um carimbo dizendo como ele soube: <i>visto</i>, <i>copiado</i>, <i>ouvi falar</i> ou <i>boato</i>. Para a mesa, todos valem igual. O carimbo serve de pista para o Mestre: um boato pode funcionar um pouco diferente do que está escrito, e é com ele que o Mestre decide.</p>
-        <p><b>Mãos de talento.</b> A cada nível, você ganha dois talentos: recebe uma mão de 4 cartas para cada um e fica com 1 carta de cada mão. O Mestre monta as mãos (ou a ficha do site sorteia). Se preferir, o Mestre pode deixar cada jogador pegar qualquer talento cujos requisitos já cumpra.</p>
-        <p><b>Montando a mão.</b> Três cartas são talentos Comuns e uma é um talento Raro. Só entram na mão talentos cujos requisitos o personagem já cumpre; se nenhum Raro serve ainda, a quarta carta também é Comum. Os Desatados não entram no sorteio: o Mestre entrega quando o feito for cumprido.</p>
+        <p><b>Mãos de talento.</b> A cada nível, você ganha dois talentos: recebe uma mão de 5 cartas para cada um e fica com 1 carta de cada mão. O Mestre monta as mãos (ou a ficha do site sorteia). Se preferir, o Mestre pode deixar cada jogador pegar qualquer talento cujos requisitos já cumpra.</p>
+        <p><b>Montando a mão.</b> Quatro cartas são talentos Comuns e uma é um talento Raro. Só entram na mão talentos cujos requisitos o personagem já cumpre; se nenhum Raro serve ainda, a quinta carta também é Comum. Os Desatados não entram no sorteio: o Mestre entrega quando o feito for cumprido.</p>
         <p><b>Congelar e queimar.</b> Em cada mão, antes de escolher, você pode congelar uma carta e queimar outra. A congelada volta garantida na sua próxima mão, se você ainda cumprir o requisito. A queimada sai do seu baralho e não aparece mais para você (o Mestre pode devolver). Congelar ou queimar não conta como escolha: você ainda fica com uma das outras cartas.</p>
         <p><b>Comum.</b> A maioria dos talentos de um personagem: efeitos pequenos e úteis, incluindo o primeiro passo de cada Vertente de Sintonia.</p>
         <p><b>Raro.</b> Mais fortes, ou com efeitos maiores. Muitos pedem um talento Comum antes.</p>
@@ -2802,7 +2802,8 @@ function sortearMaos() {
   const com = de('comum').filter(sem), rar = de('raro').filter(sem), len = de('lendário').filter(sem);
   const gF = gelo.find(t => t.rar !== 'comum'), gC = gelo.filter(t => t.rar === 'comum');
   const forte = gF || len[0] || rar[0];
-  const mao = gC.slice(0, forte ? 3 : 4).concat(com.splice(0, (forte ? 3 : 4) - Math.min(gC.length, forte ? 3 : 4)));
+  const nc = forte ? 4 : 5;
+  const mao = gC.slice(0, nc).concat(com.splice(0, nc - Math.min(gC.length, nc)));
   if (forte) mao.push(forte);
   return mao.length ? [{ tipo: 'mao', cartas: mao.map(t => t.nome) }] : [];
 }
@@ -3169,7 +3170,7 @@ function renderTalentos() {
     const d = findTal(t.nome);
     return `<div class="fx-card on tal${d ? ' cr-' + esc(d.rar) : ''}${FX.chegou && t.nome === FX.chegou ? ' chegou' : ''}"><h4><span>${esc(t.nome)}</span><button class="x" type="button" data-del="talentos" data-i="${i}" aria-label="Apagar talento">×</button></h4>
       ${d ? `<span class="meta rar-${esc(d.rar)}">${esc(d.rar)} · requisito: ${esc(d.req)}</span><p>${d.ef}</p>` : `<textarea id="tl-${i}" data-l="talentos.${i}.texto" aria-label="O que o talento faz" placeholder="o que ele faz">${esc(t.texto || '')}</textarea>`}</div>`;
-  }).join('') || '<p class="fx-empty">Nenhum talento ainda. A cada nível, você ganha dois talentos: uma mão de 4 cartas para cada um.</p>';
+  }).join('') || '<p class="fx-empty">Nenhum talento ainda. A cada nível, você ganha dois talentos: uma mão de 5 cartas para cada um.</p>';
   FX.chegou = '';
 }
 function renderEquip(c) {
