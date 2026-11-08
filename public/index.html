@@ -245,6 +245,19 @@ a{color:var(--rubric)}
 .lostpage{margin:14px 0;padding:12px 16px;border:1px dashed var(--rule);font-family:var(--f-hand);color:var(--note);font-size:1.08rem;line-height:1.4;background:repeating-linear-gradient(-45deg,transparent 0 10px,rgba(0,0,0,.03) 10px 20px)}
 .foot{max-width:880px;text-align:center;font-family:var(--f-fell);font-style:italic;color:#8fa3a3;font-size:.95rem}
 
+.atlas-stats,.stats.long{grid-template-columns:1fr!important}
+.atlas-stats div,.stats.long div{display:grid;grid-template-columns:minmax(8em,13em) minmax(0,1fr);gap:2px 18px;align-items:baseline}
+.atlas-stats dt,.stats.long dt{white-space:normal!important}
+.stats.long dd{font-weight:400;text-align:left}
+@media (max-width:600px){.atlas-stats div,.stats.long div{grid-template-columns:1fr;gap:0}.atlas-stats dd,.stats.long dd{margin-bottom:4px}}
+@media (min-width:821px){
+  .spread > *{grid-column:1 / -1}
+  .spread > h2,.spread > .prose{grid-column:1}
+  .spread > .note{grid-column:1 / -1;justify-self:end;max-width:min(55%,420px)}
+  .spread > .prose + .note,.spread > h2 + .note{grid-column:2;justify-self:stretch;max-width:none}
+  .with-photo > .prose{max-width:62ch}
+}
+
 .page,.cover{scroll-margin-top:84px}
 /* ---------- site: barra de abas + ficha do Pathfinder ---------- */
 :root{
@@ -1032,7 +1045,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">o Constructor me escaneou e disse "humano, frágil, levemente desidratado". tomei um copo d'água.</p>
       <section class="ficha" aria-label="Ficha da Origem Constructor">
         <h3>Constructor <small>registro nº 206</small></h3>
-        <dl class="stats"><div><dt>Exclusiva do Aspecto</dt><dd>Constructor</dd></div><div><dt>Perícias</dt><dd>Ofício, Musicalidade e mais uma entre Percepção ou Investigação</dd></div></dl>
+        <dl class="stats long"><div><dt>Exclusiva do Aspecto</dt><dd>Constructor</dd></div><div><dt>Perícias</dt><dd>Ofício, Musicalidade e mais uma entre Percepção ou Investigação</dd></div></dl>
         <p class="trait"><b>Equipamento.</b> Uma placa com um número gravado, um saco de peças sobressalentes e um caderno onde você anota tudo o que aprende.</p>
         <p class="trait"><b>Scanner de Ether.</b> 1 PA. Escaneie um objeto ou criatura a até 9 m. O Mestre te diz o que é, para que serve, e se é mais fraco, parecido ou mais forte que você. Como você não tem memória do mundo, testes de Erudição sobre a história de Luminant têm desvantagem.</p>
         <div class="qlabel">PERGUNTAS PARA QUEM VIVEU ISSO</div>
@@ -1379,7 +1392,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
         <table class="sig"><tbody><tr><th>I</th><td>+2 de dano de mantras Eletrizantes</td></tr><tr><th>II</th><td>+4 de dano de mantras Eletrizantes</td></tr><tr><th>III</th><td>+6 de dano de mantras Eletrizantes, e as Defesas do alvo custam +1 PA</td></tr></tbody></table></div>
       <section class="ficha" aria-label="Thundercall, mantras Base">
         <div class="tier">REGISTRO Nº 112 · BASE ☆☆☆</div>
-        <div class="mantra fk-visto"><div class="mhead"><h4>Agarrão Elétrico<span class="orig">Jolt Grab</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Combate</span><p class="flavor">Você agarra o inimigo e o derruba com eletricidade.</p><dl class="stats"><div><dt>Dano</dt><dd>1d6 + Elem <span class='t'>(Eletrizante)</span></dd></div><div><dt>Alcance</dt><dd>metade do seu movimento</dd></div><div><dt>Custo</dt><dd>3 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> TR de Fortitude contra a sua CD de Elemento; em uma falha, fica Caído.</p></div><div class="mantra fk-copiado"><div class="mhead"><h4>Feixe Relâmpago<span class="orig">Lightning Beam</span></h4><span class="fonte fonte-copiado">copiado</span></div><span class="mcat">Combate</span><p class="flavor">Um raio de pura energia em linha reta.</p><dl class="stats"><div><dt>Dano</dt><dd>1d8 + Elem <span class='t'>(Eletrizante)</span></dd></div><div><dt>Alcance</dt><dd>linha de 9 m</dd></div><div><dt>Custo</dt><dd>4 Ether · 1 PA</dd></div></dl></div><div class="mantra fk-visto"><div class="mhead"><h4>Lâmina Relâmpago<span class="orig">Lightning Blade</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Combate</span><p class="flavor">Um avanço e dois golpes que soltam arcos de relâmpago.</p><dl class="stats"><div><dt>Dano</dt><dd>1d4 Eletrizante + 1d4 Cortante; some Elem uma vez <span class='t'>(Eletrizante)</span></dd></div><div><dt>Alcance</dt><dd>avanço de até 3 m, corpo a corpo</dd></div><div><dt>Custo</dt><dd>4 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> Dois golpes, em rajada.</p></div>
+        <div class="mantra fk-visto"><div class="mhead"><h4>Agarrão Elétrico<span class="orig">Jolt Grab</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Combate</span><p class="flavor">Você agarra o inimigo e o derruba com eletricidade.</p><dl class="stats"><div><dt>Dano</dt><dd>1d6 + Elem <span class='t'>(Eletrizante)</span></dd></div><div><dt>Alcance</dt><dd>metade do seu movimento</dd></div><div><dt>Custo</dt><dd>3 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> TR de Fortitude contra a sua CD de Elemento; em uma falha, fica Caído.</p></div><div class="mantra fk-copiado"><div class="mhead"><h4>Feixe Relâmpago<span class="orig">Lightning Beam</span></h4><span class="fonte fonte-copiado">copiado</span></div><span class="mcat">Combate</span><p class="flavor">Um raio de pura energia em linha reta.</p><dl class="stats"><div><dt>Dano</dt><dd>1d8 + Elem <span class='t'>(Eletrizante)</span></dd></div><div><dt>Alcance</dt><dd>linha de 9 m</dd></div><div><dt>Custo</dt><dd>4 Ether · 1 PA</dd></div></dl></div><div class="mantra fk-visto"><div class="mhead"><h4>Lâmina Relâmpago<span class="orig">Lightning Blade</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Combate</span><p class="flavor">Um avanço e dois golpes que soltam arcos de relâmpago.</p><dl class="stats long"><div><dt>Dano</dt><dd>1d4 Eletrizante + 1d4 Cortante; some Elem uma vez <span class='t'>(Eletrizante)</span></dd></div><div><dt>Alcance</dt><dd>avanço de até 3 m, corpo a corpo</dd></div><div><dt>Custo</dt><dd>4 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> Dois golpes, em rajada.</p></div>
       </section>
       <p class="lostpage">As folhas com os mantras de uma, duas e três estrelas desta Sintonia ainda não foram encontradas. Estão em algum lugar por aí.</p>
     </div>
@@ -1395,7 +1408,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
         <table class="sig"><tbody><tr><th>I</th><td>1d4 por agulha</td></tr><tr><th>II</th><td>1d4 + 1 por agulha</td></tr><tr><th>III</th><td>1d6 por agulha</td></tr></tbody></table><p>Puxar Agulhas: 1 PA e 2 Ether, alvo a até 9 m. Arranque todas as agulhas dele: o alvo sofre o dano do grau por agulha e é puxado 1,5 m na sua direção por agulha (TR de Fortitude evita só o puxão).</p></div>
       <section class="ficha" aria-label="Ironsing, mantras Base">
         <div class="tier">REGISTRO Nº 117 · BASE ☆☆☆</div>
-        <div class="mantra fk-visto"><div class="mhead"><h4>Erupção Metálica<span class="orig">Metal Eruption</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Combate</span><p class="flavor">Uma pisada, e uma chuva de pontas de metal sobe à frente.</p><dl class="stats"><div><dt>Dano</dt><dd>1d8 + Elem <span class='t'>(Metálico e Cortante)</span></dd></div><div><dt>Alcance</dt><dd>cone de 4,5 m</dd></div><div><dt>Custo</dt><dd>4 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> Aplica 1 acúmulo de Sangramento além da agulha.</p></div><div class="mantra fk-visto"><div class="mhead"><h4>Rajada de Agulhas<span class="orig">Needle Barrage</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Combate</span><p class="flavor">Um salto e três agulhas lançadas no ar.</p><dl class="stats"><div><dt>Dano</dt><dd>1d4 por agulha; some Elem uma vez <span class='t'>(Metálico e Perfurante)</span></dd></div><div><dt>Alcance</dt><dd>9 m</dd></div><div><dt>Custo</dt><dd>5 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> Em rajada.</p></div><div class="mantra fk-visto"><div class="mhead"><h4>Muralha de Metal<span class="orig">Metal Rampart</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Mobilidade</span><span class="fonte-nota">vi um conjurador dormir em cima do próprio pilar. disse que era o único lugar seco da ilha.</span><p class="flavor">Um pilar de metal sobe e leva você junto.</p><dl class="stats"><div><dt>Dano</dt><dd>1d6 + Elem em quem estiver na área <span class='t'>(Metálico)</span></dd></div><div><dt>Alcance</dt><dd>área de 2 m</dd></div><div><dt>Custo</dt><dd>3 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> Você sobe até 6 m. O pilar serve de cobertura até o fim do combate. Não crava agulhas.</p></div>
+        <div class="mantra fk-visto"><div class="mhead"><h4>Erupção Metálica<span class="orig">Metal Eruption</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Combate</span><p class="flavor">Uma pisada, e uma chuva de pontas de metal sobe à frente.</p><dl class="stats"><div><dt>Dano</dt><dd>1d8 + Elem <span class='t'>(Metálico e Cortante)</span></dd></div><div><dt>Alcance</dt><dd>cone de 4,5 m</dd></div><div><dt>Custo</dt><dd>4 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> Aplica 1 acúmulo de Sangramento além da agulha.</p></div><div class="mantra fk-visto"><div class="mhead"><h4>Rajada de Agulhas<span class="orig">Needle Barrage</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Combate</span><p class="flavor">Um salto e três agulhas lançadas no ar.</p><dl class="stats long"><div><dt>Dano</dt><dd>1d4 por agulha; some Elem uma vez <span class='t'>(Metálico e Perfurante)</span></dd></div><div><dt>Alcance</dt><dd>9 m</dd></div><div><dt>Custo</dt><dd>5 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> Em rajada.</p></div><div class="mantra fk-visto"><div class="mhead"><h4>Muralha de Metal<span class="orig">Metal Rampart</span></h4><span class="fonte fonte-visto">visto</span></div><span class="mcat">Mobilidade</span><span class="fonte-nota">vi um conjurador dormir em cima do próprio pilar. disse que era o único lugar seco da ilha.</span><p class="flavor">Um pilar de metal sobe e leva você junto.</p><dl class="stats"><div><dt>Dano</dt><dd>1d6 + Elem em quem estiver na área <span class='t'>(Metálico)</span></dd></div><div><dt>Alcance</dt><dd>área de 2 m</dd></div><div><dt>Custo</dt><dd>3 Ether · 1 PA</dd></div></dl><p class="trait"><b>Efeito.</b> Você sobe até 6 m. O pilar serve de cobertura até o fim do combate. Não crava agulhas.</p></div>
       </section>
       <p class="lostpage">As folhas com os mantras de uma, duas e três estrelas desta Sintonia ainda não foram encontradas. Estão em algum lugar por aí.</p>
     </div>
@@ -1716,9 +1729,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note r">uma Terra à Deriva voltou com um pão ainda quente no forno. ninguém teve coragem de comer. eu tive. estava bom.</p>
       <section class="ficha alt" aria-label="O Mar do Vazio e os Faróis">
         <h3>O Mar do Vazio e os Faróis <small>registro nº 501</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>quem tem Guardiões da Luz. Hoje, quase sempre a Autoridade.</dd></div><div><dt>Perigos</dt><dd>perder-se no tempo, monstros que sobem com as Terras à Deriva, guardas de farol que atiram antes de perguntar.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Uma Terra à Deriva reaparece com um navio atracado. O diário de bordo tem a data de amanhã.</li><li>Um Guardião da Luz manda um bilhete para fora do farol pedindo resgate. Os guardas juram que ele nunca pediu nada.</li><li>O farol de uma rota importante se apaga sem explicação, e três navios estão no meio do caminho.</li><li>Alguém acendeu as fogueiras da ilha do Barqueiro e fugiu. Agora o Barqueiro espera, e não vai embora sem dançar com alguém.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>quem tem Guardiões da Luz. Hoje, quase sempre a Autoridade.</dd></div><div><dt>Perigos</dt><dd>perder-se no tempo, monstros que sobem com as Terras à Deriva, guardas de farol que atiram antes de perguntar.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1731,9 +1743,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">perguntei a um Gremor qual Luminant era o mais bonito. ele apontou para o Sul. depois lembrei que a estrela dele aponta pra lá também.</p>
       <section class="ficha" aria-label="Os Cinco Luminants">
         <h3>Os Cinco Luminants <small>registro nº 502</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Central</dt><dd>a Autoridade, Markor, as Ilhas da Canção de Ninar.</dd></div><div><dt>Leste e Etrea</dt><dd>Etrea contra a Autoridade; ilhas que vêm e vão do Mar do Vazio.</dd></div><div><dt>Oeste</dt><dd>as Cem Legiões e a Fé Estelar.</dd></div><div><dt>Norte</dt><dd>gelo, poucos moradores, as Edenkite.</dd></div><div><dt>Sul</dt><dd>ruínas Celtor, quase todo engolido.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Uma família Celtor contrata o grupo para buscar uma relíquia numa ilha do Sul que deve afundar de vez em um mês.</li><li>Um peregrino quer chegar ao Norte para perguntar algo às Edenkite. Ele não diz o quê.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Central</dt><dd>a Autoridade, Markor, as Ilhas da Canção de Ninar.</dd></div><div><dt>Leste e Etrea</dt><dd>Etrea contra a Autoridade; ilhas que vêm e vão do Mar do Vazio.</dd></div><div><dt>Oeste</dt><dd>as Cem Legiões e a Fé Estelar.</dd></div><div><dt>Norte</dt><dd>gelo, poucos moradores, as Edenkite.</dd></div><div><dt>Sul</dt><dd>ruínas Celtor, quase todo engolido.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1746,9 +1757,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note r">um mestre das Vigílias me olhou segurar uma espada e disse "não". só isso. depois soube que era o Maestro. fiquei até orgulhoso.</p>
       <section class="ficha alt" aria-label="Ilha das Vigílias">
         <h3>Ilha das Vigílias <small>registro nº 503</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>os espadachins das Vigílias, leais a Etrea.</dd></div><div><dt>Perigos</dt><dd>bandidos que atacam o porto, os Jardins da Pedra Ardente, o túmulo sem nome.</dd></div><div><dt>O que se encontra</dt><dd>treino de armas, mestres de Galebreathe, um antiquário que compra quase tudo.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Um aprendiz das Vigílias pede ajuda para encontrar o irmão, que foi aos Jardins e não voltou. Só trouxeram a espada dele, partida.</li><li>Alguém escavou o túmulo do guerreiro sem nome. O túmulo está vazio, e as pedras dos Jardins esfriaram.</li><li>O Maestro Evengarde procura aliados fortes o bastante para enfrentar o Lorde Regente. Ele observa o grupo há semanas.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>os espadachins das Vigílias, leais a Etrea.</dd></div><div><dt>Perigos</dt><dd>bandidos que atacam o porto, os Jardins da Pedra Ardente, o túmulo sem nome.</dd></div><div><dt>O que se encontra</dt><dd>treino de armas, mestres de Galebreathe, um antiquário que compra quase tudo.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1761,9 +1771,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">fui roubado em Erisia três vezes no mesmo dia. na terceira, o ladrão devolveu tudo. disse que estava com pena.</p>
       <section class="ficha" aria-label="Erisia">
         <h3>Erisia <small>registro nº 504</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>embaixo, ninguém. Em cima, o Duque Ishamon e os golens dele.</dd></div><div><dt>Perigos</dt><dd>bandidos, emboscadas, a guerra entre Etrea e a Autoridade, golens com alma de gente.</dd></div><div><dt>Bom para</dt><dd>Pathfinders começando, e quem quer sumir por um tempo.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>O Lorde Regente de Etrea contrata o grupo para entrar na mansão do Duque e trazer a Forja do Pecado. Ele promete uma recompensa. Quem já trabalhou para ele não voltou para cobrar.</li><li>Um golem do Duque desce até a Erisia de baixo e para no meio da vila. Não ataca. Chama alguém pelo nome.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>embaixo, ninguém. Em cima, o Duque Ishamon e os golens dele.</dd></div><div><dt>Perigos</dt><dd>bandidos, emboscadas, a guerra entre Etrea e a Autoridade, golens com alma de gente.</dd></div><div><dt>Bom para</dt><dd>Pathfinders começando, e quem quer sumir por um tempo.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1776,9 +1785,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">não entre na sala do trono sem ser chamado. um homem fez isso. o Regente o ergueu no ar com fios que ninguém viu, sem levantar da cadeira.</p>
       <section class="ficha" aria-label="Etris e o Lorde Regente">
         <h3>Etris e o Lorde Regente <small>registro nº 514</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>o Lorde Regente, sentado no trono. Quanto mais tempo sentado, mais forte.</dd></div><div><dt>Perigos</dt><dd>os guardas do Regente, os assassinos que o palácio contrata, perguntas demais sobre o passado da cidade.</dd></div><div><dt>O que se encontra</dt><dd>o maior porto do Leste, mestres de quase tudo, e um povo que finge não ver o que acontece no palácio.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Um velho de Etris diz ter salvo um livro do incêndio do arquivo. Ele quer vendê-lo, e alguém do palácio já sabe disso.</li><li>Um Canor é preso em Etris sem motivo. O Regente não gosta de Canor, e ninguém sabe por quê.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>o Lorde Regente, sentado no trono. Quanto mais tempo sentado, mais forte.</dd></div><div><dt>Perigos</dt><dd>os guardas do Regente, os assassinos que o palácio contrata, perguntas demais sobre o passado da cidade.</dd></div><div><dt>O que se encontra</dt><dd>o maior porto do Leste, mestres de quase tudo, e um povo que finge não ver o que acontece no palácio.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1791,9 +1799,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note r">levei duas camadas de lã e um cobertor. passei frio. o cobertor também.</p>
       <section class="ficha alt" aria-label="Minityrsa">
         <h3>Minityrsa <small>registro nº 505</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>o Ministério, no Posto Antumbra. O resto da ilha é de quem aguentar o frio.</dd></div><div><dt>Perigos</dt><dd>frio que cansa, batedores e necromantes do Ministério, a prova solitária.</dd></div><div><dt>Dica</dt><dd>acenda a fogueira sempre debaixo de um teto, ou a neve apaga.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Um Pathfinder saiu da prova solitária de Minityrsa e não fala mais. Escreve, o tempo todo, o nome de alguém que o grupo conhece.</li><li>A cripta dos Inquebrantáveis amanhece com a porta entreaberta.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>o Ministério, no Posto Antumbra. O resto da ilha é de quem aguentar o frio.</dd></div><div><dt>Perigos</dt><dd>frio que cansa, batedores e necromantes do Ministério, a prova solitária.</dd></div><div><dt>Dica</dt><dd>acenda a fogueira sempre debaixo de um teto, ou a neve apaga.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1806,9 +1813,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">lavei o rosto no templo. a porta abriu. lavei de novo pra ver se fechava. não fechou.</p>
       <section class="ficha" aria-label="Aratel e o Vale Varrido">
         <h3>Aratel e o Vale Varrido <small>registro nº 506</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>a Colmeia no norte, na Grande Colmeia. O vale está em disputa.</dd></div><div><dt>Perigos</dt><dd>cavaleiros de pedra, construtos da Colmeia, tropas da Autoridade, sede.</dd></div><div><dt>O que se encontra</dt><dd>o bosque dos Lordes da Colmeia, um templo dos Guardiões da Luz, sucata de batalhas.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Um construto da Colmeia tombado no vale ainda está vivo e pede, num idioma de cliques, para ser levado de volta para casa.</li><li>A Autoridade oferece uma recompensa por quem mapear o caminho até a Grande Colmeia. A Colmeia oferece o dobro para quem não mapear.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>a Colmeia no norte, na Grande Colmeia. O vale está em disputa.</dd></div><div><dt>Perigos</dt><dd>cavaleiros de pedra, construtos da Colmeia, tropas da Autoridade, sede.</dd></div><div><dt>O que se encontra</dt><dd>o bosque dos Lordes da Colmeia, um templo dos Guardiões da Luz, sucata de batalhas.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1821,9 +1827,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note r">comprei uma pistola. disparei uma vez. o canhão do castelo respondeu. não comprei outra.</p>
       <section class="ficha alt" aria-label="Ilha do Verão">
         <h3>Ilha do Verão <small>registro nº 507</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>a Companhia do Verão.</dd></div><div><dt>Perigos</dt><dd>o canhão, cobradores, bandidos, a guerra fria com a União da Ignição.</dd></div><div><dt>O que se encontra</dt><dd>armas de fogo, munição, ferreiros, um mestre de Thundercall.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Uma caixa de explosivos sumiu do armazém. A Companhia quer de volta, discretamente, e quer o nome de quem levou, nada discretamente.</li><li>Um mercador deve à Companhia e fugiu para a casa da família. O grupo é contratado para cobrar.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>a Companhia do Verão.</dd></div><div><dt>Perigos</dt><dd>o canhão, cobradores, bandidos, a guerra fria com a União da Ignição.</dd></div><div><dt>O que se encontra</dt><dd>armas de fogo, munição, ferreiros, um mestre de Thundercall.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1836,9 +1841,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">os Chrysid cantam pros mortos no caminho até a lua. perguntei se cantariam pra mim. disseram que depende.</p>
       <section class="ficha" aria-label="Ilhas da Canção de Ninar">
         <h3>Ilhas da Canção de Ninar <small>registro nº 508</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>a Dama Confessora e o Conselho.</dd></div><div><dt>Perigos</dt><dd>as montanhas, e a Fé, se você a ofender.</dd></div><div><dt>O que se encontra</dt><dd>os maiores arquivos fora de Markor, sacerdotes, peregrinos.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Um Chrysid exilado pede ajuda para voltar às Ilhas. Diz que saiu sem permissão, e que lá isso tem preço.</li><li>Um afresco do Echelon foi pintado de novo durante a noite. Agora mostra o grupo.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>a Dama Confessora e o Conselho.</dd></div><div><dt>Perigos</dt><dd>as montanhas, e a Fé, se você a ofender.</dd></div><div><dt>O que se encontra</dt><dd>os maiores arquivos fora de Markor, sacerdotes, peregrinos.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1851,9 +1855,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note r">pedi para consultar um livro na Cidadela. me deram um formulário. pedi para consultar o formulário.</p>
       <section class="ficha alt" aria-label="Markor e a Cidadela">
         <h3>Markor e a Cidadela <small>registro nº 509</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>o Alto Conclave, com dinheiro da Autoridade.</dd></div><div><dt>Perigos</dt><dd>burocracia, e os Mergulhadores recrutando quem parece útil.</dd></div><div><dt>O que se encontra</dt><dd>arquivos, mestres de quase tudo, contratos de expedição às Profundezas.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Um livro da Cidadela some e aparece na mochila de um dos personagens. Ninguém lembra de ter pego.</li><li>Os Mergulhadores precisam de gente descartável para uma descida rápida a Scyphozia. Pagam bem. Pagam adiantado, o que é mau sinal.</li><li>Um aprendiz jura que viu o Capitão Orlandeau vivo, lá embaixo. Klaris proibiu qualquer um de ir atrás.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>o Alto Conclave, com dinheiro da Autoridade.</dd></div><div><dt>Perigos</dt><dd>burocracia, e os Mergulhadores recrutando quem parece útil.</dd></div><div><dt>O que se encontra</dt><dd>arquivos, mestres de quase tudo, contratos de expedição às Profundezas.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1866,9 +1869,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">os guardas Celtor me cumprimentaram. continuaram patrulhando. ao lado deles, um monstro também me cumprimentou.</p>
       <section class="ficha" aria-label="Scyphozia e a Cidade Afogada">
         <h3>Scyphozia e a Cidade Afogada <small>registro nº 510</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Quem manda</dt><dd>ninguém. Os Mergulhadores têm uma base, o Castelo da Luz. As Vozes cuidam da Provação.</dd></div><div><dt>Perigos</dt><dd>monstros do abismo, perda de Sanidade com o tempo, a própria Provação.</dd></div><div><dt>Regra de mesa</dt><dd>em Scyphozia, cada hora sem descanso custa Sanidade. O Mestre decide quanto.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Um guarda Celtor pede ao grupo que mate um monstro específico da cidade, já que ele não pode. É o monstro que matou a filha dele.</li><li>Alguém atravessou a Provação e voltou com o rosto de outra pessoa.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Quem manda</dt><dd>ninguém. Os Mergulhadores têm uma base, o Castelo da Luz. As Vozes cuidam da Provação.</dd></div><div><dt>Perigos</dt><dd>monstros do abismo, perda de Sanidade com o tempo, a própria Provação.</dd></div><div><dt>Regra de mesa</dt><dd>em Scyphozia, cada hora sem descanso custa Sanidade. O Mestre decide quanto.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1881,9 +1883,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note r">o Mergulhador que me falou dos ovos coçava a cabeça o tempo todo. não sentei perto dele de novo.</p>
       <section class="ficha alt" aria-label="Abaixo de Scyphozia">
         <h3>Abaixo de Scyphozia <small>registro nº 511</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Segunda camada</dt><dd>o Vendaval Eterno; Nova Kyrsa, a Cidade Adormecida.</dd></div><div><dt>Terceira camada</dt><dd>os Respiradouros: calor, gêiseres, Korilfiend.</dd></div><div><dt>Como se desce</dt><dd>pelo Gancho de Luz dos Mergulhadores, pelas brocas dos Mineiros, ou caindo numa fenda.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Uma broca dos Mineiros voltou à superfície sem a equipe. O painel marca uma profundidade que não devia existir.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Segunda camada</dt><dd>o Vendaval Eterno; Nova Kyrsa, a Cidade Adormecida.</dd></div><div><dt>Terceira camada</dt><dd>os Respiradouros: calor, gêiseres, Korilfiend.</dd></div><div><dt>Como se desce</dt><dd>pelo Gancho de Luz dos Mergulhadores, pelas brocas dos Mineiros, ou caindo numa fenda.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1896,9 +1897,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">não faça pedidos a Yun’Shul. se fizer, leia as letras miúdas. ele não escreve as letras miúdas.</p>
       <section class="ficha" aria-label="Os Deuses Afogados">
         <h3>Os Deuses Afogados <small>registro nº 512</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Ethiron</dt><dd>vento, o Olho do Turbilhão. Segunda camada.</dd></div><div><dt>Korilfiend</dt><dd>calor, a Origem do Inferno. Terceira camada.</dd></div><div><dt>Yun’Shul</dt><dd>corações e desejos. Atende pedidos em Scyphozia.</dd></div><div><dt>Krulians</dt><dd>servos dos deuses, que mudam de forma. Ficam fracos na superfície.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>Um santuário de Yun’Shul aparece numa ilha da superfície, onde não devia existir. A fila de gente querendo fazer um pedido já dá a volta no porto.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Ethiron</dt><dd>vento, o Olho do Turbilhão. Segunda camada.</dd></div><div><dt>Korilfiend</dt><dd>calor, a Origem do Inferno. Terceira camada.</dd></div><div><dt>Yun’Shul</dt><dd>corações e desejos. Atende pedidos em Scyphozia.</dd></div><div><dt>Krulians</dt><dd>servos dos deuses, que mudam de forma. Ficam fracos na superfície.</dd></div></dl>
+        
       </section>
     </div>
   </article>
@@ -1911,9 +1911,8 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note r">não há facção que não tenha tentado me contratar. também não há facção que tenha me pagado direito.</p>
       <section class="ficha alt" aria-label="Quem Manda no Mar">
         <h3>Quem Manda no Mar <small>registro nº 513</small></h3>
-        <dl class="stats atlas-stats"><div><dt>Autoridade Central</dt><dd>império de pacificadores, governado pelo Soberano Drallis Ehr, o "Salvador de Lumen", cujo rosto ninguém viu. Quer unir o mundo contra as Profundezas, de preferência sob a própria bandeira.</dd></div><div><dt>Reino de Etrea</dt><dd>o reino do Leste, nas mãos do Lorde Regente desde o golpe. Em guerra com a Autoridade.</dd></div><div><dt>A Colmeia</dt><dd>Vesperian e Ganymede nas Grandes Colmeias. Tecnologia viva, pouca paciência com vizinhos.</dd></div><div><dt>O Ministério</dt><dd>cultistas da sombra, liderados por nove Profetas numerados pela força. Querem afundar o mundo e se tornar Deuses Afogados. O Segundo Profeta criou o BloodRend e só o ensina aos seus discípulos.</dd></div><div><dt>Cidadela e Mergulhadores</dt><dd>sábios e mergulhadores do abismo. Querem saber tudo, a qualquer custo, de preferência o seu.</dd></div><div><dt>União da Ignição</dt><dd>os Mineiros. Cavam onde não devem, com brocas que não deviam existir.</dd></div><div><dt>Companhia do Verão</dt><dd>armas de fogo e cobrança de dívidas.</dd></div><div><dt>Cem Legiões</dt><dd>o império dos Khan no Oeste.</dd></div><div><dt>Fé Estelar</dt><dd>reza para os Celestiais e caça as relíquias deles.</dd></div></dl>
-        <div class="qlabel">GANCHOS PARA O MESTRE</div>
-        <ol class="qs"><li>A Autoridade e o Ministério contratam o grupo, sem saber, para o mesmo trabalho em lados opostos.</li><li>Um Profeta do Ministério quer desertar e precisa de alguém de fora para levá-lo até a Cidadela.</li><li>O Guardião Jericho, da Autoridade, caça o Ministério e anda dizendo que não consegue mais servir à Autoridade sem quebrar o próprio Juramento. Ele precisa de alguém de fora.</li></ol>
+        <dl class="stats atlas-stats long"><div><dt>Autoridade Central</dt><dd>império de pacificadores, governado pelo Soberano Drallis Ehr, o "Salvador de Lumen", cujo rosto ninguém viu. Quer unir o mundo contra as Profundezas, de preferência sob a própria bandeira.</dd></div><div><dt>Reino de Etrea</dt><dd>o reino do Leste, nas mãos do Lorde Regente desde o golpe. Em guerra com a Autoridade.</dd></div><div><dt>A Colmeia</dt><dd>Vesperian e Ganymede nas Grandes Colmeias. Tecnologia viva, pouca paciência com vizinhos.</dd></div><div><dt>O Ministério</dt><dd>cultistas da sombra, liderados por nove Profetas numerados pela força. Querem afundar o mundo e se tornar Deuses Afogados. O Segundo Profeta criou o BloodRend e só o ensina aos seus discípulos.</dd></div><div><dt>Cidadela e Mergulhadores</dt><dd>sábios e mergulhadores do abismo. Querem saber tudo, a qualquer custo, de preferência o seu.</dd></div><div><dt>União da Ignição</dt><dd>os Mineiros. Cavam onde não devem, com brocas que não deviam existir.</dd></div><div><dt>Companhia do Verão</dt><dd>armas de fogo e cobrança de dívidas.</dd></div><div><dt>Cem Legiões</dt><dd>o império dos Khan no Oeste.</dd></div><div><dt>Fé Estelar</dt><dd>reza para os Celestiais e caça as relíquias deles.</dd></div></dl>
+        
       </section>
     </div>
   </article>
