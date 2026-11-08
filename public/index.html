@@ -505,6 +505,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 .lg-links{margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule)}
 
+.fx-card.carta.off{opacity:.55}
+
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
 </style>
@@ -1741,18 +1743,18 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <h2 id="h-talentos"><span class="kicker">Antes dos registros</span>Sobre os Talentos</h2>
       <div class="prose">
         <p>Ninguém escolhe exatamente no que vai ficar bom. A estrada oferece, e você pega o que dá. Um dia aprende a cair sem se machucar; no outro, descobre que consegue segurar o fôlego mais do que devia. Chamo isso de talento, por falta de palavra melhor.</p>
-        <p>Os Pathfinders mais velhos falam disso como um jogo de cartas: a vida te dá algumas mãos, e você fica com uma carta só.</p>
+        <p>Os Pathfinders mais velhos falam disso como um jogo de cartas: a vida te dá uma mão, e você fica com uma carta só.</p>
         <p>Juntei aqui as cartas de que tive notícia. Poucas são minhas. A maior parte vi em outras pessoas, ou ouvi alguém contar numa noite longa.</p>
       </div>
       <p class="note">não dá para aprender tudo. escolhi as minhas pelo que me manteve vivo, não pelo que parecia mais forte.</p>
       <div class="rulebox">
         <p><b>Marcas do Catalogador.</b> Cada mantra e cada talento traz um carimbo dizendo como ele soube: <i>visto</i>, <i>copiado</i>, <i>ouvi falar</i> ou <i>boato</i>. Para a mesa, todos valem igual. O carimbo serve de pista para o Mestre: um boato pode funcionar um pouco diferente do que está escrito, e é com ele que o Mestre decide.</p>
-        <p><b>Mãos de talento.</b> A cada nível, você recebe 3 mãos de 5 cartas e escolhe 1 carta entre as quinze. O Mestre monta as mãos (ou a ficha do site sorteia). Se preferir, o Mestre pode deixar cada jogador pegar qualquer talento cujos requisitos já cumpra.</p>
-        <p><b>Montando as mãos.</b> Duas mãos são de talentos Comuns e uma, garantida, é de talentos Raros. Só entram na mão talentos cujos requisitos o personagem já cumpre. Os Desatados não entram no sorteio: o Mestre entrega quando o feito for cumprido.</p>
+        <p><b>Mãos de talento.</b> A cada nível, você recebe uma mão de 4 cartas e fica com 1. O Mestre monta a mão (ou a ficha do site sorteia). Se preferir, o Mestre pode deixar cada jogador pegar qualquer talento cujos requisitos já cumpra.</p>
+        <p><b>Montando a mão.</b> Três cartas são talentos Comuns e uma é um talento Raro. Só entram na mão talentos cujos requisitos o personagem já cumpre; se nenhum Raro serve ainda, a quarta carta também é Comum. Os Desatados não entram no sorteio: o Mestre entrega quando o feito for cumprido.</p>
         <p><b>Comum.</b> A maioria dos talentos de um personagem: efeitos pequenos e úteis, incluindo o primeiro passo de cada Vertente de Sintonia.</p>
         <p><b>Raro.</b> Mais fortes, ou com efeitos maiores. Muitos pedem um talento Comum antes.</p>
         <p><b>Medida de cada carta.</b> Um Comum dá um bônus pequeno (+1 ou +2) a algo específico, ou um efeito de situação. Um Raro dá um bônus que vale quase sempre, ou um efeito forte limitado a uma vez por rodada. Um Lendário muda o jeito de jogar, quase sempre com um limite por combate ou por descanso. PA de graça é o efeito mais forte do jogo, e só aparece com limite.</p>
-        <p><b>Lendário.</b> O fim de uma família de talentos. Só aparecem para quem cumpre todos os requisitos, e entram numa mão Rara no lugar de uma carta.</p>
+        <p><b>Lendário.</b> O fim de uma família de talentos. Só aparecem para quem cumpre todos os requisitos, e entram na mão no lugar da carta Rara.</p>
       </div>
     </div>
   </article>
@@ -2407,26 +2409,25 @@ function sortearMaos() {
   const ok = pool().filter(t => !x.tal.has(fold(t.nome)) && reqOk(t.req, x));
   const de = r => shuffle(ok.filter(t => t.rar === r));
   const com = de('comum'), rar = de('raro'), len = de('lendário');
-  const h1 = com.splice(0, 5), h2 = com.splice(0, 5);
-  let h3 = rar.splice(0, 5), t3 = 'raro';
-  if (len.length) { if (h3.length >= 5) h3[r5()] = len[0]; else h3.push(len[0]); }
-  if (!h3.length) { h3 = com.splice(0, 5); t3 = 'comum'; }
-  return [[h1, 'comum'], [h2, 'comum'], [h3, t3]].filter(([h]) => h.length).map(([h, tipo]) => ({ tipo, cartas: h.map(t => t.nome) }));
+  const forte = len[0] || rar[0];
+  const mao = com.splice(0, forte ? 3 : 4);
+  if (forte) mao.push(forte);
+  return mao.length ? [{ tipo: 'mao', cartas: mao.map(t => t.nome) }] : [];
 }
-function r5() { return shuffle([0, 1, 2, 3, 4])[0]; }
 const podeMexer = () => typeof CUR === 'undefined' || !CUR || CUR.pode !== false;
 function renderMaos(c) {
   const box = O('maos'); if (!box) return;
   const falta = Math.max(0, talentosDevidos(c.lvl) - S.talentos.length);
   const pode = podeMexer();
   if (S.maos && S.maos.length) {
-    box.innerHTML = `<p class="fx-maos-t">${pode ? 'Fique com uma carta. As outras voltam para o baralho.' : 'Mãos sorteadas, esperando a escolha.'}</p>` + S.maos.map((h, i) => `
-      <div class="fx-mao"><p class="fx-lbl">Mão ${i + 1} · ${h.tipo === 'raro' ? 'Rara' : 'Comum'}</p><div class="fx-cards">${h.cartas.map(n => {
-        const d = findTal(n) || { nome: n, rar: '', req: '', ef: '' };
-        return `<div class="fx-card carta cr-${esc(d.rar)}"><h4><span>${esc(d.nome)}</span></h4><span class="meta rar-${esc(d.rar)}">${esc(d.rar)} · requisito: ${esc(d.req)}</span><p>${d.ef}</p>${pode ? `<button class="fx-btn" type="button" data-pegar="${esc(d.nome)}">Ficar com esta</button>` : ''}</div>`;
-      }).join('')}</div></div>`).join('');
+    const x = reqCtx();
+    box.innerHTML = `<p class="fx-maos-t">${pode ? 'Fique com uma carta. As outras voltam para o baralho.' : 'Mão sorteada, esperando a escolha.'}</p>` + S.maos.map(h => `
+      <div class="fx-mao"><div class="fx-cards">${h.cartas.map(n => {
+        const d = findTal(n) || { nome: n, rar: '', req: '', ef: '' }, ok = reqOk(d.req, x) && !x.tal.has(fold(d.nome));
+        return `<div class="fx-card carta cr-${esc(d.rar)}${ok ? '' : ' off'}"><h4><span>${esc(d.nome)}</span></h4><span class="meta rar-${esc(d.rar)}">${esc(d.rar)} · requisito: ${esc(d.req || 'nenhum')}</span><p>${d.ef}</p>${!ok ? '<p class="fx-empty">Você não cumpre mais o requisito desta carta.</p>' : pode ? `<button class="fx-btn" type="button" data-pegar="${esc(d.nome)}">Ficar com esta</button>` : ''}</div>`;
+      }).join('')}</div>${pode && !h.cartas.some(n => { const d = findTal(n); return d && reqOk(d.req, x) && !x.tal.has(fold(d.nome)); }) ? '<button class="fx-btn" type="button" data-act="sortear">Sortear de novo</button>' : ''}</div>`).join('');
   } else if (falta > 0) {
-    box.innerHTML = `<div class="fx-maos-aviso"><span>${falta === 1 ? 'Você tem 1 talento para pegar.' : `Você tem ${falta} talentos para pegar.`}</span>${pode ? '<button class="fx-btn" type="button" data-act="sortear">Sortear mãos</button>' : ''}</div>`;
+    box.innerHTML = `<div class="fx-maos-aviso"><span>${falta === 1 ? 'Você tem 1 talento para pegar.' : `Você tem ${falta} talentos para pegar.`}</span>${pode ? '<button class="fx-btn" type="button" data-act="sortear">Sortear a mão</button>' : ''}</div>`;
   } else box.innerHTML = '';
 }
 
@@ -2705,7 +2706,7 @@ function renderTalentos() {
     const d = findTal(t.nome);
     return `<div class="fx-card on"><h4><span>${esc(t.nome)}</span><button class="x" type="button" data-del="talentos" data-i="${i}" aria-label="Apagar talento">×</button></h4>
       ${d ? `<span class="meta rar-${esc(d.rar)}">${esc(d.rar)} · requisito: ${esc(d.req)}</span><p>${d.ef}</p>` : `<textarea id="tl-${i}" data-l="talentos.${i}.texto" aria-label="O que o talento faz" placeholder="o que ele faz">${esc(t.texto || '')}</textarea>`}</div>`;
-  }).join('') || '<p class="fx-empty">Nenhum talento ainda. A cada nível, você recebe três mãos de cartas e fica com uma.</p>';
+  }).join('') || '<p class="fx-empty">Nenhum talento ainda. A cada nível, você recebe uma mão de 4 cartas e fica com uma.</p>';
 }
 function renderEquip(c) {
   const tr = c.tr;
@@ -2771,7 +2772,7 @@ function wire() {
     if (t.dataset.roll) { const c = C(); roll(t.dataset.roll, c.sk[t.dataset.roll] ?? 0); return; }
     if (t.dataset.rollN) { roll(t.dataset.rollN, num(t.dataset.bonus)); return; }
     if (t.dataset.del) { S[t.dataset.del].splice(+t.dataset.i, 1); changed(); return; }
-    if (t.dataset.pegar) { const d = findTal(t.dataset.pegar); S.talentos.push({ nome: d ? d.nome : t.dataset.pegar, texto: '' }); S.maos = []; changed(); save(); return; }
+    if (t.dataset.pegar) { const d = findTal(t.dataset.pegar); if (!d || !reqOk(d.req, reqCtx())) { renderMaos(C()); return; } S.talentos.push({ nome: d ? d.nome : t.dataset.pegar, texto: '' }); S.maos = []; changed(); save(); return; }
     const act = t.dataset.act;
     if (act === 'sortear') { const m = sortearMaos(); if (!m.length) { O('maos').innerHTML = '<p class="fx-empty">Nenhum talento cumpre os requisitos agora. Confira atributos, Estilo e Sintonia.</p>'; return; } S.maos = m; changed(); save(); return; }
     if (act === 'add-arma') { const v = $('#add-arma', root).value.trim(); if (!v) return; S.armas.push({ nome: v, dano: '', tipo: '', prop: '' }); autoArma(S.armas.length - 1); $('#add-arma', root).value = ''; changed(); }
