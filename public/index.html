@@ -515,6 +515,227 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx-queimadas{margin:4px 0 14px}.fx-queimadas summary{cursor:pointer;font-family:var(--f-body);font-style:italic}
 .fx-queimadas span{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dotted var(--rule)}
 
+/* =====================================================================
+   Pele de jogo (Deepwoken): as abas Fichas e Mesas viram o painel do
+   personagem, escuro como pedra molhada, com latão gasto e osso.
+   O livro continua papel; a ficha é o que o Pathfinder vê de olhos fechados.
+   ===================================================================== */
+.fx{
+  --dw-bg:#13191b;--dw-panel:#182023;--dw-panel-2:#1d272a;--dw-line:rgba(201,170,108,.30);--dw-line-2:rgba(201,170,108,.55);
+  --dw-brass:#c9aa6c;--dw-bone:#e9e0cb;--dw-dim:#a9a597;--dw-blood:#c0392d;--dw-ether:#3fb3d2;--dw-san:#a083e0;--dw-post:#e6c77a;
+  --dw-deep:#5fd6b0;--dw-raro:#a58cf0;--dw-lend:#eaa94b;
+  --ink:var(--dw-bone);--ink-soft:var(--dw-dim);--rubric:var(--dw-brass);--note:#8fd0e2;--rule:var(--dw-line);--ink-blue:#dceff4;
+  --ok:#4fae8f;--warn:#d39a3a;--bad:var(--dw-blood);
+  color:var(--dw-bone);
+}
+.fx .page{
+  background:var(--dw-bg)!important;
+  background-image:linear-gradient(rgba(110,165,170,.12),rgba(110,165,170,0) 360px)!important;
+  background-size:100% 360px!important;background-repeat:no-repeat!important;background-position:top!important;
+  box-shadow:0 0 0 1px var(--dw-line),0 0 0 5px rgba(8,12,14,.65),0 0 0 6px var(--dw-line),0 40px 80px -30px rgba(0,0,0,.95)!important;
+  color:var(--dw-bone);
+}
+.fx .page::before,.fx .page::after{display:none}
+.fx .folio{border-bottom-color:var(--dw-line)!important;color:var(--dw-brass)}
+.fx .folio b{color:var(--dw-brass)}.fx .folio span{color:var(--dw-dim)}
+.fx h2{color:var(--dw-bone);text-shadow:0 2px 18px rgba(0,0,0,.6)}
+.fx h2 .kicker{color:var(--dw-brass)}
+.fx .spread > h2::after,.fx h2::after{background:linear-gradient(90deg,var(--dw-brass),transparent)!important;width:140px!important;height:1px!important}
+.fx p,.fx li,.fx td{color:inherit}
+
+/* painéis com cantos de latão */
+.fx .fx-box{
+  background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(0,0,0,.14)),var(--dw-panel);
+  border:1px solid var(--dw-line);padding:16px 18px 18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 24px -18px #000;
+}
+.fx .fx-box::before{content:"";position:absolute;inset:-1px;pointer-events:none;
+  --c:var(--dw-brass);
+  background:
+    linear-gradient(var(--c),var(--c)) left top/14px 1.5px no-repeat,linear-gradient(var(--c),var(--c)) left top/1.5px 14px no-repeat,
+    linear-gradient(var(--c),var(--c)) right top/14px 1.5px no-repeat,linear-gradient(var(--c),var(--c)) right top/1.5px 14px no-repeat,
+    linear-gradient(var(--c),var(--c)) left bottom/14px 1.5px no-repeat,linear-gradient(var(--c),var(--c)) left bottom/1.5px 14px no-repeat,
+    linear-gradient(var(--c),var(--c)) right bottom/14px 1.5px no-repeat,linear-gradient(var(--c),var(--c)) right bottom/1.5px 14px no-repeat}
+.fx .fx-box > h3{color:var(--dw-bone);font-size:1.3rem;letter-spacing:.05em;align-items:center;margin-bottom:14px}
+.fx .fx-box > h3::before{content:"";width:8px;height:8px;transform:rotate(45deg);background:var(--dw-brass);box-shadow:0 0 10px rgba(201,170,108,.6);flex:0 0 auto}
+.fx .fx-box > h3::after{content:"";flex:1 1 40px;min-width:40px;height:1px;background:linear-gradient(90deg,var(--dw-line-2),transparent);order:3}
+.fx .fx-box > h3 small{color:var(--dw-dim);order:4;flex-basis:100%;margin-top:-2px}
+
+/* campos */
+.fx .fx-f > span,.fx .fx-lbl{color:var(--dw-brass);opacity:.9}
+.fx .fx-in,.fx select,.fx textarea{font-family:var(--f-body);color:var(--ink-blue);color-scheme:dark;border-bottom:1px solid rgba(201,170,108,.28)}
+.fx select{background:transparent}.fx select option,.fx select optgroup{background:#11171a;color:var(--dw-bone)}
+.fx textarea{background:rgba(0,0,0,.22);border:1px solid var(--dw-line)}
+.fx .fx-in:focus,.fx select:focus,.fx textarea:focus{background:rgba(63,179,210,.07);border-bottom-color:var(--dw-ether);outline:none;box-shadow:0 1px 0 var(--dw-ether)}
+.fx .fx-hint,.fx .fx-calc{color:var(--dw-dim)}
+.fx .fx-empty{color:#8fb8c2}
+.fx .fx-status{color:var(--dw-deep)}
+
+/* botões */
+.fx .fx-btn{
+  background:linear-gradient(#253034,#1a2326);color:var(--dw-bone);border:1px solid var(--dw-line);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 2px 0 rgba(0,0,0,.4);transition:border-color .15s,box-shadow .15s,transform .08s,color .15s
+}
+.fx .fx-btn:hover{border-color:var(--dw-brass);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 14px -4px rgba(201,170,108,.7)}
+.fx .fx-btn:active{transform:translateY(1px);box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
+.fx .fx-btn.red{color:#e98a7d;border-color:rgba(192,57,45,.55)}
+.fx .fx-btn.red:hover{box-shadow:0 0 14px -4px rgba(192,57,45,.8)}
+.fx .x{color:#d97a6e}
+
+/* atributos: emblema em losango */
+.fx .fx-attr{background:linear-gradient(160deg,var(--dw-panel-2),#141b1e);border:1px solid var(--dw-line);padding:10px 12px;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;position:relative}
+.fx .fx-attr::after{content:"";position:absolute;right:0;bottom:0;width:100px;height:70px;background:radial-gradient(at 100% 100%,rgba(201,170,108,.12),transparent 70%);pointer-events:none}
+.fx .fx-attr .nm{display:flex;align-items:center;gap:7px;color:var(--dw-bone);font-size:1.05rem}
+.fx .ic{width:20px;height:20px;flex:0 0 auto;fill:none;stroke:var(--dw-brass);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.fx .fx-attr .fx-in{font-size:1.3rem;width:100%;max-width:3.4em}
+.fx .fx-attr .mod{position:relative;z-index:0;width:54px;height:54px;display:grid;place-items:center;font-size:1.35rem;color:var(--dw-bone);
+  background:var(--dw-brass);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);grid-column:2}
+@media (max-width:480px){.fx .fx-attr .mod{width:46px;height:46px;font-size:1.2rem}.fx .fx-attr{padding:9px 10px}}
+.fx .fx-attr .mod::before{content:"";position:absolute;inset:1.6px;z-index:-1;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:radial-gradient(circle at 50% 30%,#33424a,#12181b 75%)}
+.fx .fx-attr .bon{color:var(--dw-dim);font-family:var(--f-body)}
+
+/* recursos: barras de jogo */
+.fx .fx-track{background:linear-gradient(160deg,var(--dw-panel-2),#141b1e);border:1px solid var(--dw-line);padding:10px 12px 12px;position:relative;--tc:var(--dw-blood);--tc2:#7d1d16}
+.fx .t-ether{--tc:var(--dw-ether);--tc2:#145c74}.fx .t-san{--tc:var(--dw-san);--tc2:#4b3384}.fx .t-postura{--tc:var(--dw-post);--tc2:#8a6d25}
+.fx .fx-track .top span{display:flex;align-items:center;gap:7px;color:var(--dw-bone)}
+.fx .fx-track .ic{stroke:var(--tc);filter:drop-shadow(0 0 4px color-mix(in srgb,var(--tc) 60%,transparent))}
+.fx .fx-track .top em{color:var(--tc)}
+.fx .fx-track .row .fx-in{font-size:1.55rem;color:var(--dw-bone)}
+.fx .fx-track .row .max{color:var(--dw-dim)}
+.fx .fx-bar{height:12px;margin-top:10px;background:#0a0e10;border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 2px 4px rgba(0,0,0,.7)}
+.fx .fx-bar::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(0,0,0,.5) calc(10% - 1px) 10%),linear-gradient(rgba(255,255,255,.22),transparent 55%)}
+.fx .fx-bar i{z-index:1;background:linear-gradient(90deg,var(--tc2),var(--tc))!important;box-shadow:0 0 10px -2px var(--tc);transition:width .35s cubic-bezier(.2,.8,.2,1)}
+.fx .fx-bar .ghost{position:absolute;inset:0 auto 0 0;z-index:0;background:rgba(255,236,214,.8);transition:width .55s ease-out}
+.fx .t-pv .fx-bar.bad i{animation:dw-pulsa 1.3s ease-in-out infinite}
+.fx .pm{border:1px solid var(--dw-line);background:linear-gradient(#253034,#1a2326);color:var(--dw-bone);transition:border-color .15s,box-shadow .15s}
+.fx .pm:hover{border-color:var(--tc,var(--dw-brass));box-shadow:0 0 10px -3px var(--tc,var(--dw-brass))}
+.fx .pm:active{transform:scale(.92)}
+.fx .fx-track.hit{animation:dw-golpe .42s cubic-bezier(.36,.07,.19,.97)}
+.fx .fx-track.heal{animation:dw-cura .7s ease-out}
+
+/* pontos em losango */
+.fx .pips{gap:9px;padding-left:3px}
+.fx .pip{width:15px;height:15px;transform:rotate(45deg);border:1.5px solid rgba(233,224,203,.45);border-radius:2px;margin:4px 3px;background:rgba(0,0,0,.25);transition:background .2s,box-shadow .2s,border-color .2s}
+.fx .pip:hover{border-color:var(--dw-bone)}
+.fx .pip[aria-pressed="true"]{background:var(--dw-blood);border-color:#f0a194;box-shadow:0 0 12px rgba(192,57,45,.85)}
+.fx [data-o="impeto"] .pip[aria-pressed="true"]{background:var(--dw-lend);border-color:#ffe2a8;box-shadow:0 0 14px rgba(234,169,75,.9)}
+.fx .pip.good[aria-pressed="true"]{background:#d9e8e3;border-color:#fff;box-shadow:0 0 12px rgba(217,232,227,.8)}
+.fx [data-o="marcas"] .pip[aria-pressed="true"]{background:var(--dw-deep);border-color:#c9fff0;box-shadow:0 0 16px rgba(95,214,176,.95)}
+.fx .pip.pop{animation:dw-pop .38s cubic-bezier(.2,.9,.3,1.4)}
+.fx .pips em{color:var(--dw-dim);font-family:var(--f-body)}
+
+/* condições */
+.fx .chip{border:1px solid var(--dw-line);color:var(--dw-dim);background:rgba(0,0,0,.2);font-family:var(--f-body);transition:background .18s,color .18s,box-shadow .18s,transform .1s}
+.fx .chip:hover{color:var(--dw-bone);border-color:var(--dw-line-2)}
+.fx .chip[aria-pressed="true"]{background:linear-gradient(#5b1c16,#3b120e);color:#ffe1da;border-color:rgba(240,120,100,.6);box-shadow:0 0 12px -3px rgba(192,57,45,.9)}
+.fx .chip:active{transform:scale(.95)}
+
+/* números de combate */
+.fx .fx-stat{border-bottom:1px solid rgba(201,170,108,.16)}
+.fx .fx-stat span{color:var(--dw-dim)}
+.fx .fx-stat b{color:var(--dw-bone)}
+.fx .fx-stat button,.fx .roll{border-radius:2px;transition:color .15s,text-shadow .15s,background .15s}
+.fx .fx-stat button:hover,.fx .roll:hover{color:var(--dw-lend);text-shadow:0 0 10px rgba(234,169,75,.7);background:rgba(234,169,75,.08);border-color:transparent}
+
+/* tabelas */
+.fx .fx-table th{color:var(--dw-brass);border-bottom:1px solid var(--dw-line-2)}
+.fx .fx-table td{border-bottom:1px solid rgba(201,170,108,.12)}
+.fx .fx-table tbody tr:nth-child(even) td{background:rgba(255,255,255,.018)}
+.fx .fx-table input[type=checkbox]{accent-color:var(--dw-brass)}
+
+/* cartas */
+.fx .fx-card{background:linear-gradient(165deg,#212c30,#151c1f 70%);border:1px solid var(--dw-line);padding:11px 13px;position:relative;box-shadow:0 8px 18px -14px #000}
+.fx .fx-card h4{color:var(--dw-bone)}
+.fx .fx-card .meta,.fx .fx-card h4 small{color:var(--dw-dim)}
+.fx .fx-card.on{border-color:var(--dw-line-2);box-shadow:inset 3px 0 0 var(--dw-brass),0 8px 18px -14px #000}
+.fx .rar-comum{color:#cfc6b2}.fx .rar-raro{color:var(--dw-raro)}.fx .rar-lendário{color:var(--dw-lend)}
+.fx .fx-card.cr-raro{border-color:rgba(165,140,240,.55)}
+.fx .fx-card.cr-raro.on,.fx .carta.cr-raro{box-shadow:inset 0 2px 0 var(--dw-raro),0 0 18px -10px var(--dw-raro)}
+.fx .fx-card.cr-lendário{border:1px solid rgba(234,169,75,.75);box-shadow:inset 0 2px 0 var(--dw-lend),0 0 26px -10px var(--dw-lend);overflow:hidden}
+.fx .fx-card.cr-lendário::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,220,150,.16) 50%,transparent 65%);background-size:250% 100%;animation:dw-brilho 4.5s linear infinite}
+.fx .fx-card label{color:var(--dw-dim)}
+.fx .fx-card input[type=checkbox]{accent-color:var(--dw-brass)}
+
+/* a mão de talento */
+.fx .fx-maos-aviso{background:linear-gradient(90deg,rgba(234,169,75,.12),rgba(234,169,75,.02));border:1px solid rgba(234,169,75,.45);box-shadow:inset 3px 0 0 var(--dw-lend)}
+.fx .fx-maos-aviso span{color:var(--dw-bone)}
+.fx .fx-maos-aviso .fx-btn{border-color:var(--dw-lend);animation:dw-chama 2.2s ease-in-out infinite}
+.fx .fx-maos-t{color:var(--dw-dim)}
+.fx .fx-mao{border-bottom:1px solid var(--dw-line)}
+.fx .fx-mao .fx-cards{perspective:1000px;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr))}
+.fx .carta{min-height:220px;padding-top:26px;transform-origin:50% 100%;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s,box-shadow .35s,filter .35s}
+.fx .carta:hover{transform:translateY(-4px)}
+.fx .carta .gema{position:absolute;top:10px;left:12px;width:10px;height:10px;transform:rotate(45deg);background:#cfc6b2;box-shadow:0 0 8px rgba(207,198,178,.6)}
+.fx .carta.cr-raro .gema{background:var(--dw-raro);box-shadow:0 0 10px var(--dw-raro)}
+.fx .carta.cr-lendário .gema{background:var(--dw-lend);box-shadow:0 0 12px var(--dw-lend)}
+.fx .carta .fx-acoes{margin-top:auto;padding-top:10px}
+.fx .carta.dist{animation:dw-dar .62s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--n,0) * 110ms)}
+.fx .carta.gelada{border-color:#8fd8ee!important;background:linear-gradient(165deg,#22404b,#14262d 70%)!important;box-shadow:inset 0 0 0 1px rgba(143,216,238,.4),0 0 22px -8px #8fd8ee!important}
+.fx .carta.gelada::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.9;
+  background:radial-gradient(circle at 12% 18%,rgba(220,245,255,.35) 0 2px,transparent 3px),radial-gradient(circle at 80% 30%,rgba(220,245,255,.28) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 60% 85%,rgba(220,245,255,.3) 0 2px,transparent 3px),radial-gradient(circle at 30% 65%,rgba(220,245,255,.22) 0 1px,transparent 2px),
+    linear-gradient(160deg,rgba(200,240,255,.18),transparent 40%,transparent 70%,rgba(200,240,255,.14))}
+.fx .carta.congela{animation:dw-gelo .7s ease-out}
+.fx .carta.queimada{filter:grayscale(.85) brightness(.55) sepia(.3);opacity:.75}
+.fx .carta.queima{animation:dw-queima .9s ease-in both}
+.fx .carta.queima::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(255,140,40,.85),rgba(194,57,27,.5) 30%,transparent 60%);background-size:100% 220%;animation:dw-brasa .9s ease-in both}
+.fx .fx-maos-t,.fx .fx-mao{position:relative}
+.fx .escolhendo .carta{pointer-events:none}
+.fx .carta.escolhida{transform:translateY(-14px) scale(1.05);box-shadow:0 0 0 1px var(--dw-lend),0 0 40px -6px var(--dw-lend)!important;z-index:2}
+.fx .carta.descartada{opacity:.15;transform:translateY(18px) scale(.94) rotate(-1deg);filter:grayscale(1)}
+.fx .tal.chegou{animation:dw-chega 1.1s ease-out}
+.fx .fx-marca.gelo{color:#9fe0f2}.fx .fx-marca.fogo{color:#f0966f}
+.fx .fx-queimadas summary{color:var(--dw-dim)}
+
+/* subir de nível */
+.fx .fx-head.sobe{animation:dw-sobe 1.2s ease-out}
+.fx-toast{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top,0px));z-index:60;transform:translateX(-50%);min-width:240px;text-align:center;
+  background:linear-gradient(#1f2a2e,#12181b);border:1px solid #c9aa6c;box-shadow:0 0 0 4px rgba(10,14,16,.7),0 0 40px -6px rgba(201,170,108,.7),0 20px 40px -10px #000;
+  padding:12px 26px 13px;color:#e9e0cb;font-family:var(--f-body);pointer-events:none}
+.fx-toast b{display:block;font-family:var(--f-display);font-weight:400;font-size:1.9rem;letter-spacing:.08em;color:#f1d79c;text-shadow:0 0 18px rgba(234,169,75,.7)}
+.fx-toast span{display:block;color:#bdb8a8;font-style:italic;margin-top:2px}
+.fx-toast.entra{animation:dw-toast .55s cubic-bezier(.2,.9,.3,1.2)}
+
+/* dados */
+.dice{background:linear-gradient(#1c2528,#121719);color:#e9e0cb;border:1px solid rgba(201,170,108,.55);box-shadow:0 0 0 4px rgba(8,12,14,.6),0 22px 44px -12px #000}
+.dice header b{color:#c9aa6c}
+.dice li{border-bottom-color:rgba(201,170,108,.15)}
+.dice li em{color:#a9a597}
+.dice li b{color:#e9e0cb;min-width:2ch;text-align:right}
+.dice li.rolando b{color:#c9aa6c;filter:blur(.4px)}
+.dice li.parou b{animation:dw-dado .45s cubic-bezier(.2,.9,.3,1.4)}
+.dice li.crit b{color:#f3c36a;text-shadow:0 0 14px rgba(234,169,75,.9)}
+.dice li.fumble b{color:#ef6b5c;text-shadow:0 0 12px rgba(192,57,45,.9)}
+.dice li.fumble.parou{animation:dw-golpe .42s}
+.dice .fx-btn,.dice .chip{background:#1a2326;color:#e9e0cb;border-color:rgba(201,170,108,.3)}
+.dice .chip[aria-pressed="true"]{background:#c9aa6c;color:#13191b}
+
+/* lista de fichas e mesa */
+.fx .party .fx-card{transition:transform .2s,box-shadow .2s,border-color .2s}
+.fx .party .fx-card:hover{transform:translateY(-2px);border-color:var(--dw-line-2);box-shadow:0 14px 28px -18px #000,0 0 18px -10px rgba(201,170,108,.6)}
+.fx .party .bars .fx-bar{height:8px;margin:0}
+.fx .party .bars span{color:var(--dw-dim)}
+.fx .party .bars .fx-bar i{background:linear-gradient(90deg,#7d1d16,var(--dw-blood))!important}
+
+@keyframes dw-golpe{0%,100%{transform:translateX(0)}15%{transform:translateX(-6px)}30%{transform:translateX(5px)}45%{transform:translateX(-4px)}60%{transform:translateX(3px)}75%{transform:translateX(-1px)}}
+.fx .fx-track.hit{box-shadow:inset 0 0 0 1px rgba(240,100,80,.7),inset 0 0 26px rgba(192,57,45,.45)}
+@keyframes dw-cura{0%{box-shadow:inset 0 0 0 1px var(--tc),0 0 0 0 var(--tc)}100%{box-shadow:inset 0 0 0 1px transparent,0 0 0 12px transparent}}
+@keyframes dw-pulsa{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6)}}
+@keyframes dw-pop{0%{transform:rotate(45deg) scale(.5)}60%{transform:rotate(45deg) scale(1.4)}100%{transform:rotate(45deg) scale(1)}}
+@keyframes dw-brilho{from{background-position:150% 0}to{background-position:-100% 0}}
+@keyframes dw-chama{0%,100%{box-shadow:0 0 0 0 rgba(234,169,75,0)}50%{box-shadow:0 0 18px -2px rgba(234,169,75,.75)}}
+@keyframes dw-dar{0%{opacity:0;transform:translateY(46px) rotateY(-95deg) scale(.88)}60%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes dw-gelo{0%{filter:brightness(2.2) saturate(.2);transform:scale(1.04)}100%{filter:none;transform:none}}
+@keyframes dw-queima{0%{filter:none}35%{filter:brightness(1.5) saturate(1.6) sepia(.4)}100%{filter:grayscale(.85) brightness(.55) sepia(.3)}}
+@keyframes dw-brasa{0%{background-position:0 -120%;opacity:0}30%{opacity:1}100%{background-position:0 100%;opacity:0}}
+@keyframes dw-chega{0%{box-shadow:0 0 0 1px var(--dw-lend),0 0 40px -4px var(--dw-lend);transform:scale(1.03)}100%{transform:none}}
+@keyframes dw-sobe{0%{filter:drop-shadow(0 0 0 rgba(234,169,75,0))}30%{filter:drop-shadow(0 0 22px rgba(234,169,75,.9))}100%{filter:none}}
+@keyframes dw-toast{0%{opacity:0;transform:translate(-50%,-24px) scale(.9)}100%{opacity:1;transform:translate(-50%,0)}}
+@keyframes dw-dado{0%{transform:scale(1.7)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){
+  .fx *,.fx *::before,.fx *::after,.fx-toast,.dice *{animation:none!important;transition:none!important}
+}
+
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
 </style>
@@ -2444,11 +2665,13 @@ function renderMaos(c) {
         const botoes = !ok ? '<p class="fx-empty">Você não cumpre mais o requisito desta carta.</p>' : !pode ? '' : foi
           ? `<div class="fx-acoes"><button class="fx-btn" type="button" data-fogo="${esc(d.nome)}">Desfazer</button></div>`
           : `<div class="fx-acoes"><button class="fx-btn" type="button" data-pegar="${esc(d.nome)}">Ficar com esta</button>${(!h.gelo || gel) ? `<button class="fx-btn" type="button" data-gelo="${esc(d.nome)}" aria-pressed="${gel}">${gel ? 'Descongelar' : 'Congelar'}</button>` : ''}${!h.fogo && !gel ? `<button class="fx-btn" type="button" data-fogo="${esc(d.nome)}">Queimar</button>` : ''}</div>`;
-        return `<div class="fx-card carta cr-${esc(d.rar)}${ok && !foi ? '' : ' off'}${gel ? ' gelada' : ''}"><h4><span>${esc(d.nome)}</span></h4><span class="meta rar-${esc(d.rar)}">${esc(d.rar)} · requisito: ${esc(d.req || 'nenhum')}</span><p>${d.ef}</p>${marca}${botoes}</div>`;
+        const ani = (FX.deal ? ' dist' : '') + (FX.gelo === d.nome ? ' congela' : '') + (FX.fogo === d.nome ? ' queima' : '');
+        return `<div class="fx-card carta cr-${esc(d.rar)}${ok && !foi ? '' : ' off'}${gel ? ' gelada' : ''}${foi ? ' queimada' : ''}${ani}" style="--n:${h.cartas.indexOf(n)}" data-carta="${esc(d.nome)}"><span class="gema" aria-hidden="true"></span><h4><span>${esc(d.nome)}</span></h4><span class="meta rar-${esc(d.rar)}">${esc(d.rar)} · requisito: ${esc(d.req || 'nenhum')}</span><p>${d.ef}</p>${marca}${botoes}</div>`;
       }).join('')}</div>${pode && !h.cartas.some(n => { const d = findTal(n); return d && reqOk(d.req, x) && !x.tal.has(fold(d.nome)); }) ? '<button class="fx-btn" type="button" data-act="sortear">Sortear de novo</button>' : ''}</div>`).join('');
   } else if (falta > 0) {
     box.innerHTML = `<div class="fx-maos-aviso"><span>${falta === 1 ? 'Você tem 1 talento para pegar.' : `Você tem ${falta} talentos para pegar.`}</span>${pode ? '<button class="fx-btn" type="button" data-act="sortear">Sortear a mão</button>' : ''}</div>`;
   } else box.innerHTML = '';
+  FX.deal = false; FX.gelo = ''; FX.fogo = '';
   const q = S.queimadas || [];
   if (q.length && pode) box.insertAdjacentHTML('beforeend', `<details class="fx-queimadas"><summary>Cartas queimadas (${q.length})</summary>${q.map(n => `<span>${esc(n)} <button class="fx-btn" type="button" data-volta="${esc(n)}">Devolver ao baralho</button></span>`).join('')}</details>`);
 }
@@ -2460,9 +2683,40 @@ const field = (label, path, extra = '') => `<label class="fx-f"><span>${label}</
 function get(path) { return path.split('.').reduce((o, k) => (o == null ? o : o[k]), S); }
 function set(path, val) { const ks = path.split('.'); const last = ks.pop(); const o = ks.reduce((o, k) => o[k], S); o[last] = val; }
 
+/* ---------------- animações ---------------- */
+const CALMO = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FX = { prev: {}, lvl: null, deal: false, gelo: '', fogo: '', chegou: '' };
+function anima(el, cls) { if (!el || CALMO()) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); el.addEventListener('animationend', () => el.classList.remove(cls), { once: true }); }
+function aviso(titulo, linha) {
+  let t = document.querySelector('.fx-toast');
+  if (!t) { t = document.createElement('div'); t.className = 'fx-toast'; t.setAttribute('role', 'status'); t.setAttribute('aria-live', 'polite'); document.body.appendChild(t); }
+  t.innerHTML = `<b>${esc(titulo)}</b>${linha ? `<span>${esc(linha)}</span>` : ''}`;
+  t.hidden = false; anima(t, 'entra');
+  clearTimeout(t._t); t._t = setTimeout(() => { t.hidden = true; }, 3200);
+}
+const ICON = {
+  for: '<path d="M5 19l8-8"/><path d="M10.5 4.5l9 9-3 3-9-9z"/>',
+  agi: '<path d="M20 4C11 4 6 9 5 19"/><path d="M5 19c6-1 11-5 13-12"/><path d="M9 13h5M11 9h4"/>',
+  fort: '<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M12 7v10"/>',
+  int: '<path d="M2 12c3.5-6 16.5-6 20 0-3.5 6-16.5 6-20 0z"/><circle cx="12" cy="12" r="3"/>',
+  von: '<path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-4.5 3-7 1 2 2 3 3 3 0-2-1-4 0-7z"/>',
+  car: '<path d="M4 18V8l4.5 4L12 5l3.5 7L20 8v10z"/><path d="M4 21h16"/>',
+};
+const TRK = { pv: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>', ether: '<path d="M12 3c3 4.5 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-6.5 6-11z"/>', san: '<circle cx="12" cy="12" r="8"/><path d="M12 8a4 4 0 1 1-4 4 2 2 0 1 1 2-2"/>', postura: '<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/>' };
+const svg = p => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+function pegarCarta(d) {
+  const box = O('maos'); if (box) box.classList.remove('escolhendo');
+  if (!S.maos || !S.maos.length) return;
+  FX.chegou = d.nome;
+  const h = S.maos[0] || {};
+  if (h.gelo && h.gelo !== d.nome) S.congeladas = [h.gelo];
+  if (h.fogo && h.fogo !== d.nome) S.queimadas = (S.queimadas || []).concat(h.fogo);
+  S.talentos.push({ nome: d.nome, texto: '' }); S.maos = []; changed(); save();
+}
 function build() {
+  FX.prev = {}; FX.lvl = null;
   root.innerHTML = `
-  <article class="page" aria-labelledby="fx-title">
+  <article class="page ficha-dw" aria-labelledby="fx-title">
     <div class="folio"><b>Registro do Pathfinder</b><span>escrito a lápis, para poder apagar</span></div>
     <div class="fx-head">
       <h2 id="fx-title"><span class="kicker">Ficha de personagem</span><span data-o="nomeT"></span></h2>
@@ -2499,7 +2753,7 @@ function build() {
 
       <section class="fx-box s5" aria-labelledby="h-attr"><h3 id="h-attr">Atributos <small>o valor que você rolou; o Aspecto soma sozinho</small></h3>
         <div class="fx-attrs">${ATTRS.map(([k, n]) => `
-          <div class="fx-attr"><span class="nm">${n}</span>
+          <div class="fx-attr a-${k}"><span class="nm">${svg(ICON[k])}${n}</span>
             <input class="fx-in" id="a-${k}" type="number" min="1" max="30" data-b="attrs.${k}" data-n value="${esc(S.attrs[k])}" aria-label="${n}">
             <span class="mod" data-o="mod-${k}"></span><span class="bon" data-o="bon-${k}"></span></div>`).join('')}
         </div>
@@ -2601,12 +2855,12 @@ function build() {
   refresh();
 }
 function track(label, key, maxKey) {
-  return `<div class="fx-track"><div class="top"><span>${label}</span><em data-o="${key}-max-note"></em></div>
+  return `<div class="fx-track t-${key}" data-o="trk-${key}"><div class="top"><span>${svg(TRK[key])}${label}</span><em data-o="${key}-max-note"></em></div>
     <div class="row"><button class="pm" type="button" data-pm="${key}" data-d="-1" aria-label="Menos 1 de ${label}">−</button>
     <input class="fx-in" id="t-${key}" type="number" data-b="${key}.atual" data-n value="${esc(S[key].atual)}" aria-label="${label} atual">
     <button class="pm" type="button" data-pm="${key}" data-d="1" aria-label="Mais 1 de ${label}">+</button>
     <span class="max">/ <span data-o="${maxKey}"></span></span></div>
-    <div class="fx-bar" data-o="bar-${key}"><i></i></div>
+    <div class="fx-bar" data-o="bar-${key}"><b class="ghost"></b><i></i></div>
     ${key !== 'postura' ? `<label class="fx-f" style="margin-top:6px"><span>Ajuste do máximo</span><input class="fx-in" id="t-${key}-aj" type="number" data-b="${key}.ajuste" data-n value="${esc(S[key].ajuste)}"></label>` : ''}</div>`;
 }
 const small = (label, path, id) => `<label class="fx-f"><span>${label}</span><input class="fx-in" id="${id}" type="number" data-b="${path}" data-n value="${esc(get(path))}"></label>`;
@@ -2617,6 +2871,8 @@ const O = k => $(`[data-o="${k}"]`, root);
 function refresh() {
   const c = C();
   O('nomeT').textContent = S.nome || 'Pathfinder sem nome';
+  if (FX.lvl !== null && c.lvl > FX.lvl) { const f = Math.max(0, talentosDevidos(c.lvl) - S.talentos.length); aviso('Nível ' + c.lvl, f ? (f === 1 ? '1 talento para pegar' : f + ' talentos para pegar') + ' e 1 mantra novo' : '1 mantra novo'); anima($('.fx-head', root), 'sobe'); }
+  FX.lvl = c.lvl;
   ATTRS.forEach(([k]) => {
     O('mod-' + k).textContent = sign(c.m[k]);
     O('bon-' + k).textContent = c.bon[k] ? `total ${c.total[k]} (${sign(c.bon[k])} do Aspecto)` : `total ${c.total[k]}`;
@@ -2678,7 +2934,12 @@ function renderTracks(c) {
     const cur = S[k].atual === '' ? mx : num(S[k].atual);
     const inp = $('#t-' + k, root); if (document.activeElement !== inp) inp.value = S[k].atual === '' ? mx : S[k].atual;
     const r = mx > 0 ? Math.max(0, Math.min(1, cur / mx)) : 0;
-    const bar = O('bar-' + k); bar.className = 'fx-bar' + (r <= .25 ? ' bad' : r <= .5 ? ' warn' : ''); bar.firstElementChild.style.width = (r * 100) + '%';
+    const bar = O('bar-' + k); bar.className = 'fx-bar' + (r <= .25 ? ' bad' : r <= .5 ? ' warn' : '');
+    const fill = $('i', bar), ghost = $('.ghost', bar), pct = (r * 100) + '%', antes = FX.prev[k];
+    fill.style.width = pct;
+    if (antes !== undefined && cur < antes) { anima(O('trk-' + k), 'hit'); clearTimeout(ghost._t); ghost._t = setTimeout(() => { ghost.style.width = pct; }, 380); }
+    else { ghost.style.width = pct; if (antes !== undefined && cur > antes) anima(O('trk-' + k), 'heal'); }
+    FX.prev[k] = cur;
   }
   O('postura-max-note').textContent = c.postNotes.join(' · ');
   O('san-max-note').textContent = num(S.san.atual === '' ? c.sanMax : S.san.atual) <= c.sanMax / 2 ? 'Abalado' : '';
@@ -2686,14 +2947,14 @@ function renderTracks(c) {
 function pips(key, n, val, setter, label) {
   const el = O(key);
   el.innerHTML = Array.from({ length: n }, (_, i) => `<button class="pip" type="button" aria-pressed="${i < val}" aria-label="${label}: ${i + 1}"></button>`).join('');
-  $$('button', el).forEach((b, i) => b.onclick = () => { setter(val === i + 1 ? i : i + 1); pips(key, n, val === i + 1 ? i : i + 1, setter, label); changed(false); });
+  $$('button', el).forEach((b, i) => b.onclick = () => { setter(val === i + 1 ? i : i + 1); pips(key, n, val === i + 1 ? i : i + 1, setter, label); anima($$('button', el)[i], 'pop'); changed(false); });
 }
 function pipsMorte() {
   const el = O('morte');
   el.innerHTML = `<em class="fx-hint">sucessos</em>${[0, 1, 2].map(i => `<button class="pip good" type="button" data-ms="${i}" aria-pressed="${i < S.morte.s}" aria-label="Sucesso ${i + 1}"></button>`).join('')}
     <em class="fx-hint">fracassos</em>${[0, 1, 2].map(i => `<button class="pip" type="button" data-mf="${i}" aria-pressed="${i < S.morte.f}" aria-label="Fracasso ${i + 1}"></button>`).join('')}`;
-  $$('[data-ms]', el).forEach(b => b.onclick = () => { const i = +b.dataset.ms; S.morte.s = S.morte.s === i + 1 ? i : i + 1; pipsMorte(); changed(false); });
-  $$('[data-mf]', el).forEach(b => b.onclick = () => { const i = +b.dataset.mf; S.morte.f = S.morte.f === i + 1 ? i : i + 1; pipsMorte(); changed(false); });
+  $$('[data-ms]', el).forEach(b => b.onclick = () => { const i = +b.dataset.ms; S.morte.s = S.morte.s === i + 1 ? i : i + 1; pipsMorte(); anima($(`[data-ms="${i}"]`, el), 'pop'); changed(false); });
+  $$('[data-mf]', el).forEach(b => b.onclick = () => { const i = +b.dataset.mf; S.morte.f = S.morte.f === i + 1 ? i : i + 1; pipsMorte(); anima($(`[data-mf="${i}"]`, el), 'pop'); changed(false); });
 }
 function renderArmas(c) {
   const all = DATA.estilos.flatMap(e => e.armas.map(w => ({ e, w })));
@@ -2726,9 +2987,10 @@ function renderMantras() {
 function renderTalentos() {
   O('talentos').innerHTML = S.talentos.map((t, i) => {
     const d = findTal(t.nome);
-    return `<div class="fx-card on"><h4><span>${esc(t.nome)}</span><button class="x" type="button" data-del="talentos" data-i="${i}" aria-label="Apagar talento">×</button></h4>
+    return `<div class="fx-card on tal${d ? ' cr-' + esc(d.rar) : ''}${FX.chegou && t.nome === FX.chegou ? ' chegou' : ''}"><h4><span>${esc(t.nome)}</span><button class="x" type="button" data-del="talentos" data-i="${i}" aria-label="Apagar talento">×</button></h4>
       ${d ? `<span class="meta rar-${esc(d.rar)}">${esc(d.rar)} · requisito: ${esc(d.req)}</span><p>${d.ef}</p>` : `<textarea id="tl-${i}" data-l="talentos.${i}.texto" aria-label="O que o talento faz" placeholder="o que ele faz">${esc(t.texto || '')}</textarea>`}</div>`;
   }).join('') || '<p class="fx-empty">Nenhum talento ainda. A cada nível, você recebe uma mão de 4 cartas e fica com uma.</p>';
+  FX.chegou = '';
 }
 function renderEquip(c) {
   const tr = c.tr;
@@ -2796,16 +3058,17 @@ function wire() {
     if (t.dataset.del) { S[t.dataset.del].splice(+t.dataset.i, 1); changed(); return; }
     if (t.dataset.pegar) {
       const d = findTal(t.dataset.pegar); if (!d || !reqOk(d.req, reqCtx())) { renderMaos(C()); return; }
-      const h = S.maos[0] || {};
-      if (h.gelo && h.gelo !== d.nome) S.congeladas = [h.gelo];
-      if (h.fogo && h.fogo !== d.nome) S.queimadas = (S.queimadas || []).concat(h.fogo);
-      S.talentos.push({ nome: d.nome, texto: '' }); S.maos = []; changed(); save(); return;
+      const box = O('maos'); if (box.classList.contains('escolhendo')) return;
+      if (CALMO()) return pegarCarta(d);
+      box.classList.add('escolhendo');
+      $$('.carta', box).forEach(el => el.classList.add(el.dataset.carta === d.nome ? 'escolhida' : 'descartada'));
+      setTimeout(() => pegarCarta(d), 650); return;
     }
-    if (t.dataset.gelo && S.maos[0]) { const h = S.maos[0]; h.gelo = h.gelo === t.dataset.gelo ? '' : t.dataset.gelo; renderMaos(C()); changed(false); save(); return; }
-    if (t.dataset.fogo && S.maos[0]) { const h = S.maos[0]; h.fogo = h.fogo === t.dataset.fogo ? '' : t.dataset.fogo; renderMaos(C()); changed(false); save(); return; }
+    if (t.dataset.gelo && S.maos[0]) { const h = S.maos[0]; h.gelo = h.gelo === t.dataset.gelo ? '' : t.dataset.gelo; if (h.gelo) FX.gelo = h.gelo; renderMaos(C()); changed(false); save(); return; }
+    if (t.dataset.fogo && S.maos[0]) { const h = S.maos[0]; h.fogo = h.fogo === t.dataset.fogo ? '' : t.dataset.fogo; if (h.fogo) FX.fogo = h.fogo; renderMaos(C()); changed(false); save(); return; }
     if (t.dataset.volta) { S.queimadas = (S.queimadas || []).filter(n => n !== t.dataset.volta); renderMaos(C()); changed(false); save(); return; }
     const act = t.dataset.act;
-    if (act === 'sortear') { const m = sortearMaos(); if (!m.length) { O('maos').innerHTML = '<p class="fx-empty">Nenhum talento cumpre os requisitos agora. Confira atributos, Estilo e Sintonia.</p>'; return; } S.maos = m; changed(); save(); return; }
+    if (act === 'sortear') { const m = sortearMaos(); if (!m.length) { O('maos').innerHTML = '<p class="fx-empty">Nenhum talento cumpre os requisitos agora. Confira atributos, Estilo e Sintonia.</p>'; return; } S.maos = m; FX.deal = true; changed(); save(); return; }
     if (act === 'add-arma') { const v = $('#add-arma', root).value.trim(); if (!v) return; S.armas.push({ nome: v, dano: '', tipo: '', prop: '' }); autoArma(S.armas.length - 1); $('#add-arma', root).value = ''; changed(); }
     if (act === 'add-mantra') { const v = $('#add-mantra', root).value.trim(); if (!v) return; S.extras.push({ nome: v, texto: '' }); $('#add-mantra', root).value = ''; changed(); }
     if (act === 'add-tal') { const v = $('#add-tal', root).value.trim(); if (!v) return; const d = DATA.talentos.find(x => x.nome.toLowerCase() === v.toLowerCase()); S.talentos.push({ nome: d ? d.nome : v, texto: '' }); $('#add-tal', root).value = ''; changed(); }
@@ -2848,6 +3111,9 @@ function roll(label, bonus) {
   log.length = Math.min(log.length, 12);
   dice.hidden = false; dice.dataset.min = '0';
   renderDice();
+  const li = $('ol li', dice), nb = li && $('b', li); if (!nb || CALMO()) return;
+  const fim = nb.textContent; let k = 0; li.classList.add('rolando');
+  const iv = setInterval(() => { nb.textContent = 1 + Math.floor(Math.random() * 20) + bonus; if (++k > 9) { clearInterval(iv); nb.textContent = fim; li.classList.remove('rolando'); anima(li, 'parou'); } }, 45);
 }
 function renderDice() {
   $('ol', dice).innerHTML = log.map((r, i) => `<li class="${r.nat === 20 ? 'crit' : r.nat === 1 ? 'fumble' : ''}"><span>${esc(r.label)} <em>d20 ${r.nat}${r.other !== null ? ` (e ${r.other})` : ''} ${sign(r.bonus)}</em></span><b>${r.total}</b></li>`).join('');
