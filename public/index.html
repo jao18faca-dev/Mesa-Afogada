@@ -1103,6 +1103,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
 <p><b>Quem começa.</b> Ninguém rola iniciativa. Na primeira rodada, compare a sua Iniciativa com a do inimigo mais rápido: se for igual ou maior, você age antes dos inimigos, com os 3 PA; se for menor, age depois deles. Numa emboscada, quem embosca rola Furtividade contra a Atenção de cada alvo, e quem não percebeu nada não age na primeira rodada.</p>
 <p><b>Rápido ou lento.</b> Da segunda rodada em diante, cada jogador escolhe, toda rodada, se vai agir rápido ou devagar. A rodada tem três fases, nesta ordem: primeiro agem os rápidos, com só 2 PA; depois agem os inimigos; por último agem os lentos, com os 3 PA. Dentro de cada fase, o grupo combina a ordem: quem termina descreve o que fez e passa a vez.</p>
 <p><b>No tabuleiro.</b> Num mapa em quadrados, cada quadrado tem 1,5 m, e andar na diagonal também custa 1,5 m. Nas áreas, o <i>raio</i> conta do centro do ponto escolhido; o <i>cone</i> sai de quem lança e, na ponta, é tão largo quanto é comprido; a <i>linha</i> tem 1,5 m de largura. Um quadrado está dentro da área quando o centro dele está.</p>
+<p><b>Terreno.</b> Água rasa, lama, mato alto, entulho e arbustos são <i>terreno difícil</i>: cada quadrado custa o dobro do movimento. Em água funda, só nadando. Paredes e rochas bloqueiam a passagem. Mureta, árvore, pedra, caixote e barril dão meia cobertura; um pilar dá cobertura total.</p>
 <div class="twrap"><table class="wtable"><thead><tr><th>Ação</th><th>PA</th><th>Detalhe</th></tr></thead><tbody>
 <tr><td>Mover</td><td>1</td><td>até o seu movimento</td></tr>
 <tr><td>Atacar</td><td>1</td><td>o segundo ataque no turno sofre −3 no acerto, e o terceiro, −6</td></tr>
@@ -4003,11 +4004,548 @@ root.addEventListener('click', async e => {
 });
 
 
+/* ---------- mapa detalhado: texturas, bordas, objetos, luz e gerador ---------- */
+// Tudo é desenhado a partir dos dados (terreno + objetos + ambiente), então o mapa é igual em todas as telas
+// e pesa poucos KB no banco. As texturas são feitas uma vez por sessão, sem imagem nenhuma de fora.
+const MAPA_T = {
+  '.': ['Chão', ''], g: ['Grama', ''], r: ['Terra', ''], s: ['Areia', ''], k: ['Pedra', ''], m: ['Tábuas', ''], o: ['Chão de caverna', ''],
+  a: ['Água rasa', 'terreno difícil'], f: ['Água funda', 'só nadando'], l: ['Lama', 'terreno difícil'], v: ['Mato alto', 'terreno difícil'], d: ['Entulho', 'terreno difícil'],
+  c: ['Mureta', 'meia cobertura'], b: ['Rocha', 'bloqueia'], p: ['Parede', 'bloqueia'],
+};
+const MAPA_ORDEM = 'faslrogvdkmcbp';            // quem vem depois se espalha por cima de quem vem antes
+const MAPA_ORGANICO = new Set('faslrogvdb');     // bordas irregulares; o resto tem borda reta
+const MAPA_ALTO = new Set('pbc');                // fazem sombra no chão
+const MAPA_AGUA = new Set('af');
+const MAPA_PROPS = {
+  arvore: ['Árvore', 'meia cobertura'], palmeira: ['Palmeira', 'meia cobertura'], arbusto: ['Arbusto', 'terreno difícil'], rocha: ['Rocha', 'meia cobertura'],
+  caixote: ['Caixote', 'meia cobertura'], barril: ['Barril', 'meia cobertura'], pilar: ['Pilar', 'cobertura total'], tronco: ['Tronco caído', 'meia cobertura'],
+  fogueira: ['Fogueira', 'quem entra se queima'], cristal: ['Cristal', 'meia cobertura'], cogumelo: ['Cogumelos', ''], ossos: ['Ossos', ''],
+  barco: ['Barco', ''], poste: ['Poste', ''],
+};
+const MAPA_BIOMAS = { praia: ['Praia', 's'], floresta: ['Floresta', 'g'], cais: ['Cais', 'f'], ruinas: ['Ruínas', 'g'], caverna: ['Caverna', 'o'] };
+
+function mapaRng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const mapaHash = (x, y, k = 0) => { const s = Math.sin(x * 127.1 + y * 311.7 + k * 74.7) * 43758.5453; return s - Math.floor(s); };
+const hex = c => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
+
+/* ---------- texturas que se repetem sem emenda ---------- */
+const TEX = {}, TEX_S = 512, TEX_R = 2;   // 512 px = 256 px do mundo (pouco mais de 5 quadrados)
+function ruidoTile(r, per) {
+  const v = new Float32Array(per * per).map(() => r());
+  return (x, y) => {
+    const fx = x * per, fy = y * per, x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0;
+    const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+    const i = (a, b) => v[(((b % per) + per) % per) * per + (((a % per) + per) % per)];
+    const a0 = i(x0, y0) + (i(x0 + 1, y0) - i(x0, y0)) * sx, a1 = i(x0, y0 + 1) + (i(x0 + 1, y0 + 1) - i(x0, y0 + 1)) * sx;
+    return a0 + (a1 - a0) * sy;
+  };
+}
+function baseRuido(g, r, cores, grao, contraste = 1) {
+  const S = TEX_S, img = g.createImageData(S, S), d = img.data;
+  const os = [3, 7, 15, 31].map(p => ruidoTile(r, p)), w = [.5, .26, .15, .09];
+  const cs = cores.map(hex), N = 128, q = new Float32Array(N * N);
+  // o ruído é calculado numa grade menor e esticado: fica igual e custa 16 vezes menos
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let k = 0; k < 4; k++) s += os[k](x / N, y / N) * w[k]; q[y * N + x] = s; }
+  const at = (x, y) => { const fx = x / S * N, fy = y / S * N, x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0, x1 = (x0 + 1) % N, y1 = (y0 + 1) % N;
+    const a = q[y0 * N + x0] + (q[y0 * N + x1] - q[y0 * N + x0]) * tx, b = q[y1 * N + x0] + (q[y1 * N + x1] - q[y1 * N + x0]) * tx; return a + (b - a) * ty; };
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+    let t = Math.max(0, Math.min(1, ((at(x, y) - .5) * 2.2 * contraste) + .5));
+    const seg = t * (cs.length - 1), i0 = Math.min(cs.length - 2, Math.floor(seg)), f = seg - i0, gr = (r() - .5) * grao, o = (y * S + x) * 4;
+    for (let c = 0; c < 3; c++) d[o + c] = cs[i0][c] + (cs[i0 + 1][c] - cs[i0][c]) * f + gr;
+    d[o + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+}
+function emVolta(g, x, y, m, fn) {
+  const S = TEX_S;
+  for (const dx of [-S, 0, S]) for (const dy of [-S, 0, S]) {
+    if (x + dx < -m || x + dx > S + m || y + dy < -m || y + dy > S + m) continue;
+    g.save(); g.translate(x + dx, y + dy); fn(g); g.restore();
+  }
+}
+function pedrinhas(g, r, n, rmin, rmax, cores, sombra = .35) {
+  for (let i = 0; i < n; i++) {
+    const x = r() * TEX_S, y = r() * TEX_S, rr = rmin + r() * (rmax - rmin), lados = 5 + Math.floor(r() * 3), cor = cores[Math.floor(r() * cores.length)], rot = r() * 6.3;
+    const pts = Array.from({ length: lados }, (_, k) => { const a = rot + k / lados * Math.PI * 2, q = rr * (.7 + r() * .45); return [Math.cos(a) * q, Math.sin(a) * q]; });
+    emVolta(g, x, y, rr + 4, h => {
+      h.beginPath(); pts.forEach(([px, py], k) => k ? h.lineTo(px + 1.5, py + 2) : h.moveTo(px + 1.5, py + 2)); h.closePath(); h.fillStyle = `rgba(0,0,0,${sombra})`; h.fill();
+      h.beginPath(); pts.forEach(([px, py], k) => k ? h.lineTo(px, py) : h.moveTo(px, py)); h.closePath(); h.fillStyle = cor; h.fill();
+      h.strokeStyle = 'rgba(255,255,255,.18)'; h.lineWidth = 1; h.beginPath(); h.moveTo(pts[0][0], pts[0][1]); h.lineTo(pts[1][0], pts[1][1]); h.stroke();
+    });
+  }
+}
+function blocos(g, r, alturas, larg, cores, junta, rel = .2, chanfro = 3) {
+  g.fillStyle = junta; g.fillRect(0, 0, TEX_S, TEX_S);
+  let y = 0;
+  for (const h of alturas) {
+    let x = -r() * larg[1];
+    while (x < TEX_S) {
+      let w = larg[0] + r() * (larg[1] - larg[0]);
+      const cor = hex(cores[Math.floor(r() * cores.length)]), dv = (r() - .5) * 18;
+      const fill = `rgb(${cor.map(c => Math.round(c + dv)).join(',')})`;
+      const x0 = x, ww = w;
+      emVolta(g, x0, y, ww + 4, h2 => {
+        h2.fillStyle = fill; h2.beginPath(); h2.roundRect(chanfro, chanfro, ww - chanfro * 2, h - chanfro * 2, 4); h2.fill();
+        h2.strokeStyle = `rgba(255,255,255,${rel})`; h2.lineWidth = 2; h2.beginPath(); h2.moveTo(chanfro + 2, h - chanfro - 2); h2.lineTo(chanfro + 2, chanfro + 2); h2.lineTo(ww - chanfro - 2, chanfro + 2); h2.stroke();
+        h2.strokeStyle = 'rgba(0,0,0,.35)'; h2.beginPath(); h2.moveTo(ww - chanfro - 1, chanfro + 2); h2.lineTo(ww - chanfro - 1, h - chanfro - 1); h2.lineTo(chanfro + 2, h - chanfro - 1); h2.stroke();
+      });
+      x += w;
+    }
+    y += h;
+  }
+}
+function sujeira(g, r, alfa) {
+  // uma camada de ruído escuro por cima, para nenhuma textura parecer limpa demais
+  const c = document.createElement('canvas'); c.width = c.height = TEX_S; const h = c.getContext('2d');
+  baseRuido(h, r, ['#8e8e8e', '#ffffff', '#b4b4b4'], 0, 1.6);
+  g.save(); g.globalAlpha = alfa; g.globalCompositeOperation = 'multiply'; g.drawImage(c, 0, 0); g.restore();
+}
+function gerarTextura(tipo) {
+  const c = document.createElement('canvas'); c.width = c.height = TEX_S;
+  const g = c.getContext('2d'), r = mapaRng(1000 + tipo.charCodeAt(0) * 7919), S = TEX_S;
+  const linhas = (n, cores, comp, ang, larg, alfa) => { for (let i = 0; i < n; i++) { const x = r() * S, y = r() * S, l = comp[0] + r() * (comp[1] - comp[0]), a = ang[0] + r() * (ang[1] - ang[0]); g.strokeStyle = cores[Math.floor(r() * cores.length)]; g.globalAlpha = alfa; g.lineWidth = larg; emVolta(g, x, y, l, h => { h.beginPath(); h.moveTo(0, 0); h.lineTo(Math.cos(a) * l, Math.sin(a) * l); h.stroke(); }); } g.globalAlpha = 1; };
+  switch (tipo) {
+    case 'g':
+      baseRuido(g, r, ['#2c4520', '#40602a', '#557a33', '#3c5a27'], 12);
+      linhas(3200, ['#73a040', '#3b5c24', '#86b24c', '#2a461c', '#5f8a36'], [5, 12], [-2.2, -.9], 1.6, .55);
+      for (let i = 0; i < 18; i++) { const x = r() * S, y = r() * S, cor = ['#efe6a6', '#e9e3f2', '#f0b8c4'][i % 3]; emVolta(g, x, y, 4, h => { h.fillStyle = cor; for (let k = 0; k < 5; k++) { h.beginPath(); h.arc(Math.cos(k * 1.26) * 2.4, Math.sin(k * 1.26) * 2.4, 1.6, 0, 7); h.fill(); } }); }
+      break;
+    case 'v':
+      baseRuido(g, r, ['#1d3016', '#2b4520', '#3a5a29'], 12);
+      for (let i = 0; i < 420; i++) { const x = r() * S, y = r() * S, n = 6 + Math.floor(r() * 5); emVolta(g, x, y, 22, h => { for (let k = 0; k < n; k++) { const a = -Math.PI / 2 + (r() - .5) * 1.6, l = 10 + r() * 14; h.strokeStyle = ['#5f8c35', '#78a544', '#3d6326', '#93bd58'][Math.floor(r() * 4)]; h.lineWidth = 1.8; h.globalAlpha = .75; h.beginPath(); h.moveTo(0, 0); h.quadraticCurveTo(Math.cos(a) * l * .5 + (r() - .5) * 6, Math.sin(a) * l * .5, Math.cos(a) * l, Math.sin(a) * l); h.stroke(); } h.globalAlpha = 1; }); }
+      break;
+    case 'r':
+      baseRuido(g, r, ['#45321f', '#5c4430', '#735738', '#5a412b'], 16);
+      pedrinhas(g, r, 220, 1.5, 4.5, ['#8b7b66', '#6f604f', '#a39079', '#5c4f41']);
+      linhas(40, ['rgba(30,20,10,.6)'], [8, 22], [0, 6.3], 1.2, .5);
+      break;
+    case 's':
+      baseRuido(g, r, ['#ae925e', '#c4a979', '#d6bf8f', '#c9b183'], 12, .8);
+      for (let i = 0; i < 70; i++) { const x = r() * S, y = r() * S, l = 30 + r() * 60; emVolta(g, x, y, l, h => { h.strokeStyle = 'rgba(255,248,225,.22)'; h.lineWidth = 2; h.beginPath(); h.moveTo(-l / 2, 0); h.quadraticCurveTo(0, -6, l / 2, 0); h.stroke(); h.strokeStyle = 'rgba(90,70,40,.16)'; h.beginPath(); h.moveTo(-l / 2, 3); h.quadraticCurveTo(0, -3, l / 2, 3); h.stroke(); }); }
+      for (let i = 0; i < 2600; i++) { g.fillStyle = r() < .5 ? 'rgba(255,250,230,.35)' : 'rgba(80,60,30,.25)'; g.fillRect(r() * S, r() * S, 1.5, 1.5); }
+      pedrinhas(g, r, 14, 2, 4, ['#e8e0d0', '#cfc2a8', '#f1ebe0'], .2);
+      break;
+    case 'o':
+      baseRuido(g, r, ['#1e1b19', '#2b2623', '#38312c', '#29241f'], 12);
+      pedrinhas(g, r, 160, 1.5, 4, ['#4a433c', '#3a342f', '#57504a']);
+      for (let i = 0; i < 26; i++) { const x = r() * S, y = r() * S, rx = 10 + r() * 26; emVolta(g, x, y, rx, h => { h.fillStyle = 'rgba(0,0,0,.22)'; h.beginPath(); h.ellipse(0, 0, rx, rx * .6, r() * 3, 0, 7); h.fill(); }); }
+      break;
+    case 'k':
+      blocos(g, r, [70, 58, 64, 76, 60, 66, 58, 60], [68, 140], ['#6d6a63', '#5f5c55', '#78746b', '#66625a', '#706b62'], '#2a2826', .16);
+      sujeira(g, r, .45);
+      pedrinhas(g, r, 30, 1.5, 3, ['#4b4842', '#7e7a71']);
+      break;
+    case 'm': {
+      g.fillStyle = '#1d130b'; g.fillRect(0, 0, S, S);
+      for (let row = 0; row < 8; row++) {
+        let x = -r() * 200;
+        while (x < S) {
+          const w = 150 + r() * 160, cor = hex(['#7a5434', '#6b482b', '#856040', '#5f3f25', '#734f30'][Math.floor(r() * 5)]), dv = (r() - .5) * 14, y = row * 64;
+          const fill = `rgb(${cor.map(c => Math.round(c + dv)).join(',')})`, x0 = x, sem = r() * 100;
+          emVolta(g, x0, y, w + 4, h => {
+            h.fillStyle = fill; h.fillRect(2, 3, w - 4, 58);
+            h.strokeStyle = 'rgba(40,24,10,.32)'; h.lineWidth = 1.3;
+            for (let k = 0; k < 7; k++) { const yy = 8 + k * 7.5 + Math.sin(sem + k) * 2; h.beginPath(); h.moveTo(4, yy); for (let xx = 4; xx < w - 4; xx += 16) h.lineTo(xx, yy + Math.sin((xx + sem * 10 + k * 13) / 23) * 1.8); h.stroke(); }
+            h.strokeStyle = 'rgba(255,230,190,.12)'; h.beginPath(); h.moveTo(3, 4); h.lineTo(w - 3, 4); h.stroke();
+            h.fillStyle = '#2a2a2a'; for (const nx of [10, w - 12]) for (const ny of [16, 46]) { h.beginPath(); h.arc(nx, ny, 2.2, 0, 7); h.fill(); h.fillStyle = 'rgba(255,255,255,.25)'; h.fillRect(nx - 1, ny - 1.5, 1, 1); h.fillStyle = '#2a2a2a'; }
+          });
+          x += w;
+        }
+      }
+      sujeira(g, r, .25);
+      break;
+    }
+    case 'a':
+      baseRuido(g, r, ['#24636c', '#2f7781', '#3e8d94', '#2a6c75'], 8);
+      for (let i = 0; i < 90; i++) { const x = r() * S, y = r() * S, l = 20 + r() * 50, a = r() * 6.3; emVolta(g, x, y, l, h => { h.rotate(a); h.strokeStyle = 'rgba(210,248,242,.18)'; h.lineWidth = 2.2; h.beginPath(); h.moveTo(-l / 2, 0); h.bezierCurveTo(-l / 4, -8, l / 4, 8, l / 2, 0); h.stroke(); }); }
+      for (let i = 0; i < 500; i++) { g.fillStyle = 'rgba(230,255,250,.25)'; g.fillRect(r() * S, r() * S, 1.5, 1.5); }
+      break;
+    case 'f':
+      baseRuido(g, r, ['#0e2a3a', '#143748', '#1b4659', '#17405a'], 6);
+      for (let i = 0; i < 70; i++) { const x = r() * S, y = r() * S, l = 18 + r() * 34; emVolta(g, x, y, l, h => { h.strokeStyle = 'rgba(150,205,225,.13)'; h.lineWidth = 2; h.beginPath(); h.arc(0, l, l, -Math.PI * .7, -Math.PI * .3); h.stroke(); }); }
+      break;
+    case 'l':
+      baseRuido(g, r, ['#2f2216', '#3e2d1e', '#4d3926', '#3a2a1c'], 10);
+      for (let i = 0; i < 34; i++) { const x = r() * S, y = r() * S, rx = 8 + r() * 22; emVolta(g, x, y, rx, h => { h.fillStyle = 'rgba(70,82,80,.32)'; h.beginPath(); h.ellipse(0, 0, rx, rx * .55, r() * 3, 0, 7); h.fill(); h.strokeStyle = 'rgba(200,220,215,.18)'; h.lineWidth = 1.5; h.beginPath(); h.ellipse(0, 0, rx, rx * .55, 0, 3.6, 5.2); h.stroke(); }); }
+      break;
+    case 'd':
+      baseRuido(g, r, ['#3d3127', '#4e4034', '#5d4f41'], 14);
+      pedrinhas(g, r, 360, 3, 11, ['#7c776e', '#67625a', '#8d877b', '#5a554e', '#7a5a46'], .45);
+      break;
+    case 'c':
+      blocos(g, r, [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32], [44, 70], ['#8a857a', '#7a756b', '#949083', '#827d72'], '#34312d', .2, 2);
+      sujeira(g, r, .3);
+      break;
+    case 'p':
+      blocos(g, r, [64, 64, 64, 64, 64, 64, 64, 64], [96, 150], ['#4e4b47', '#45423f', '#55524d', '#3f3d3a'], '#161514', .14, 3);
+      sujeira(g, r, .35);
+      break;
+    case 'b':
+      baseRuido(g, r, ['#3e3d39', '#55534d', '#6b6961', '#4a4843'], 14, 1.4);
+      for (let i = 0; i < 60; i++) { let x = r() * S, y = r() * S, a = r() * 6.3; g.strokeStyle = 'rgba(15,15,15,.55)'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 6; k++) { a += (r() - .5) * 1.2; x += Math.cos(a) * 9; y += Math.sin(a) * 9; g.lineTo(x, y); } g.stroke(); }
+      for (let i = 0; i < 70; i++) { const x = r() * S, y = r() * S, rr = 10 + r() * 24; emVolta(g, x, y, rr, h => { h.fillStyle = 'rgba(255,255,255,.05)'; h.beginPath(); h.moveTo(-rr, 0); h.lineTo(0, -rr * .6); h.lineTo(rr * .7, 0); h.closePath(); h.fill(); }); }
+      break;
+    default:
+      baseRuido(g, r, ['#1b2629', '#162023', '#1f2b2e'], 6);
+  }
+  return c;
+}
+function textura(tipo, g) {
+  if (!TEX[tipo]) TEX[tipo] = gerarTextura(tipo);
+  const p = g.createPattern(TEX[tipo], 'repeat'); p.setTransform(new DOMMatrix().scale(1 / TEX_R)); return p;
+}
+
+/* ---------- o mapa inteiro ---------- */
+// Cada terreno vira uma máscara: a grade de quadrados é suavizada e recebe um pouco de ruído,
+// então poças, rochas e manchas de grama ficam com borda de verdade, sem cara de quadradinho.
+const MASK_R = 16;
+const lisa = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+function ruidoBorda(u, v) {
+  const x0 = Math.floor(u), y0 = Math.floor(v), tx = u - x0, ty = v - y0, sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+  const a = mapaHash(x0, y0, 9) + (mapaHash(x0 + 1, y0, 9) - mapaHash(x0, y0, 9)) * sx, b = mapaHash(x0, y0 + 1, 9) + (mapaHash(x0 + 1, y0 + 1, 9) - mapaHash(x0, y0 + 1, 9)) * sx;
+  return a + (b - a) * sy;
+}
+// cobertura suavizada (0 a 1) de um conjunto de quadrados, pixel a pixel, só dentro da região pedida
+function cobertura(grade, cols, linhas, reg, ruido, R = MASK_R) {
+  const w = (reg.x1 - reg.x0 + 1) * R, h = (reg.y1 - reg.y0 + 1) * R, out = new Float32Array(w * h);
+  const G = (x, y) => grade[Math.max(0, Math.min(linhas - 1, y)) * cols + Math.max(0, Math.min(cols - 1, x))];
+  for (let py = 0; py < h; py++) {
+    const v = reg.y0 + (py + .5) / R - .5, j0 = Math.floor(v), fv = v - j0, sv = fv * fv * (3 - 2 * fv);
+    for (let px = 0; px < w; px++) {
+      const u = reg.x0 + (px + .5) / R - .5, i0 = Math.floor(u), fu = u - i0, su = fu * fu * (3 - 2 * fu);
+      const a = G(i0, j0) + (G(i0 + 1, j0) - G(i0, j0)) * su, b = G(i0, j0 + 1) + (G(i0 + 1, j0 + 1) - G(i0, j0 + 1)) * su;
+      let val = a + (b - a) * sv;
+      if (ruido && val > .02 && val < .98) val += (ruidoBorda(u * 1.7 + .5, v * 1.7 + .5) - .5) * ruido + (ruidoBorda(u * 4.1, v * 4.1) - .5) * ruido * .45;
+      out[py * w + px] = val;
+    }
+  }
+  return { out, w, h };
+}
+function canvasDe(w, h, preenche) { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'), img = g.createImageData(w, h); preenche(img.data); g.putImageData(img, 0, 0); return c; }
+function camada(g, k, reg, mascara, tipo, sombra) {
+  const Q = TQ, X = Math.round(reg.x0 * Q * k), Y = Math.round(reg.y0 * Q * k), W = Math.round((reg.x1 - reg.x0 + 1) * Q * k), H = Math.round((reg.y1 - reg.y0 + 1) * Q * k);
+  const L = document.createElement('canvas'); L.width = W; L.height = H; const l = L.getContext('2d');
+  l.setTransform(k, 0, 0, k, -reg.x0 * Q * k, -reg.y0 * Q * k); l.fillStyle = textura(tipo, l); l.fillRect(reg.x0 * Q, reg.y0 * Q, W / k, H / k);
+  l.setTransform(1, 0, 0, 1, 0, 0); l.globalCompositeOperation = 'destination-in'; l.imageSmoothingEnabled = true; l.imageSmoothingQuality = 'high'; l.drawImage(mascara, 0, 0, W, H);
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0);
+  if (sombra) { g.shadowColor = sombra[0]; g.shadowBlur = sombra[1] * k; g.shadowOffsetX = sombra[2] * k; g.shadowOffsetY = sombra[3] * k; }
+  g.drawImage(L, X, Y); g.restore();
+}
+function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
+  const { cols, linhas, terreno } = t, Q = TQ, bioma = cena.bioma && MAPA_BIOMAS[cena.bioma] ? cena.bioma : '';
+  const chao = bioma ? MAPA_BIOMAS[bioma][1] : '';
+  const reg = parte ? { x0: Math.max(0, parte.x0), y0: Math.max(0, parte.y0), x1: Math.min(cols - 1, parte.x1), y1: Math.min(linhas - 1, parte.y1) } : { x0: 0, y0: 0, x1: cols - 1, y1: linhas - 1 };
+  const tipoEm = i => { const c = terreno[i]; return c === '.' ? (chao || '.') : c; };
+  const tipos = new Array(cols * linhas); for (let i = 0; i < tipos.length; i++) tipos[i] = tipoEm(i);
+  const organico = new Set(MAPA_ORGANICO); if (bioma !== 'cais') organico.add('k');
+  if (chao) { g.fillStyle = textura(chao, g); g.fillRect(reg.x0 * Q, reg.y0 * Q, (reg.x1 - reg.x0 + 1) * Q, (reg.y1 - reg.y0 + 1) * Q); }
+  else { const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, '#1b2629'); gr.addColorStop(1, '#121a1c'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
+  // a região precisa de um quadrado de folga: a borda suavizada de fora entra um pouco nela
+  const folga = { x0: Math.max(0, reg.x0 - 1), y0: Math.max(0, reg.y0 - 1), x1: Math.min(cols - 1, reg.x1 + 1), y1: Math.min(linhas - 1, reg.y1 + 1) };
+  const usados = new Set(); for (let y = folga.y0; y <= folga.y1; y++) for (let x = folga.x0; x <= folga.x1; x++) usados.add(tipos[y * cols + x]);
+  const sombraDe = T => T === 'm' ? ['rgba(0,0,0,.5)', 6, 2, 4] : T === 'b' ? ['rgba(0,0,0,.6)', 12, 3, 6] : MAPA_ALTO.has(T) ? ['rgba(0,0,0,.62)', 10, 3, 6] : null;
+  let fezAgua = false;
+  for (const T of MAPA_ORDEM) {
+    if (!usados.has(T)) continue;
+    if (organico.has(T)) {
+      // como num quadro pintado em camadas: cada terreno também passa por baixo dos que vêm depois,
+      // assim a borda arredondada de um mostra o vizinho de baixo, e nunca um buraco
+      const oT = MAPA_ORDEM.indexOf(T), grade = tipos.map(c => MAPA_ORDEM.indexOf(c) >= oT ? 1 : 0), cob = cobertura(grade, cols, linhas, reg, .42);
+      const masc = canvasDe(cob.w, cob.h, d => { for (let i = 0; i < cob.out.length; i++) d[i * 4 + 3] = 255 * lisa(.45, .55, cob.out[i]); });
+      camada(g, k, reg, masc, T, sombraDe(T));
+    } else {
+      const path = new Path2D(), bordas = [];
+      for (let y = folga.y0; y <= folga.y1; y++) for (let x = folga.x0; x <= folga.x1; x++) {
+        if (tipos[y * cols + x] !== T) continue;
+        path.rect(x * Q, y * Q, Q, Q);
+        for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) { const nx = x + dx, ny = y + dy; if (nx >= 0 && ny >= 0 && nx < cols && ny < linhas && tipos[ny * cols + nx] !== T) bordas.push([x, y, dx, dy]); }
+      }
+      g.save(); const sb = sombraDe(T); if (sb) { g.shadowColor = sb[0]; g.shadowBlur = sb[1] * k; g.shadowOffsetX = sb[2] * k; g.shadowOffsetY = sb[3] * k; }
+      g.fillStyle = textura(T, g); g.fill(path); g.restore();
+      if (T === 'p' || T === 'c') {
+        g.save(); g.lineWidth = 2;
+        for (const [x, y, dx, dy] of bordas) {
+          g.strokeStyle = dy < 0 || dx < 0 ? 'rgba(255,250,235,.16)' : 'rgba(0,0,0,.45)'; g.beginPath();
+          if (dx === 0) { const yy = (y + (dy > 0 ? 1 : 0)) * Q + (dy < 0 ? 1 : -1); g.moveTo(x * Q, yy); g.lineTo((x + 1) * Q, yy); }
+          else { const xx = (x + (dx > 0 ? 1 : 0)) * Q + (dx < 0 ? 1 : -1); g.moveTo(xx, y * Q); g.lineTo(xx, (y + 1) * Q); }
+          g.stroke();
+        }
+        g.restore();
+      }
+    }
+    // espuma: depois das duas águas, uma faixa clara acompanhando a margem
+    if (!fezAgua && (T === 'a' || (T === 'f' && !usados.has('a')))) {
+      fezAgua = true;
+      // a espuma segue a borda da terra (mesmo ruído das camadas de terra), do lado da água
+      const grade = tipos.map(c => MAPA_AGUA.has(c) ? 0 : 1), cob = cobertura(grade, cols, linhas, reg, .42, Math.min(32, Math.max(16, Math.round(16 * k))));
+      const esp = canvasDe(cob.w, cob.h, d => { for (let i = 0; i < cob.out.length; i++) { const v = cob.out[i], a = lisa(.36, .44, v) * (1 - lisa(.47, .51, v)) * .62 + lisa(.2, .23, v) * (1 - lisa(.26, .3, v)) * .26; d[i * 4] = 236; d[i * 4 + 1] = 250; d[i * 4 + 2] = 246; d[i * 4 + 3] = 255 * a; } });
+      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = true; g.drawImage(esp, Math.round(reg.x0 * Q * k), Math.round(reg.y0 * Q * k), Math.round((reg.x1 - reg.x0 + 1) * Q * k), Math.round((reg.y1 - reg.y0 + 1) * Q * k)); g.restore();
+    }
+  }
+  if (rapido) return;
+  const props = (cena.props || []).slice().sort((a, b) => a.y - b.y);
+  // luz da floresta: manchas de sol entre as copas
+  if (bioma === 'floresta') { g.save(); g.globalCompositeOperation = 'soft-light'; const r = mapaRng(cols * 31 + linhas); for (let i = 0; i < cols * linhas / 10; i++) { const x = r() * W, y = r() * H, rr = Q * (.6 + r() * 1.4), gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, 'rgba(255,240,170,.5)'); gr.addColorStop(1, 'rgba(255,240,170,0)'); g.fillStyle = gr; g.fillRect(x - rr, y - rr, rr * 2, rr * 2); } g.restore(); }
+  for (const p of props) desenharObjeto(g, p, k);
+  // luz: na caverna, escuro com o brilho dos cristais e do fogo; nos outros, só as bordas escurecem
+  const luzes = props.filter(p => p.t === 'cristal' || p.t === 'fogueira' || (p.t === 'cogumelo' && bioma === 'caverna'));
+  if (bioma === 'caverna') { g.save(); g.fillStyle = 'rgba(4,8,14,.42)'; g.fillRect(0, 0, W, H); g.restore(); }
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (const p of luzes) {
+    const cx = (p.x + .5) * Q, cy = (p.y + .5) * Q, cor = p.t === 'fogueira' ? '255,150,60' : p.t === 'cristal' ? '90,210,230' : '150,120,240', R = Q * (p.t === 'fogueira' ? 3 : 2.2);
+    const gr = g.createRadialGradient(cx, cy, 0, cx, cy, R); gr.addColorStop(0, `rgba(${cor},.32)`); gr.addColorStop(1, `rgba(${cor},0)`); g.fillStyle = gr; g.fillRect(cx - R, cy - R, R * 2, R * 2);
+  }
+  g.restore();
+  const vg = g.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.hypot(W, H) * .6);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, bioma === 'caverna' ? 'rgba(0,0,0,.6)' : 'rgba(0,0,0,.32)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  if (bioma === 'praia') { g.save(); g.globalCompositeOperation = 'soft-light'; const lg = g.createLinearGradient(0, 0, W, H); lg.addColorStop(0, 'rgba(255,225,170,.45)'); lg.addColorStop(1, 'rgba(255,225,170,0)'); g.fillStyle = lg; g.fillRect(0, 0, W, H); g.restore(); }
+}
+
+/* ---------- objetos ---------- */
+function sombraOval(g, x, y, rx, ry, a = .38) { const gr = g.createRadialGradient(x, y, 0, x, y, rx); gr.addColorStop(0, `rgba(0,0,0,${a})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.save(); g.translate(x, y); g.scale(1, ry / rx); g.translate(-x, -y); g.fillStyle = gr; g.beginPath(); g.arc(x, y, rx, 0, 7); g.fill(); g.restore(); }
+function bola(g, x, y, r, c1, c2, lx = -.35, ly = -.4) { const gr = g.createRadialGradient(x + r * lx, y + r * ly, r * .1, x, y, r); gr.addColorStop(0, c1); gr.addColorStop(1, c2); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+function desenharObjeto(g, p, k) {
+  const Q = TQ, r = mapaRng((p.v >>> 0) * 2654435761 + 7), cx = (p.x + .5 + (r() - .5) * .18) * Q, cy = (p.y + .5 + (r() - .5) * .18) * Q, rot = r() * Math.PI * 2, esc = .85 + r() * .3;
+  g.save();
+  switch (p.t) {
+    case 'arvore': {
+      const R = Q * .95 * esc; sombraOval(g, cx + Q * .25, cy + Q * .35, R * 1.05, R * .8, .45);
+      const tons = r() < .5 ? ['#6d9a3e', '#2a4a1d'] : ['#5f8a45', '#22401f'];
+      const n = 7 + Math.floor(r() * 3);
+      for (let i = 0; i < n; i++) { const a = rot + i / n * 6.283, d = R * (.42 + r() * .12); bola(g, cx + Math.cos(a) * d, cy + Math.sin(a) * d, R * (.42 + r() * .12), tons[0], tons[1]); }
+      bola(g, cx, cy, R * .55, '#7fae4a', tons[1]);
+      for (let i = 0; i < 14; i++) { const a = r() * 6.3, d = r() * R * .7; g.fillStyle = 'rgba(200,235,140,.22)'; g.beginPath(); g.arc(cx + Math.cos(a) * d - R * .12, cy + Math.sin(a) * d - R * .15, R * .08, 0, 7); g.fill(); }
+      break;
+    }
+    case 'palmeira': {
+      const R = Q * .95 * esc; sombraOval(g, cx + Q * .3, cy + Q * .35, R, R * .55, .38);
+      const n = 7 + Math.floor(r() * 3);
+      for (let i = 0; i < n; i++) {
+        const a = rot + i / n * 6.283 + (r() - .5) * .3, L = R * (.85 + r() * .25), ex = cx + Math.cos(a) * L, ey = cy + Math.sin(a) * L, nx = -Math.sin(a), ny = Math.cos(a), w = R * .2;
+        const gr = g.createLinearGradient(cx, cy, ex, ey); gr.addColorStop(0, '#3f6b2a'); gr.addColorStop(1, '#79a64a'); g.fillStyle = gr;
+        g.beginPath(); g.moveTo(cx, cy); g.quadraticCurveTo(cx + Math.cos(a) * L * .5 + nx * w, cy + Math.sin(a) * L * .5 + ny * w, ex, ey); g.quadraticCurveTo(cx + Math.cos(a) * L * .5 - nx * w, cy + Math.sin(a) * L * .5 - ny * w, cx, cy); g.fill();
+        g.strokeStyle = 'rgba(30,50,20,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(cx, cy); g.lineTo(ex, ey); g.stroke();
+      }
+      bola(g, cx, cy, R * .13, '#9a7a4e', '#4e3a22');
+      break;
+    }
+    case 'arbusto': {
+      const R = Q * .42 * esc; sombraOval(g, cx + 4, cy + 6, R * 1.1, R * .8, .35);
+      for (let i = 0; i < 5; i++) { const a = rot + i * 1.26, d = R * .45; bola(g, cx + Math.cos(a) * d, cy + Math.sin(a) * d, R * .55, '#6b9640', '#25401b'); }
+      if (r() < .4) for (let i = 0; i < 6; i++) { g.fillStyle = '#c2414a'; g.beginPath(); g.arc(cx + (r() - .5) * R * 1.2, cy + (r() - .5) * R * 1.2, 1.8, 0, 7); g.fill(); }
+      break;
+    }
+    case 'rocha': {
+      const R = Q * .42 * esc, n = 7 + Math.floor(r() * 3);
+      const pts = Array.from({ length: n }, (_, i) => { const a = rot + i / n * 6.283, q = R * (.7 + r() * .35); return [cx + Math.cos(a) * q, cy + Math.sin(a) * q * .85]; });
+      g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 8 * k; g.shadowOffsetX = 3 * k; g.shadowOffsetY = 5 * k;
+      const gr = g.createLinearGradient(cx - R, cy - R, cx + R, cy + R); gr.addColorStop(0, '#9b978d'); gr.addColorStop(1, '#4b4943');
+      g.fillStyle = gr; g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); g.fill();
+      g.shadowColor = 'transparent';
+      g.fillStyle = 'rgba(255,255,255,.12)'; g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); g.lineTo(cx, cy - R * .1); g.lineTo(pts[n - 1][0], pts[n - 1][1]); g.closePath(); g.fill();
+      g.strokeStyle = 'rgba(20,20,18,.55)'; g.lineWidth = 1.4; g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); g.stroke();
+      g.beginPath(); g.moveTo(cx - R * .3, cy); g.lineTo(cx + R * .1, cy + R * .25); g.stroke();
+      break;
+    }
+    case 'caixote': {
+      const L = Q * .72 * esc; g.translate(cx, cy); g.rotate((r() - .5) * .5);
+      g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 6 * k; g.shadowOffsetX = 3 * k; g.shadowOffsetY = 5 * k;
+      g.fillStyle = '#8a6236'; g.fillRect(-L / 2, -L / 2, L, L); g.shadowColor = 'transparent';
+      g.strokeStyle = '#4a3119'; g.lineWidth = 2; g.strokeRect(-L / 2 + 1, -L / 2 + 1, L - 2, L - 2);
+      g.fillStyle = '#a07443'; g.fillRect(-L / 2 + 4, -L / 2 + 4, L - 8, L - 8);
+      g.strokeStyle = 'rgba(60,38,18,.7)'; g.lineWidth = 1.2; for (let i = 1; i < 4; i++) { g.beginPath(); g.moveTo(-L / 2 + 4, -L / 2 + 4 + i * (L - 8) / 4); g.lineTo(L / 2 - 4, -L / 2 + 4 + i * (L - 8) / 4); g.stroke(); }
+      g.strokeStyle = '#5a3c1f'; g.lineWidth = 3; g.beginPath(); g.moveTo(-L / 2 + 5, -L / 2 + 5); g.lineTo(L / 2 - 5, L / 2 - 5); g.stroke();
+      break;
+    }
+    case 'barril': {
+      const R = Q * .3 * esc; sombraOval(g, cx + 4, cy + 6, R * 1.2, R, .45);
+      bola(g, cx, cy, R, '#9a6c3c', '#4f3219', -.3, -.3);
+      g.strokeStyle = '#2f2f2f'; g.lineWidth = 2.2; for (const q of [.95, .62]) { g.beginPath(); g.arc(cx, cy, R * q, 0, 7); g.stroke(); }
+      g.strokeStyle = 'rgba(40,24,10,.6)'; g.lineWidth = 1; for (let i = -1; i <= 1; i++) { g.beginPath(); g.moveTo(cx - R * .55, cy + i * R * .28); g.lineTo(cx + R * .55, cy + i * R * .28); g.stroke(); }
+      break;
+    }
+    case 'pilar': {
+      const R = Q * .4; sombraOval(g, cx + Q * .3, cy + Q * .4, R * 1.5, R * .9, .5);
+      g.fillStyle = '#4e4b45'; g.beginPath(); for (let i = 0; i < 8; i++) { const a = i / 8 * 6.283 + .39; g.lineTo(cx + Math.cos(a) * R * 1.12, cy + Math.sin(a) * R * 1.12); } g.closePath(); g.fill();
+      bola(g, cx, cy, R, '#a8a296', '#5c5850');
+      g.strokeStyle = 'rgba(30,28,25,.55)'; g.lineWidth = 1.3; g.beginPath(); g.arc(cx, cy, R * .72, 0, 7); g.stroke();
+      if (r() < .4) { g.strokeStyle = 'rgba(20,20,20,.6)'; g.beginPath(); g.moveTo(cx - R * .5, cy - R * .2); g.lineTo(cx, cy + R * .1); g.lineTo(cx + R * .2, cy + R * .6); g.stroke(); }
+      break;
+    }
+    case 'tronco': {
+      const L = Q * 1.7 * esc, w = Q * .36; g.translate(cx, cy); g.rotate(rot);
+      g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 6 * k; g.shadowOffsetX = 3 * k; g.shadowOffsetY = 5 * k;
+      const gr = g.createLinearGradient(0, -w / 2, 0, w / 2); gr.addColorStop(0, '#7d5a3a'); gr.addColorStop(1, '#3f2b1a');
+      g.fillStyle = gr; g.beginPath(); g.roundRect(-L / 2, -w / 2, L, w, w / 2); g.fill(); g.shadowColor = 'transparent';
+      g.strokeStyle = 'rgba(30,18,8,.55)'; g.lineWidth = 1.2; for (let i = 0; i < 6; i++) { const yy = -w / 2 + 3 + i * (w - 6) / 5; g.beginPath(); g.moveTo(-L / 2 + 6, yy); g.lineTo(L / 2 - 8, yy + (r() - .5) * 2); g.stroke(); }
+      bola(g, L / 2 - w * .35, 0, w * .42, '#c9a57a', '#8a6844', 0, 0);
+      g.strokeStyle = 'rgba(90,60,30,.6)'; g.beginPath(); g.arc(L / 2 - w * .35, 0, w * .25, 0, 7); g.stroke();
+      break;
+    }
+    case 'fogueira': {
+      const R = Q * .38;
+      for (let i = 0; i < 9; i++) { const a = i / 9 * 6.283; bola(g, cx + Math.cos(a) * R, cy + Math.sin(a) * R, R * .26, '#8a857a', '#3e3b36'); }
+      g.strokeStyle = '#4a3120'; g.lineWidth = 5; g.lineCap = 'round'; for (let i = 0; i < 3; i++) { const a = rot + i * 2.1; g.beginPath(); g.moveTo(cx - Math.cos(a) * R * .7, cy - Math.sin(a) * R * .7); g.lineTo(cx + Math.cos(a) * R * .7, cy + Math.sin(a) * R * .7); g.stroke(); }
+      const fg = g.createRadialGradient(cx, cy, 0, cx, cy, R * .8); fg.addColorStop(0, 'rgba(255,245,190,1)'); fg.addColorStop(.35, 'rgba(255,170,60,.95)'); fg.addColorStop(1, 'rgba(220,70,20,0)');
+      g.fillStyle = fg; g.beginPath(); g.arc(cx, cy, R * .8, 0, 7); g.fill();
+      break;
+    }
+    case 'cristal': {
+      const n = 3 + Math.floor(r() * 3);
+      for (let i = 0; i < n; i++) {
+        const a = rot + (i / n) * 6.283, d = Q * .14, L = Q * (.32 + r() * .22), w = Q * .1, bx = cx + Math.cos(a) * d, by = cy + Math.sin(a) * d, ex = bx + Math.cos(a - .4) * L, ey = by + Math.sin(a - .4) * L, nx = -Math.sin(a - .4) * w, ny = Math.cos(a - .4) * w;
+        const gr = g.createLinearGradient(bx, by, ex, ey); gr.addColorStop(0, '#1f6c80'); gr.addColorStop(1, '#bff6ff');
+        g.fillStyle = gr; g.beginPath(); g.moveTo(bx + nx, by + ny); g.lineTo(ex, ey); g.lineTo(bx - nx, by - ny); g.closePath(); g.fill();
+        g.strokeStyle = 'rgba(225,255,255,.7)'; g.lineWidth = 1; g.beginPath(); g.moveTo(bx, by); g.lineTo(ex, ey); g.stroke();
+      }
+      break;
+    }
+    case 'cogumelo': {
+      const n = 3 + Math.floor(r() * 3), brilho = r() < .5;
+      for (let i = 0; i < n; i++) { const x = cx + (r() - .5) * Q * .6, y = cy + (r() - .5) * Q * .6, R = Q * (.08 + r() * .08); sombraOval(g, x + 2, y + 3, R * 1.3, R, .4); bola(g, x, y, R, brilho ? '#d8c8ff' : '#e0705a', brilho ? '#5b3fa8' : '#7a2418'); g.fillStyle = 'rgba(255,255,255,.75)'; g.beginPath(); g.arc(x - R * .3, y - R * .2, R * .18, 0, 7); g.fill(); }
+      break;
+    }
+    case 'ossos': {
+      g.strokeStyle = '#ddd5c2'; g.lineCap = 'round';
+      for (let i = 0; i < 3; i++) { const a = rot + i * 1.9, L = Q * (.22 + r() * .14), x = cx + (r() - .5) * Q * .4, y = cy + (r() - .5) * Q * .4; g.lineWidth = 3.2; g.beginPath(); g.moveTo(x - Math.cos(a) * L, y - Math.sin(a) * L); g.lineTo(x + Math.cos(a) * L, y + Math.sin(a) * L); g.stroke(); g.fillStyle = '#ddd5c2'; for (const s of [-1, 1]) { g.beginPath(); g.arc(x + Math.cos(a) * L * s, y + Math.sin(a) * L * s, 3, 0, 7); g.fill(); } }
+      bola(g, cx + Q * .12, cy - Q * .12, Q * .12, '#efe8d6', '#a39b88'); g.fillStyle = '#2a2622'; g.fillRect(cx + Q * .07, cy - Q * .15, 3, 3); g.fillRect(cx + Q * .14, cy - Q * .15, 3, 3);
+      break;
+    }
+    case 'barco': {
+      const L = Q * 1.9, w = Q * .62; g.translate(cx, cy); g.rotate(rot);
+      g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 10 * k; g.shadowOffsetX = 3 * k; g.shadowOffsetY = 6 * k;
+      const casco = () => { g.beginPath(); g.moveTo(-L / 2, 0); g.quadraticCurveTo(-L / 2 + L * .1, -w / 2, -L * .1, -w / 2); g.lineTo(L * .25, -w / 2); g.quadraticCurveTo(L / 2, -w / 3, L / 2, 0); g.quadraticCurveTo(L / 2, w / 3, L * .25, w / 2); g.lineTo(-L * .1, w / 2); g.quadraticCurveTo(-L / 2 + L * .1, w / 2, -L / 2, 0); g.closePath(); };
+      g.fillStyle = '#5a3d22'; casco(); g.fill(); g.shadowColor = 'transparent';
+      g.save(); casco(); g.clip(); g.fillStyle = '#8a6238'; g.fillRect(-L / 2, -w / 2 + 4, L, w - 8);
+      g.strokeStyle = 'rgba(50,30,14,.6)'; g.lineWidth = 1; for (let i = 1; i < 5; i++) { g.beginPath(); g.moveTo(-L / 2, -w / 2 + 4 + i * (w - 8) / 5); g.lineTo(L / 2, -w / 2 + 4 + i * (w - 8) / 5); g.stroke(); }
+      g.fillStyle = '#5a3d22'; for (const sx of [-.15, .15]) g.fillRect(sx * L - 4, -w / 2, 8, w);
+      g.restore();
+      g.strokeStyle = '#3a2614'; g.lineWidth = 2; casco(); g.stroke();
+      break;
+    }
+    case 'poste': {
+      const R = Q * .16; sombraOval(g, cx + 4, cy + 6, R * 1.6, R * 1.1, .45);
+      bola(g, cx, cy, R, '#7a5a3a', '#3a2614', 0, 0);
+      g.strokeStyle = '#c8b48a'; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, R * 1.25, .4, 5.4); g.stroke();
+      break;
+    }
+  }
+  g.restore();
+}
+
+/* ---------- gerador ---------- */
+function ruidoMapa(r, escala) {
+  const G = 64, v = new Float32Array(G * G).map(() => r());
+  return (x, y) => {
+    const fx = x / escala, fy = y / escala, x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0, sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+    const i = (a, b) => v[((b % G) + G) % G * G + ((a % G) + G) % G];
+    const a0 = i(x0, y0) + (i(x0 + 1, y0) - i(x0, y0)) * sx, a1 = i(x0, y0 + 1) + (i(x0 + 1, y0 + 1) - i(x0, y0 + 1)) * sx;
+    return a0 + (a1 - a0) * sy;
+  };
+}
+function gerarMapa(bioma, cols, linhas, semente) {
+  const r = mapaRng(semente), T = new Array(cols * linhas).fill(MAPA_BIOMAS[bioma][1]), props = [], ocupado = new Set();
+  const dentro = (x, y) => x >= 0 && y >= 0 && x < cols && y < linhas;
+  const get = (x, y) => dentro(x, y) ? T[y * cols + x] : null, set = (x, y, c) => { if (dentro(x, y)) T[y * cols + x] = c; };
+  const ri = (a, b) => a + Math.floor(r() * (b - a + 1));
+  const por = (t, x, y, livre = true) => { if (!dentro(x, y) || (livre && ocupado.has(x + ',' + y))) return false; props.push({ t, x, y, v: Math.floor(r() * 1e9) }); ocupado.add(x + ',' + y); return true; };
+  const bolha = (cx, cy, rad, c, so) => { for (let y = Math.floor(cy - rad - 1); y <= cy + rad + 1; y++) for (let x = Math.floor(cx - rad - 1); x <= cx + rad + 1; x++) if (Math.hypot(x - cx, y - cy) <= rad + (r() - .5) * .8 && (!so || so.includes(get(x, y)))) set(x, y, c); };
+  const espalha = (n, t, ok, tent = 40) => { let feitos = 0; for (let i = 0; i < n * tent && feitos < n; i++) { const x = ri(0, cols - 1), y = ri(0, linhas - 1); if (ok(get(x, y), x, y) && por(t, x, y)) feitos++; } };
+  const n1 = ruidoMapa(r, 6), n2 = ruidoMapa(r, 4), n3 = ruidoMapa(r, 3);
+  const meio = (x, y) => Math.hypot((x - cols / 2) / cols, (y - linhas / 2) / linhas);
+  if (bioma === 'praia') {
+    const vira = r() < .5;   // mar embaixo ou à direita
+    const A = vira ? cols : linhas, B = vira ? linhas : cols;
+    for (let b = 0; b < B; b++) {
+      const costa = A * .6 + (n1(b * 1.3, 3) - .5) * A * .3, mato = A * .28 + (n2(b * 1.1, 9) - .5) * A * .3;
+      for (let a = 0; a < A; a++) {
+        const x = vira ? a : b, y = vira ? b : a, d = a - costa;
+        set(x, y, d > 2.5 ? 'f' : d > 0 ? 'a' : a < mato ? (n3(x, y) > .7 ? 'r' : n2(x * 2, y * 2) > .72 ? 'v' : 'g') : 's');
+      }
+    }
+    for (let i = 0; i < ri(1, 3); i++) { const x = ri(2, cols - 3), y = ri(2, linhas - 3); if (get(x, y) === 's' || get(x, y) === 'g') bolha(x, y, 1 + r() * 1.3, 'b', 'sgrv'); }
+    if (r() < .75) { // um píer
+      for (let t = 0; t < 30; t++) {
+        const p = ri(3, (vira ? linhas : cols) - 5), base = [...Array(vira ? cols : linhas).keys()].find(a => get(vira ? a : p, vira ? p : a) === 'a');
+        if (base === undefined) continue;
+        for (let a = base - 1; a < base + 6; a++) for (let w = 0; w < 2; w++) { const x = vira ? a : p + w, y = vira ? p + w : a; if (get(x, y) !== null && get(x, y) !== 'b') set(x, y, 'm'); }
+        for (let a = base; a < base + 6; a += 2) for (const w of [-1, 2]) { const x = vira ? a : p + w, y = vira ? p + w : a; if (MAPA_AGUA.has(get(x, y))) por('poste', x, y); }
+        const bx = vira ? base + 4 : p + 4, by = vira ? p + 4 : base + 4; if (get(bx, by) === 'f') por('barco', bx, by);
+        por('caixote', vira ? base : p, vira ? p : base); if (r() < .6) por('barril', vira ? base + 1 : p + 1, vira ? p + 1 : base + 1);
+        break;
+      }
+    }
+    espalha(Math.round(cols * linhas / 55), 'palmeira', (c, x, y) => c === 's' && [[-1, 0], [1, 0], [0, -1], [0, 1]].some(([dx, dy]) => 'gv'.includes(get(x + dx, y + dy))));
+    espalha(Math.round(cols * linhas / 60), 'arvore', c => c === 'g' || c === 'v');
+    espalha(Math.round(cols * linhas / 50), 'arbusto', c => c === 'g');
+    espalha(Math.round(cols * linhas / 70), 'rocha', c => c === 's');
+    espalha(2, 'tronco', c => c === 's'); espalha(r() < .5 ? 1 : 0, 'ossos', c => c === 's');
+    if (r() < .4) espalha(1, 'fogueira', c => c === 's');
+  } else if (bioma === 'floresta') {
+    for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) set(x, y, n1(x, y) > .68 ? 'r' : n2(x * 1.4, y * 1.4) > .7 ? 'v' : 'g');
+    let y = ri(Math.floor(linhas * .3), Math.ceil(linhas * .7)); // trilha
+    for (let x = 0; x < cols; x++) { set(x, y, 'r'); set(x, y + 1, 'r'); if (r() < .35) y = Math.max(1, Math.min(linhas - 3, y + (r() < .5 ? -1 : 1))); }
+    if (r() < .6) { let x = ri(Math.floor(cols * .2), Math.ceil(cols * .8)); for (let yy = 0; yy < linhas; yy++) { const w = r() < .5 ? 2 : 1; for (let k = 0; k < w; k++) set(x + k, yy, get(x + k, yy) === 'r' ? 'm' : 'a'); if (r() < .5) { set(x - 1, yy, get(x - 1, yy) === 'r' ? 'r' : 'l'); } if (r() < .35) x = Math.max(1, Math.min(cols - 3, x + (r() < .5 ? -1 : 1))); } }
+    for (let yy = 0; yy < linhas; yy++) for (let x = 0; x < cols; x++) {
+      const c = get(x, yy); if (!'gv'.includes(c)) continue;
+      const den = n3(x * 1.5, yy * 1.5) * .6 + Math.min(1, meio(x, yy) * 2.2) * .5;
+      if (r() < den * .42 - .05) por('arvore', x, yy); else if (r() < .05) por('arbusto', x, yy);
+    }
+    espalha(Math.round(cols * linhas / 70), 'rocha', c => 'gr'.includes(c)); espalha(ri(1, 3), 'tronco', c => c === 'g');
+    espalha(ri(1, 3), 'cogumelo', c => c === 'g'); if (r() < .35) espalha(1, 'fogueira', c => c === 'r');
+  } else if (bioma === 'cais') {
+    const q = Math.max(3, Math.round(linhas * .28)), pl = q + Math.max(2, Math.round(linhas * .22));
+    for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) set(x, y, y < q ? 'k' : 'f');
+    for (let x = 0; x < cols; x++) if (r() > .18 || x % 7 === 0) set(x, 0, 'p');
+    for (let x = 0; x < cols; x += ri(4, 7)) { set(x, 0, 'k'); set(x + 1, 0, 'k'); }
+    const x0 = ri(1, 3), x1 = cols - ri(2, 4);
+    for (let y = q; y < pl; y++) for (let x = x0; x < x1; x++) set(x, y, 'm');
+    const piers = []; for (let x = x0 + ri(1, 3); x < x1 - 2; x += ri(5, 8)) piers.push(x);
+    for (const px of piers) { const fim = linhas - ri(1, 3); for (let y = pl; y < fim; y++) { set(px, y, 'm'); set(px + 1, y, 'm'); } for (let y = pl + 1; y < fim; y += 2) { por('poste', px - 1, y); por('poste', px + 2, y); } if (r() < .7) por('barco', px + 4, ri(pl + 2, linhas - 2)); }
+    for (let x = x0; x < x1; x += 2) if (get(x, pl) === 'f') por('poste', x, pl);
+    for (let i = 0; i < ri(3, 5); i++) { const x = ri(x0, x1 - 2), y = ri(1, pl - 2); for (let k = 0; k < ri(2, 4); k++) por(r() < .65 ? 'caixote' : 'barril', x + (k % 2), y + Math.floor(k / 2)); }
+    for (let x = 1; x < cols - 1; x += ri(4, 6)) if (get(x, q - 1) === 'k') set(x, q - 1, 'c');
+  } else if (bioma === 'ruinas') {
+    for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) set(x, y, n1(x, y) > .66 ? 'r' : n2(x * 1.3, y * 1.3) > .74 ? 'v' : 'g');
+    const x0 = ri(2, Math.floor(cols * .2)), x1 = cols - ri(2, Math.floor(cols * .2)), y0 = ri(2, Math.floor(linhas * .22)), y1 = linhas - ri(2, Math.floor(linhas * .22));
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) set(x, y, n3(x * 1.6, y * 1.6) > .72 ? (r() < .5 ? 'g' : 'd') : 'k');
+    const borda = (x, y) => { if (r() < .3) { set(x, y, r() < .6 ? 'd' : 'k'); return; } set(x, y, 'p'); };
+    for (let x = x0; x <= x1; x++) { borda(x, y0); borda(x, y1); }
+    for (let y = y0; y <= y1; y++) { borda(x0, y); borda(x1, y); }
+    const pm = Math.floor((x0 + x1) / 2); for (const yy of [y0, y1]) for (let k = -1; k <= 0; k++) set(pm + k, yy, 'k');
+    for (let x = x0 + 2; x < x1 - 1; x += 3) for (const yy of [y0 + 2, y1 - 2]) if (yy > y0 + 1 && yy < y1 - 1) { if (r() < .82) por('pilar', x, yy); else { set(x, yy, 'd'); por('rocha', x, yy); } }
+    for (let i = 0; i < ri(1, 3); i++) { const x = ri(x0 + 2, x1 - 4), y = ri(y0 + 3, y1 - 3); for (let k = 0; k < ri(2, 3); k++) set(x + k, y, 'c'); }
+    if (r() < .4) { const cx = ri(2, cols - 3), cy = ri(2, linhas - 3); if (get(cx, cy) === 'g') bolha(cx, cy, 1.2 + r(), 'a', 'grv'); }
+    espalha(Math.round(cols * linhas / 45), 'arvore', (c, x, y) => 'gv'.includes(c) && (x < x0 - 1 || x > x1 + 1 || y < y0 - 1 || y > y1 + 1));
+    espalha(Math.round(cols * linhas / 45), 'arbusto', c => 'gvd'.includes(c));
+    espalha(Math.round(cols * linhas / 80), 'rocha', c => 'gdk'.includes(c)); espalha(ri(1, 2), 'ossos', c => c === 'k'); espalha(1, 'tronco', c => c === 'g');
+  } else if (bioma === 'caverna') {
+    let tent = 0, chao = 0;
+    do {
+      const m = Array.from({ length: cols * linhas }, (_, i) => { const x = i % cols, y = Math.floor(i / cols); return x === 0 || y === 0 || x === cols - 1 || y === linhas - 1 || r() < .43; });
+      for (let it = 0; it < 4; it++) { const c = m.slice(); for (let y = 1; y < linhas - 1; y++) for (let x = 1; x < cols - 1; x++) { let n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && c[(y + dy) * cols + x + dx]) n++; m[y * cols + x] = n >= 5 || (n <= 1 && r() < .3); } }
+      // fica só a maior caverna conectada
+      const reg = new Int32Array(cols * linhas).fill(-1); let melhor = -1, tam = 0, id = 0;
+      for (let i = 0; i < m.length; i++) { if (m[i] || reg[i] >= 0) continue; const fila = [i]; reg[i] = id; let n = 0; while (fila.length) { const j = fila.pop(); n++; const x = j % cols, y = Math.floor(j / cols); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const q = (y + dy) * cols + x + dx; if (dentro(x + dx, y + dy) && !m[q] && reg[q] < 0) { reg[q] = id; fila.push(q); } } } if (n > tam) { tam = n; melhor = id; } id++; }
+      for (let i = 0; i < m.length; i++) T[i] = !m[i] && reg[i] === melhor ? 'o' : 'b';
+      chao = tam / (cols * linhas); tent++;
+    } while (chao < .38 && tent < 8);
+    for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) { if (get(x, y) !== 'o') continue; const n = n1(x * 1.2, y * 1.2); if (n > .74) set(x, y, n > .82 ? 'f' : 'a'); }
+    for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) if (get(x, y) === 'o' && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => MAPA_AGUA.has(get(x + dx, y + dy))) && r() < .45) set(x, y, 'l');
+    const pertoDaParede = (x, y) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => get(x + dx, y + dy) === 'b');
+    espalha(ri(4, 7), 'cristal', (c, x, y) => c === 'o' && pertoDaParede(x, y));
+    espalha(ri(4, 6), 'cogumelo', c => c === 'o' || c === 'l'); espalha(ri(3, 5), 'rocha', c => c === 'o'); espalha(ri(1, 3), 'ossos', c => c === 'o');
+    if (r() < .35) espalha(1, 'fogueira', c => c === 'o');
+  }
+  return { terreno: T.join(''), props };
+}
+
+
 /* ---------- tabuleiro de combate ---------- */
 // Um quadrado = 1,5 m. Peças, névoa, terreno e turno ficam no Supabase; a tela pergunta a cada 1,2 s
 // só a versão do tabuleiro e baixa o resto quando ela muda.
 const TQ = 48, METRO = 1.5;
-const TERRENOS = [['a', 'Água'], ['d', 'Difícil'], ['c', 'Cobertura'], ['p', 'Parede'], ['.', 'Apagar']];
+const TERRENOS = [['g', 'Grama'], ['r', 'Terra'], ['s', 'Areia'], ['k', 'Pedra'], ['m', 'Tábuas'], ['o', 'Caverna'], ['a', 'Água rasa'], ['f', 'Água funda'], ['l', 'Lama'], ['v', 'Mato alto'], ['d', 'Entulho'], ['c', 'Mureta'], ['b', 'Rocha'], ['p', 'Parede'], ['.', 'Chão do ambiente']];
 const FORMAS = [['circulo', 'Raio'], ['cone', 'Cone'], ['linha', 'Linha']];
 const TAMANHOS_AREA = [3, 4.5, 6, 9, 12, 18];
 const FASES = ['Antes dos inimigos', 'Inimigos e aliados', 'Depois dos inimigos'];
@@ -4028,7 +4566,8 @@ function agendar(fn) { tbJobs.add(fn); if (!tbRaf) tbRaf = requestAnimationFrame
 function norm(t) {
   const n = t.cols * t.linhas;
   const pad = (s, ch) => (String(s || '') + ch.repeat(n)).slice(0, n);
-  return { ...t, terreno: pad(t.terreno, '.'), nevoa: pad(t.nevoa, '0'), turno: t.turno && typeof t.turno === 'object' ? t.turno : {} };
+  return { ...t, terreno: pad(t.terreno, '.'), nevoa: pad(t.nevoa, '0'), turno: t.turno && typeof t.turno === 'object' ? t.turno : {},
+    cena: t.cena && typeof t.cena === 'object' ? { ...t.cena, props: Array.isArray(t.cena.props) ? t.cena.props : [] } : { props: [] } };
 }
 const turno = () => (TB && TB.t.turno) || {};
 const minha = p => !!(p && p.ficha_id && TB.minhas.has(p.ficha_id));
@@ -4065,7 +4604,7 @@ async function renderTabuleiro(id) {
       const n = 24 * 16;
       t = (await api('POST', 'tabuleiros', { mesa_id: id, cols: 24, linhas: 16, terreno: '.'.repeat(n), nevoa: '0'.repeat(n) }, 'return=representation'))[0];
     }
-    TB = { id, m, mestre, t: norm(t), versao: t.versao, fundoV: -1, pecas: [], marcas: [], fichas: [], sum: {}, sig: {}, minhas: new Set(),
+    TB = { id, m, mestre, t: norm(t), versao: t.versao, fundoV: -1, pincelN: 1, objeto: 'arvore', bioma: 'praia', tamGerar: '24x16', pecas: [], marcas: [], fichas: [], sum: {}, sig: {}, minhas: new Set(),
       sel: null, tool: 'mover', pincel: 'a', nevoaModo: '1', area: { forma: 'circulo', m: 3 }, vista: { x: 0, y: 0, z: 1 },
       ocupado: 0, pend: {}, fim: {}, previa: null, regua: null, els: new Map(), autoKey: '' };
     root.innerHTML = pageWrap('Maré Baixa', 'o tabuleiro', mestre ? 'Tabuleiro · você é o Mestre' : 'Tabuleiro', esc(m.nome), tbHtml());
@@ -4085,7 +4624,7 @@ function tbHtml() {
   <div class="tb">
     <div class="tb-palco">
       <div class="tb-ferr" role="toolbar" aria-label="Ferramentas do tabuleiro">
-        ${f('mover', 'Mover')}${f('regua', 'Régua')}${f('area', 'Área')}${TB.mestre ? f('terreno', 'Terreno') + f('nevoa', 'Névoa') : ''}
+        ${f('mover', 'Mover')}${f('regua', 'Régua')}${f('area', 'Área')}${TB.mestre ? f('terreno', 'Terreno') + f('objetos', 'Objetos') + f('nevoa', 'Névoa') : ''}
         <span class="tb-sep"></span>
         <button class="tb-f" type="button" data-tb="zoom" data-d="-1" aria-label="Afastar">−</button><button class="tb-f" type="button" data-tb="zoom" data-d="1" aria-label="Aproximar">+</button>
         <button class="tb-f" type="button" data-tb="centro">Centralizar</button>
@@ -4135,7 +4674,7 @@ async function tbCarregar(forcar) {
   try {
     const t0 = Date.now();
     const [ts, ps, mk] = await Promise.all([
-      api('GET', 'tabuleiros?select=cols,linhas,terreno,nevoa,turno,versao,fundo_versao&mesa_id=eq.' + tb.id),
+      api('GET', 'tabuleiros?select=cols,linhas,terreno,nevoa,turno,cena,versao,fundo_versao&mesa_id=eq.' + tb.id),
       api('GET', 'pecas?select=*&mesa_id=eq.' + tb.id + '&order=atualizado.asc'),
       api('GET', 'marcas?select=*&mesa_id=eq.' + tb.id + '&order=criado.asc')]);
     if (TB !== tb || !ts || !ts[0]) return;
@@ -4144,7 +4683,13 @@ async function tbCarregar(forcar) {
     if (seguro('terreno', t0)) t.terreno = o.terreno;
     if (seguro('nevoa', t0)) t.nevoa = o.nevoa;
     if (seguro('turno', t0)) t.turno = o.turno;
-    const grade = forcar || t.cols !== o.cols || t.linhas !== o.linhas || t.terreno !== o.terreno;
+    if (seguro('cena', t0)) t.cena = o.cena;
+    const mesmaGrade = t.cols === o.cols && t.linhas === o.linhas, mesmaCena = JSON.stringify(t.cena) === JSON.stringify(o.cena);
+    let pedaco = null;
+    if (!forcar && mesmaGrade && mesmaCena && t.terreno !== o.terreno) {
+      for (let i = 0; i < t.terreno.length; i++) if (t.terreno[i] !== o.terreno[i]) { const x = i % t.cols, y = Math.floor(i / t.cols); pedaco = pedaco ? { x0: Math.min(pedaco.x0, x), y0: Math.min(pedaco.y0, y), x1: Math.max(pedaco.x1, x), y1: Math.max(pedaco.y1, y) } : { x0: x, y0: y, x1: x, y1: y }; }
+    }
+    const grade = forcar || !mesmaGrade || !mesmaCena || (t.terreno !== o.terreno && !pedaco);
     const nev = grade || t.nevoa !== o.nevoa;
     tb.t = t; tb.versao = t.versao;
     const velhas = new Map(tb.pecas.map(p => [p.id, p]));
@@ -4153,6 +4698,7 @@ async function tbCarregar(forcar) {
     tb.marcas = mk.concat(tb.marcas.filter(m => String(m.id).startsWith('tmp')));
     if (tb.sel && !tb.pecas.some(p => p.id === tb.sel)) tb.sel = null;
     if (grade) desenharTerreno();
+    else if (pedaco) { tb.t = t; desenharTerreno({ x0: pedaco.x0 - 2, y0: pedaco.y0 - 2, x1: pedaco.x1 + 2, y1: pedaco.y1 + 2 }); }
     if (!forcar && (t.cols !== o.cols || t.linhas !== o.linhas)) tbCentralizar();
     if (nev) desenharNevoa();
     if (t.fundo_versao !== tb.fundoV) tbFundo(t.fundo_versao);
@@ -4197,7 +4743,10 @@ function aplicarVista() {
 }
 function tbCentralizar() {
   const vi = $('#tb-vista', root); if (!vi || !TB) return;
-  const W = TB.t.cols * TQ, H = TB.t.linhas * TQ, vw = vi.clientWidth, vh = vi.clientHeight;
+  const W = TB.t.cols * TQ, H = TB.t.linhas * TQ, vw = vi.clientWidth;
+  // no celular, a janela do mapa fica do tamanho do mapa: sem faixa vazia em cima e embaixo
+  vi.style.height = vw < 700 ? Math.round(Math.max(300, Math.min(innerHeight * .62, vw * H / W + 24))) + 'px' : '';
+  const vh = vi.clientHeight;
   const z = clamp(Math.min(vw / W, vh / H) * .96, .15, 1.6);
   TB.vista = { z, x: (vw - W * z) / 2, y: (vh - H * z) / 2 }; aplicarVista();
 }
@@ -4235,6 +4784,8 @@ function ligarTabuleiro() {
     } else if (TB.tool === 'area') {
       const o = { x: c.x + .5, y: c.y + .5 };
       TB.gesto = { tipo: 'area' }; TB.previa = { forma: TB.area.forma, metros: TB.area.m, x: o.x, y: o.y, ax: o.x, ay: o.y }; agendar(desenharAreas);
+    } else if (TB.tool === 'objetos') {
+      if (dentroDaGrade(c)) mexerObjeto(c);
     } else if (TB.tool === 'terreno' || TB.tool === 'nevoa') {
       const k = TB.tool === 'terreno' ? 'terreno' : 'nevoa';
       TB.gesto = { tipo: 'pinta', k, arr: TB.t[k].split(''), ult: null, sujo: false }; pintar(c);
@@ -4244,6 +4795,7 @@ function ligarTabuleiro() {
     if (!TB) return;
     if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     const g = TB.gesto;
+    if (!g && TB.tool === 'mover' && e.pointerType === 'mouse') { const c = celula(noMundo(e.clientX, e.clientY)); if (!TB.hover || TB.hover.x !== c.x || TB.hover.y !== c.y) { TB.hover = c; infoQuadrado(c); } return; }
     if (!g) { if (TB.tool === 'area' && e.pointerType === 'mouse' && TB.area.forma === 'circulo') { const c = celula(noMundo(e.clientX, e.clientY)); const o = { x: c.x + .5, y: c.y + .5 }; if (!TB.previa || TB.previa.x !== o.x || TB.previa.y !== o.y) { TB.previa = { forma: 'circulo', metros: TB.area.m, x: o.x, y: o.y, ax: o.x, ay: o.y, flutua: true }; agendar(desenharAreas); } } return; }
     if (g.tipo === 'pinca') {
       if (ptrs.size < 2) return;
@@ -4293,7 +4845,7 @@ function ligarTabuleiro() {
     }
   };
   vi.addEventListener('pointerup', fim); vi.addEventListener('pointercancel', fim);
-  vi.addEventListener('pointerleave', e => { if (TB && !TB.gesto && TB.previa && TB.previa.flutua) { TB.previa = null; agendar(desenharAreas); } });
+  vi.addEventListener('pointerleave', e => { if (!TB) return; if (TB.hover) { TB.hover = null; if (TB.dicaQuadrado) tbDica(''); } if (!TB.gesto && TB.previa && TB.previa.flutua) { TB.previa = null; agendar(desenharAreas); } });
   vi.addEventListener('wheel', e => { if (!TB) return; e.preventDefault(); zoomEm(e.clientX, e.clientY, Math.exp(-e.deltaY * (e.ctrlKey ? .01 : .0015))); }, { passive: false });
   vi.addEventListener('keydown', e => {
     if (!TB) return;
@@ -4325,12 +4877,13 @@ function moverPeca(p, x, y) {
 function pintar(c) {
   const g = TB.gesto; if (!g || g.tipo !== 'pinta') return;
   const val = g.k === 'terreno' ? TB.pincel : TB.nevoaModo, cols = TB.t.cols;
-  const marca = q => { if (!dentroDaGrade(q)) return; const i = q.y * cols + q.x; if (g.arr[i] !== val) { g.arr[i] = val; g.sujo = true; } };
+  const n = g.k === 'terreno' ? TB.pincelN : Math.max(1, TB.pincelN), o = Math.floor((n - 1) / 2);
+  const marca = q => { for (let yy = q.y - o; yy < q.y - o + n; yy++) for (let xx = q.x - o; xx < q.x - o + n; xx++) { if (!dentroDaGrade({ x: xx, y: yy })) continue; const i = yy * cols + xx; if (g.arr[i] !== val) { g.arr[i] = val; g.sujo = true; sujar(xx, yy); } } };
   // liga o quadrado anterior ao atual para o pincel não pular quadrados num arrasto rápido
   const a = g.ult || c; let x = a.x, y = a.y; const dx = Math.abs(c.x - x), dy = -Math.abs(c.y - y), sx = x < c.x ? 1 : -1, sy = y < c.y ? 1 : -1; let er = dx + dy;
   for (let k = 0; k < 400; k++) { marca({ x, y }); if (x === c.x && y === c.y) break; const e2 = 2 * er; if (e2 >= dy) { er += dy; x += sx; } if (e2 <= dx) { er += dx; y += sy; } }
   g.ult = c;
-  if (g.sujo) { TB.t[g.k] = g.arr.join(''); agendar(g.k === 'terreno' ? desenharTerreno : desenharNevoa); }
+  if (g.sujo) { TB.t[g.k] = g.arr.join(''); agendar(g.k === 'terreno' ? desenharSujo : desenharNevoa); }
 }
 
 /* ---------- desenho ---------- */
@@ -4339,40 +4892,77 @@ function tamanhoMundo() {
   if (mu) { mu.style.width = W + 'px'; mu.style.height = H + 'px'; }
   return [W, H];
 }
-function desenharTerreno() {
+// redesenha só o pedaço mexido pelo pincel (com um quadrado de folga para as bordas e sombras)
+function sujar(x, y) { const d = TB.sujo || (TB.sujo = { x0: x, y0: y, x1: x, y1: y }); d.x0 = Math.min(d.x0, x); d.y0 = Math.min(d.y0, y); d.x1 = Math.max(d.x1, x); d.y1 = Math.max(d.y1, y); }
+function desenharSujo() { const d = TB && TB.sujo; if (!d) return; TB.sujo = null; desenharTerreno({ x0: d.x0 - 2, y0: d.y0 - 2, x1: d.x1 + 2, y1: d.y1 + 2 }); }
+function desenharTerreno(parte) {
   const cv = $('#tb-terreno', root); if (!cv || !TB) return;
   const [W, H] = tamanhoMundo(), { cols, linhas, terreno } = TB.t;
-  const k = Math.min(2, window.devicePixelRatio || 1, Math.sqrt(12e6 / (W * H)));
-  if (cv.width !== Math.round(W * k) || cv.height !== Math.round(H * k)) { cv.width = Math.round(W * k); cv.height = Math.round(H * k); }
+  const k = Math.min(2, window.devicePixelRatio || 1, Math.sqrt(9e6 / (W * H)));
+  if (cv.width !== Math.round(W * k) || cv.height !== Math.round(H * k)) { cv.width = Math.round(W * k); cv.height = Math.round(H * k); parte = null; }
   cv.style.width = W + 'px'; cv.style.height = H + 'px';
-  const g = cv.getContext('2d'); g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, W, H);
-  if (!TB.temFundo) { const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, '#1b2629'); gr.addColorStop(1, '#121a1c'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
-  for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) {
-    const t = terreno[y * cols + x]; if (t === '.') continue;
-    const px = x * TQ, py = y * TQ;
-    if (t === 'a') {
-      g.fillStyle = 'rgba(46,124,164,.45)'; g.fillRect(px, py, TQ, TQ);
-      g.strokeStyle = 'rgba(170,220,240,.35)'; g.lineWidth = 1.2; g.beginPath();
-      for (const yy of [.35, .7]) { g.moveTo(px + 8, py + TQ * yy); g.quadraticCurveTo(px + TQ * .3, py + TQ * yy - 5, px + TQ * .5, py + TQ * yy); g.quadraticCurveTo(px + TQ * .7, py + TQ * yy + 5, px + TQ - 8, py + TQ * yy); }
-      g.stroke();
-    } else if (t === 'd') {
-      g.fillStyle = 'rgba(128,94,54,.40)'; g.fillRect(px, py, TQ, TQ);
-      g.strokeStyle = 'rgba(214,180,120,.32)'; g.lineWidth = 1.2; g.beginPath();
-      for (let s = -TQ; s < TQ; s += 12) { g.moveTo(px + Math.max(0, s), py + Math.max(0, -s)); g.lineTo(px + Math.min(TQ, s + TQ), py + Math.min(TQ, TQ - s)); }
-      g.stroke();
-    } else if (t === 'c') {
-      g.fillStyle = 'rgba(190,180,146,.24)'; g.fillRect(px, py, TQ, TQ);
-      g.fillStyle = 'rgba(233,224,203,.55)'; g.beginPath(); g.moveTo(px + TQ / 2, py + TQ * .3); g.lineTo(px + TQ * .7, py + TQ / 2); g.lineTo(px + TQ / 2, py + TQ * .7); g.lineTo(px + TQ * .3, py + TQ / 2); g.closePath(); g.fill();
-    } else if (t === 'p') {
-      g.fillStyle = 'rgba(9,11,13,.9)'; g.fillRect(px, py, TQ, TQ);
-      g.strokeStyle = 'rgba(201,170,108,.35)'; g.lineWidth = 1; g.strokeRect(px + 3.5, py + 3.5, TQ - 7, TQ - 7);
+  const g = cv.getContext('2d'); g.setTransform(k, 0, 0, k, 0, 0);
+  g.save();
+  if (parte) { g.beginPath(); g.rect(parte.x0 * TQ, parte.y0 * TQ, (parte.x1 - parte.x0 + 1) * TQ, (parte.y1 - parte.y0 + 1) * TQ); g.clip(); }
+  g.clearRect(0, 0, W, H);
+  if (!TB.temFundo) desenharMapa(g, TB.t, TB.t.cena, W, H, k, false, parte);
+  else {
+    // com imagem de fundo, o terreno vira só uma marca por cima da imagem
+    for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) {
+      const t = terreno[y * cols + x], px = x * TQ, py = y * TQ, rg = (MAPA_T[t] || [])[1];
+      if (!rg) continue;
+      g.fillStyle = MAPA_AGUA.has(t) ? 'rgba(46,124,164,.42)' : rg === 'bloqueia' ? 'rgba(9,11,13,.82)' : rg === 'meia cobertura' ? 'rgba(190,180,146,.28)' : 'rgba(128,94,54,.36)';
+      g.fillRect(px, py, TQ, TQ);
     }
+    for (const p of TB.t.cena.props || []) desenharObjeto(g, p, k);
   }
-  g.strokeStyle = TB.temFundo ? 'rgba(10,14,16,.35)' : 'rgba(233,224,203,.09)'; g.lineWidth = 1; g.beginPath();
+  g.strokeStyle = TB.temFundo ? 'rgba(10,14,16,.35)' : 'rgba(10,12,12,.22)'; g.lineWidth = 1; g.beginPath();
   for (let x = 0; x <= cols; x++) { g.moveTo(x * TQ + .5, 0); g.lineTo(x * TQ + .5, H); }
   for (let y = 0; y <= linhas; y++) { g.moveTo(0, y * TQ + .5); g.lineTo(W, y * TQ + .5); }
   g.stroke();
-  if (TB.temFundo) { g.strokeStyle = 'rgba(233,224,203,.14)'; g.beginPath(); for (let x = 0; x <= cols; x++) { g.moveTo(x * TQ + 1.5, 0); g.lineTo(x * TQ + 1.5, H); } for (let y = 0; y <= linhas; y++) { g.moveTo(0, y * TQ + 1.5); g.lineTo(W, y * TQ + 1.5); } g.stroke(); }
+  g.strokeStyle = TB.temFundo ? 'rgba(233,224,203,.14)' : 'rgba(240,232,210,.08)'; g.beginPath(); for (let x = 0; x <= cols; x++) { g.moveTo(x * TQ + 1.5, 0); g.lineTo(x * TQ + 1.5, H); } for (let y = 0; y <= linhas; y++) { g.moveTo(0, y * TQ + 1.5); g.lineTo(W, y * TQ + 1.5); } g.stroke();
+  g.restore();
+}
+function infoQuadrado(c) {
+  if (!dentroDaGrade(c)) { if (TB.dicaQuadrado) tbDica(''); return; }
+  const t = TB.t.terreno[c.y * TB.t.cols + c.x], bi = TB.t.cena.bioma && MAPA_BIOMAS[TB.t.cena.bioma], tt = t === '.' && bi ? bi[1] : t;
+  const partes = [];
+  const [nome, regra] = MAPA_T[tt] || ['', ''];
+  if (regra) partes.push(`${nome}: ${regra}`);
+  for (const p of TB.t.cena.props || []) if (p.x === c.x && p.y === c.y && MAPA_PROPS[p.t]) partes.push(MAPA_PROPS[p.t][0] + (MAPA_PROPS[p.t][1] ? ': ' + MAPA_PROPS[p.t][1] : ''));
+  if (partes.length) { TB.dicaQuadrado = true; tbDica(partes.join(' · ')); } else if (TB.dicaQuadrado) { TB.dicaQuadrado = false; tbDica(''); }
+}
+function mexerObjeto(c) {
+  const cena = TB.t.cena, props = (cena.props || []).slice();
+  if (TB.objeto === 'apagar') { const i = props.map((p, j) => [p, j]).reverse().find(([p]) => p.x === c.x && p.y === c.y); if (!i) return; props.splice(i[1], 1); }
+  else props.push({ t: TB.objeto, x: c.x, y: c.y, v: Math.floor(Math.random() * 1e9) });
+  TB.t.cena = { ...cena, props };
+  desenharTerreno({ x0: c.x - 3, y0: c.y - 3, x1: c.x + 3, y1: c.y + 3 });
+  tbEscreve(() => api('PATCH', 'tabuleiros?mesa_id=eq.' + TB.id, { cena: TB.t.cena }), '', ['cena']);
+}
+function gerarCena() {
+  const [cols, linhas] = TB.tamGerar.split('x').map(Number), semente = Math.floor(Math.random() * 2 ** 31);
+  const { terreno, props } = gerarMapa(TB.bioma, cols, linhas, semente);
+  TB.antes = { cols: TB.t.cols, linhas: TB.t.linhas, terreno: TB.t.terreno, nevoa: TB.t.nevoa, cena: TB.t.cena };
+  aplicarCena({ cols, linhas, terreno, nevoa: '0'.repeat(cols * linhas), cena: { bioma: TB.bioma, semente, props } }, `mapa de ${MAPA_BIOMAS[TB.bioma][0].toLowerCase()} gerado`);
+}
+async function aplicarCena(n, ok) {
+  TB.t = { ...TB.t, ...n };
+  const tirarImg = TB.temFundo;
+  if (tirarImg) { TB.temFundo = false; const el = $('#tb-fundo', root); el.hidden = true; el.removeAttribute('src'); }
+  desenharTerreno(); desenharNevoa(); desenharTudo(); desenharCena(); tbCentralizar();
+  await tbEscreve(async () => {
+    await api('PATCH', 'tabuleiros?mesa_id=eq.' + TB.id, n);
+    if (tirarImg) await api('DELETE', 'tabuleiro_fundo?mesa_id=eq.' + TB.id);
+  }, ok + (tirarImg ? '; a imagem de fundo saiu para o mapa aparecer' : ''), ['terreno', 'nevoa', 'cena']);
+  // ninguém fica dentro de parede, rocha ou água funda
+  if (!TB) return;
+  const ruim = (p, x, y) => { for (let yy = y; yy < y + p.tam; yy++) for (let xx = x; xx < x + p.tam; xx++) { const t = TB.t.terreno[yy * TB.t.cols + xx]; if (t === undefined || 'pbf'.includes(t)) return true; } return TB.pecas.some(o => o !== p && x < o.x + o.tam && x + p.tam > o.x && y < o.y + o.tam && y + p.tam > o.y); };
+  for (const p of TB.pecas) {
+    let x = clamp(p.x, 0, TB.t.cols - p.tam), y = clamp(p.y, 0, TB.t.linhas - p.tam);
+    if (ruim(p, x, y)) { busca: for (let raio = 1; raio < 30; raio++) for (let dy = -raio; dy <= raio; dy++) for (let dx = -raio; dx <= raio; dx++) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx + p.tam > TB.t.cols || ny + p.tam > TB.t.linhas || ruim(p, nx, ny)) continue; x = nx; y = ny; break busca; } }
+    if (x !== p.x || y !== p.y) moverPeca(p, x, y);
+  }
 }
 // a névoa é desenhada pequena (4 pontos por quadrado) e esticada: as bordas ficam macias sem filtro nenhum
 function desenharNevoa() {
@@ -4382,7 +4972,8 @@ function desenharNevoa() {
   const g = cv.getContext('2d'), img = g.createImageData(cols * R, linhas * R), a = TB.mestre ? 140 : 255;
   for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) {
     if (nevoa[y * cols + x] !== '1') continue;
-    for (let yy = 0; yy < R; yy++) for (let xx = 0; xx < R; xx++) { const i = ((y * R + yy) * cols * R + x * R + xx) * 4; img.data[i] = 6; img.data[i + 1] = 10; img.data[i + 2] = 12; img.data[i + 3] = a; }
+    // névoa com textura de nuvem (escura, azulada), em vez de um bloco preto
+    for (let yy = 0; yy < R; yy++) for (let xx = 0; xx < R; xx++) { const i = ((y * R + yy) * cols * R + x * R + xx) * 4, u = x + (xx + .5) / R, v = y + (yy + .5) / R, n = ruidoBorda(u * .9, v * .9) * .65 + ruidoBorda(u * 2.3 + 7, v * 2.3) * .35; img.data[i] = 9 + n * 16; img.data[i + 1] = 14 + n * 20; img.data[i + 2] = 19 + n * 24; img.data[i + 3] = a; }
   }
   g.putImageData(img, 0, 0);
 }
@@ -4644,6 +5235,11 @@ function desenharAdd() {
 function desenharCena() {
   const box = $('#tb-cena', root); if (!box || box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
   box.innerHTML = `<h3>Cenário</h3>
+    <p class="fx-lbl">Gerar um mapa</p>
+    <div class="chips">${Object.entries(MAPA_BIOMAS).map(([v, [n]]) => `<button class="chip" type="button" data-tb="bioma" data-v="${v}" aria-pressed="${TB.bioma === v}">${n}</button>`).join('')}</div>
+    <div class="fx-add tb-gerar"><label class="fx-f"><span>Tamanho</span><select id="tb-tam-gerar">${[['16x12', 'pequeno, 16 × 12'], ['24x16', 'médio, 24 × 16'], ['32x22', 'grande, 32 × 22'], ['40x28', 'enorme, 40 × 28']].map(([v, n]) => `<option value="${v}"${TB.tamGerar === v ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
+      <button class="fx-btn" type="button" data-tb="gerar">Gerar mapa</button>${TB.antes ? '<button class="fx-btn small" type="button" data-tb="desfazer-mapa">Desfazer</button>' : ''}</div>
+    <p class="fx-hint">Troca o terreno e os objetos; as peças continuam no mapa, longe de paredes e da água funda. Gere de novo para outra versão, e retoque com Terreno e Objetos.</p>
     <label class="fx-f"><span>Imagem de fundo</span><input type="file" id="tb-img" accept="image/*"></label>
     <p class="fx-hint">A imagem é reduzida para 2000 px e esticada sobre a grade; as linhas se ajustam ao formato dela.</p>
     ${TB.temFundo ? '<div class="fx-add"><button class="fx-btn small" type="button" data-tb="sem-img">Tirar a imagem</button></div>' : ''}
@@ -4671,7 +5267,8 @@ function desenharOpcoes() {
     regua: '<span class="fx-hint">Arraste de um quadrado a outro. Cada quadrado vale 1,5 m, inclusive na diagonal.</span>',
     area: `<span class="chips">${FORMAS.map(([v, r]) => ch('forma', v, r, TB.area.forma === v)).join('')}</span><span class="chips">${TAMANHOS_AREA.map(m => ch('metros', m, fm(m), TB.area.m === m)).join('')}</span>
       <span class="fx-hint">${TB.area.forma === 'circulo' ? 'Toque no centro do raio.' : 'Arraste de onde sai até para onde aponta.'}</span>`,
-    terreno: `<span class="chips">${TERRENOS.map(([v, r]) => ch('pincel', v, r, TB.pincel === v)).join('')}</span><span class="fx-hint">Pinte arrastando.</span>`,
+    terreno: `<span class="chips">${TERRENOS.map(([v, r]) => ch('pincel', v, r, TB.pincel === v)).join('')}</span><span class="chips">${[1, 2, 3].map(n => ch('pincel-n', n, n + '×' + n, TB.pincelN === n)).join('')}</span><span class="fx-hint">Pinte arrastando. ${MAPA_T[TB.pincel] && MAPA_T[TB.pincel][1] ? MAPA_T[TB.pincel][0] + ': ' + MAPA_T[TB.pincel][1] + '.' : ''}</span>`,
+    objetos: `<span class="chips">${Object.entries(MAPA_PROPS).map(([v, [r]]) => ch('objeto', v, r, TB.objeto === v)).join('')}${ch('objeto', 'apagar', 'Apagar', TB.objeto === 'apagar')}</span><span class="fx-hint">${TB.objeto === 'apagar' ? 'Toque num objeto para tirar.' : 'Toque no mapa para pôr. ' + (MAPA_PROPS[TB.objeto] && MAPA_PROPS[TB.objeto][1] ? MAPA_PROPS[TB.objeto][0] + ': ' + MAPA_PROPS[TB.objeto][1] + '.' : '')}</span>`,
     nevoa: `<span class="chips">${ch('nevoa-modo', '1', 'Cobrir', TB.nevoaModo === '1')}${ch('nevoa-modo', '0', 'Revelar', TB.nevoaModo === '0')}</span>
       <button class="fx-btn small" type="button" data-tb="nevoa-tudo" data-v="1">Cobrir tudo</button><button class="fx-btn small" type="button" data-tb="nevoa-tudo" data-v="0">Revelar tudo</button>
       <span class="fx-hint">Os jogadores não veem o que está coberto, nem as peças que estão ali.</span>`,
@@ -4752,6 +5349,11 @@ function tbClique(e) {
   if (a === 'forma') { TB.area.forma = b.dataset.v; return desenharOpcoes(); }
   if (a === 'metros') { TB.area.m = +b.dataset.v; return desenharOpcoes(); }
   if (a === 'pincel') { TB.pincel = b.dataset.v; return desenharOpcoes(); }
+  if (a === 'pincel-n') { TB.pincelN = +b.dataset.v; return desenharOpcoes(); }
+  if (a === 'objeto') { TB.objeto = b.dataset.v; return desenharOpcoes(); }
+  if (a === 'bioma') { TB.bioma = b.dataset.v; return desenharCena(); }
+  if (a === 'gerar') return gerarCena();
+  if (a === 'desfazer-mapa' && TB.antes) { const v = TB.antes; TB.antes = null; return aplicarCena(v, 'mapa anterior de volta'); }
   if (a === 'nevoa-modo') { TB.nevoaModo = b.dataset.v; return desenharOpcoes(); }
   if (a === 'nevoa-tudo') { const v = b.dataset.v.repeat(TB.t.cols * TB.t.linhas); TB.t.nevoa = v; desenharNevoa(); return tbEscreve(() => api('PATCH', 'tabuleiros?mesa_id=eq.' + TB.id, { nevoa: v }), b.dataset.v === '1' ? 'mapa todo coberto' : 'mapa todo à vista', ['nevoa']); }
   if (a === 'sel' && p) { selecionar(p.id); const vr = vi.getBoundingClientRect(), v = TB.vista; TB.vista.x = vr.width / 2 - (p.x + p.tam / 2) * TQ * v.z; TB.vista.y = vr.height / 2 - (p.y + p.tam / 2) * TQ * v.z; return aplicarVista(); }
@@ -4786,6 +5388,7 @@ function tbMuda(e) {
   if (!TB) return;
   const t = e.target;
   if (t.id === 'tb-img') { const f = t.files && t.files[0]; t.value = ''; return tbImagem(f); }
+  if (t.id === 'tb-tam-gerar') { TB.tamGerar = t.value; return; }
   const campo = t.dataset.tbc; if (!campo) return;
   const p = TB.pecas.find(x => x.id === TB.sel); if (!p) return;
   let v = t.type === 'checkbox' ? t.checked : t.value;

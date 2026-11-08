@@ -3,7 +3,9 @@
 
 -- ------------------------------------------------------------ tabelas
 -- um tabuleiro por mesa. terreno e névoa: uma letra por quadrado, linha por linha.
---   terreno: . vazio · a água · d difícil · c cobertura · p parede
+--   terreno: . chão · g grama · r terra · s areia · k pedra · m tábuas · o caverna
+--            a água rasa · f água funda · l lama · v mato alto · d entulho (difícil)
+--            c mureta (meia cobertura) · b rocha · p parede (bloqueiam)
 --   névoa:   0 aberto · 1 coberto
 create table if not exists public.tabuleiros (
   mesa_id uuid primary key references public.mesas on delete cascade,
@@ -16,6 +18,8 @@ create table if not exists public.tabuleiros (
   versao bigint not null default 0,
   atualizado timestamptz not null default now()
 );
+-- cena: ambiente do mapa e objetos (árvores, rochas, caixotes…) desenhados por cima do terreno
+alter table public.tabuleiros add column if not exists cena jsonb not null default '{}'::jsonb;
 
 -- a imagem de fundo fica numa tabela à parte, para a consulta de todo segundo continuar leve
 create table if not exists public.tabuleiro_fundo (
