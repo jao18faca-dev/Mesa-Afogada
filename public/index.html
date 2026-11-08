@@ -2040,9 +2040,9 @@ a.fx-btn{text-decoration:none;display:inline-block}
       <p class="note">não dá para aprender tudo. escolhi as minhas pelo que me manteve vivo, não pelo que parecia mais forte.</p>
       <div class="rulebox">
         <p><b>Marcas do Catalogador.</b> Cada mantra e cada talento traz um carimbo dizendo como ele soube: <i>visto</i>, <i>copiado</i>, <i>ouvi falar</i> ou <i>boato</i>. Para a mesa, todos valem igual. O carimbo serve de pista para o Mestre: um boato pode funcionar um pouco diferente do que está escrito, e é com ele que o Mestre decide.</p>
-        <p><b>Mãos de talento.</b> A cada nível, você recebe uma mão de 4 cartas e fica com 1. O Mestre monta a mão (ou a ficha do site sorteia). Se preferir, o Mestre pode deixar cada jogador pegar qualquer talento cujos requisitos já cumpra.</p>
+        <p><b>Mãos de talento.</b> A cada nível, você ganha dois talentos: recebe uma mão de 4 cartas para cada um e fica com 1 carta de cada mão. O Mestre monta as mãos (ou a ficha do site sorteia). Se preferir, o Mestre pode deixar cada jogador pegar qualquer talento cujos requisitos já cumpra.</p>
         <p><b>Montando a mão.</b> Três cartas são talentos Comuns e uma é um talento Raro. Só entram na mão talentos cujos requisitos o personagem já cumpre; se nenhum Raro serve ainda, a quarta carta também é Comum. Os Desatados não entram no sorteio: o Mestre entrega quando o feito for cumprido.</p>
-        <p><b>Congelar e queimar.</b> Antes de escolher, você pode congelar uma carta e queimar outra. A congelada volta garantida na sua próxima mão, se você ainda cumprir o requisito. A queimada sai do seu baralho e não aparece mais para você (o Mestre pode devolver). Congelar ou queimar não conta como escolha: você ainda fica com uma das outras cartas.</p>
+        <p><b>Congelar e queimar.</b> Em cada mão, antes de escolher, você pode congelar uma carta e queimar outra. A congelada volta garantida na sua próxima mão, se você ainda cumprir o requisito. A queimada sai do seu baralho e não aparece mais para você (o Mestre pode devolver). Congelar ou queimar não conta como escolha: você ainda fica com uma das outras cartas.</p>
         <p><b>Comum.</b> A maioria dos talentos de um personagem: efeitos pequenos e úteis, incluindo o primeiro passo de cada Vertente de Sintonia.</p>
         <p><b>Raro.</b> Mais fortes, ou com efeitos maiores. Muitos pedem um talento Comum antes.</p>
         <p><b>Medida de cada carta.</b> Um Comum dá um bônus pequeno (+1 ou +2) a algo específico, ou um efeito de situação. Um Raro dá um bônus que vale quase sempre, ou um efeito forte limitado a uma vez por rodada. Um Lendário muda o jeito de jogar, quase sempre com um limite por combate ou por descanso. PA de graça é o efeito mais forte do jogo, e só aparece com limite.</p>
@@ -2746,7 +2746,7 @@ function jurs() {
 }
 const ehMestre = () => typeof CUR !== 'undefined' && !!CUR && !!CUR.mestre;
 const temTal = n => S.talentos.some(t => fold(t.nome) === fold(n));
-const talentosDevidos = lvl => lvl + (S.aspecto === 'adret' ? Math.floor(lvl / 4) : 0);
+const talentosDevidos = lvl => 2 * lvl + (S.aspecto === 'adret' ? Math.floor(lvl / 4) : 0);
 const ATTR_BY = { forca: 'for', agilidade: 'agi', fortitude: 'fort', inteligencia: 'int', vontade: 'von', carisma: 'car' };
 const FIRE = ['pistola', 'revolver', 'mosquete', 'bacamarte'];
 function reqCtx() {
@@ -3169,7 +3169,7 @@ function renderTalentos() {
     const d = findTal(t.nome);
     return `<div class="fx-card on tal${d ? ' cr-' + esc(d.rar) : ''}${FX.chegou && t.nome === FX.chegou ? ' chegou' : ''}"><h4><span>${esc(t.nome)}</span><button class="x" type="button" data-del="talentos" data-i="${i}" aria-label="Apagar talento">×</button></h4>
       ${d ? `<span class="meta rar-${esc(d.rar)}">${esc(d.rar)} · requisito: ${esc(d.req)}</span><p>${d.ef}</p>` : `<textarea id="tl-${i}" data-l="talentos.${i}.texto" aria-label="O que o talento faz" placeholder="o que ele faz">${esc(t.texto || '')}</textarea>`}</div>`;
-  }).join('') || '<p class="fx-empty">Nenhum talento ainda. A cada nível, você recebe uma mão de 4 cartas e fica com uma.</p>';
+  }).join('') || '<p class="fx-empty">Nenhum talento ainda. A cada nível, você ganha dois talentos: uma mão de 4 cartas para cada um.</p>';
   FX.chegou = '';
 }
 function renderEquip(c) {
