@@ -442,6 +442,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx-card.carta.cr-raro{border-color:var(--note)}
 .fx-card.carta.cr-lendário{border:3px double var(--rubric)}
 
+.lg-links{margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule)}
+
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
 </style>
@@ -2583,7 +2585,6 @@ let lastSaved = 0, saving = false, pollT = null, mesaT = null;
 function loadSess() { try { sess = JSON.parse(localStorage.getItem(AUTH_KEY)) || null; } catch (e) { sess = null; } }
 function keepSess(s) { sess = s; try { s ? localStorage.setItem(AUTH_KEY, JSON.stringify(s)) : localStorage.removeItem(AUTH_KEY); } catch (e) {} }
 const slug = n => String(n || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '');
-const emailOf = n => (slug(n) || 'sem.nome') + '@mare-baixa.app';
 async function authPost(path, body) {
   let r;
   try { r = await fetch(SB_URL + '/auth/v1/' + path, { method: 'POST', headers: { apikey: SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
@@ -2711,57 +2712,119 @@ function logout() {
 }
 
 /* ---------- entrar ---------- */
-function renderLogin(msg = '') {
-  stopPolls(); CUR = null;
+let lgModo = 'entrar', lgAviso = '';
+const LAST_EMAIL = AUTH_KEY + '-email';
+const BACK = () => location.origin + location.pathname;
+const okEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
+const lgMsg = t => { const el = $('#lg-msg', root); if (el) el.textContent = t; };
+function lembrar(email) { try { localStorage.setItem(LAST_EMAIL, email); } catch (e) {} }
+function renderLogin(msg = '', modo = lgModo) {
+  stopPolls(); CUR = null; lgModo = modo;
+  if (lgAviso) { msg = lgAviso; lgAviso = ''; }
+  const [kick, title, hint] = {
+    entrar: ['Entrar', 'Seu e-mail e a sua senha', 'Primeira vez aqui? Toque em <b>Criar conta</b>. Suas fichas ficam guardadas no servidor: abra de qualquer aparelho.'],
+    criar: ['Criar conta', 'Quem está chegando no barco?', 'O nome é como a mesa vai te ver. A senha precisa de pelo menos 6 letras.'],
+    esqueci: ['Esqueci a senha', 'Trocar a senha', 'Escreva o e-mail da sua conta. Chega um link para você escolher uma senha nova.'],
+    nova: ['Senha nova', 'Escolha uma senha nova', 'Pelo menos 6 letras. Depois disso você já entra.'],
+  }[modo];
+  const go = { entrar: 'Entrar', criar: 'Criar conta', esqueci: 'Mandar o link', nova: 'Salvar a senha' }[modo];
+  const fields = [
+    modo === 'criar' ? `<label class="fx-f"><span>Nome na mesa</span><input class="fx-in" id="lg-nome" name="nickname" autocomplete="nickname" required></label>` : '',
+    modo !== 'nova' ? `<label class="fx-f"><span>E-mail</span><input class="fx-in" id="lg-email" name="email" type="email" autocomplete="email" inputmode="email" required></label>` : '',
+    modo !== 'esqueci' ? `<label class="fx-f"><span>${modo === 'nova' ? 'Senha nova' : 'Senha'}</span><input class="fx-in" id="lg-senha" name="password" type="password" autocomplete="${modo === 'entrar' ? 'current-password' : 'new-password'}" minlength="6" required></label>` : '',
+  ].join('');
+  const links = modo === 'entrar' ? '<button class="fx-btn" type="button" data-modo="criar">Criar conta</button><button class="fx-btn" type="button" data-modo="esqueci">Esqueci a senha</button>'
+    : modo === 'nova' ? '' : '<button class="fx-btn" type="button" data-modo="entrar">Já tenho conta</button>';
   root.innerHTML = `
   <article class="page" aria-labelledby="lg-title" style="max-width:720px;margin:0 auto">
     <div class="folio"><b>Maré Baixa</b><span>quem está no barco?</span></div>
-    <h2 id="lg-title" style="margin-bottom:12px"><span class="kicker">Entrar</span>Seu nome e uma senha</h2>
-    <p class="fx-hint" style="margin:0 0 16px">Primeira vez? Escreva o nome que quiser e uma senha de pelo menos 6 letras. Se o nome ainda não existe, a conta nasce na hora. Suas fichas ficam guardadas no servidor: abra de qualquer aparelho.</p>
-    <form id="lg-form" class="fx-box" autocomplete="on">
-      <div class="fx-fields">
-        <label class="fx-f"><span>Nome</span><input class="fx-in" id="lg-nome" name="username" autocomplete="username" required></label>
-        <label class="fx-f"><span>Senha</span><input class="fx-in" id="lg-senha" name="password" type="password" autocomplete="current-password" minlength="6" required></label>
-      </div>
-      <div class="fx-add"><button class="fx-btn" type="submit" id="lg-go">Entrar</button><span class="fx-status" id="lg-msg" role="status">${esc(msg)}</span></div>
-      <div id="lg-create" hidden></div>
+    <h2 id="lg-title" style="margin-bottom:12px"><span class="kicker">${kick}</span>${title}</h2>
+    <p class="fx-hint" style="margin:0 0 16px">${hint}</p>
+    <form id="lg-form" class="fx-box" autocomplete="on" novalidate>
+      <div class="fx-fields">${fields}</div>
+      <div class="fx-add"><button class="fx-btn" type="submit" id="lg-go">${go}</button><span class="fx-status" id="lg-msg" role="status">${esc(msg)}</span></div>
+      ${links ? `<div class="fx-add lg-links">${links}</div>` : ''}
     </form>
   </article>`;
-  try { const last = localStorage.getItem(AUTH_KEY + '-nome'); if (last) $('#lg-nome', root).value = last; } catch (e) {}
+  try { const last = localStorage.getItem(LAST_EMAIL); const el = $('#lg-email', root); if (last && el) el.value = last; } catch (e) {}
 }
-let pendingSignup = null;
-async function tryLogin() {
-  const nome = $('#lg-nome', root).value.trim(), pw = $('#lg-senha', root).value;
-  const msg = t => { $('#lg-msg', root).textContent = t; };
-  if (!nome) return msg('Escreva um nome.');
-  if (pw.length < 6) return msg('A senha precisa de pelo menos 6 letras.');
-  msg('entrando…'); $('#lg-go', root).disabled = true;
+function authErro(e) {
+  const m = e.message || '', c = String(e.code || '');
+  if (c === 'invalid_credentials' || /invalid login credentials/i.test(m)) return 'E-mail ou senha errados. Primeira vez aqui? Toque em Criar conta.';
+  if (c === 'email_not_confirmed' || /not confirmed/i.test(m)) return 'Falta confirmar o e-mail: clique no link que chegou na sua caixa de entrada.';
+  if (c === 'user_already_exists' || /already (registered|exists)/i.test(m)) return 'Esse e-mail já tem conta. Entre com ele, ou use Esqueci a senha.';
+  if (c === 'email_address_not_authorized' || /not authorized/i.test(m)) return 'O servidor ainda não manda e-mail para os jogadores. O Mestre precisa ligar um SMTP no Supabase.';
+  if (c === 'email_address_invalid' || (/invalid/i.test(m) && /email/i.test(m))) return 'O servidor não aceitou esse e-mail. Confira se está escrito certo.';
+  if (c.startsWith('over_') || /rate limit/i.test(m)) return 'Muitas tentativas em pouco tempo. Espere alguns minutos e tente de novo.';
+  if (c === 'email_provider_disabled' || /logins are disabled/i.test(m)) return 'O login por e-mail está desligado no Supabase.';
+  if (c === 'signup_disabled' || /signups not allowed/i.test(m)) return 'O Supabase está fechado para contas novas.';
+  if (c === 'weak_password' || /password/i.test(m) && /weak|short|least/i.test(m)) return 'O servidor achou a senha fraca. Tente uma maior, com letras e números.';
+  if (c === 'same_password') return 'Essa já é a sua senha. Escolha outra.';
+  return 'Não deu: ' + m;
+}
+async function authUser(path, method, body, token) {
+  let r;
+  try { r = await fetch(SB_URL + '/auth/v1/' + path, { method, headers: { apikey: SB_KEY, Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }); }
+  catch (e) { throw Object.assign(new Error('sem conexão com o servidor'), { status: 0 }); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.msg || j.error_description || j.message || ('erro ' + r.status)), { status: r.status, code: j.error_code || j.code || j.error });
+  return j;
+}
+async function lgSubmit() {
+  const val = id => { const el = $(id, root); return el ? el.value : ''; };
+  const email = val('#lg-email').trim().toLowerCase(), pw = val('#lg-senha'), nome = val('#lg-nome').trim();
+  if (lgModo !== 'nova' && !okEmail(email)) return lgMsg('Escreva um e-mail válido.');
+  if (lgModo !== 'esqueci' && pw.length < 6) return lgMsg('A senha precisa de pelo menos 6 letras.');
+  if (lgModo === 'criar' && !nome) return lgMsg('Escreva como a mesa vai te chamar.');
+  const btn = $('#lg-go', root); btn.disabled = true;
   try {
-    keepSess(fromToken(await authPost('token?grant_type=password', { email: emailOf(nome), password: pw })));
-    try { localStorage.setItem(AUTH_KEY + '-nome', nome); } catch (e) {}
-    afterLogin();
-  } catch (e) {
-    $('#lg-go', root).disabled = false;
-    if (e.status === 400 || e.code === 'invalid_credentials') {
-      pendingSignup = { nome, pw };
-      const box = $('#lg-create', root); box.hidden = false;
-      box.innerHTML = `<div class="fx-confirm" style="margin-top:10px;color:var(--ink)">Não achei <b>${esc(nome)}</b> com essa senha. Se é a sua primeira vez, crie a conta. Se não, confira a senha. <button class="fx-btn" type="button" data-act="lg-criar">Criar conta</button></div>`;
-      msg('');
-    } else msg('Não deu para entrar: ' + e.message);
+    if (lgModo === 'entrar') {
+      lgMsg('entrando…');
+      keepSess(fromToken(await authPost('token?grant_type=password', { email, password: pw })));
+      lembrar(email); return afterLogin();
+    }
+    if (lgModo === 'criar') {
+      lgMsg('criando a conta…');
+      const j = await authPost('signup?redirect_to=' + encodeURIComponent(BACK()), { email, password: pw, data: { nome } });
+      lembrar(email);
+      if (!j.access_token) { btn.disabled = false; return lgMsg('Conta criada. Abra o e-mail que chegou e clique no link de confirmação; depois entre aqui.'); }
+      keepSess(fromToken(j)); return afterLogin();
+    }
+    if (lgModo === 'esqueci') {
+      lgMsg('mandando…');
+      await authPost('recover?redirect_to=' + encodeURIComponent(BACK()), { email });
+      lembrar(email); btn.disabled = false;
+      return lgMsg('Pronto. Se esse e-mail tem conta, chegou um link para trocar a senha. Olhe também o spam.');
+    }
+    if (lgModo === 'nova') {
+      lgMsg('salvando…');
+      await authUser('user', 'PUT', { password: pw }, await bearer());
+      lgModo = 'entrar'; return afterLogin();
+    }
+  } catch (e) { btn.disabled = false; lgMsg(authErro(e)); }
+}
+// volta de um link do e-mail (confirmar conta ou trocar senha): os dados chegam depois do #
+async function authFromHash() {
+  const h = location.hash.slice(1);
+  if (!/(^|&)(access_token|error_description|error_code)=/.test(h)) return;
+  const q = new URLSearchParams(h);
+  const tipo = q.get('type');
+  history.replaceState(null, '', location.pathname + location.search + (tipo === 'recovery' ? '#entrar' : '#fichas'));
+  if (!q.get('access_token')) {
+    const d = (q.get('error_description') || q.get('error_code') || '').replace(/\+/g, ' ');
+    history.replaceState(null, '', location.pathname + location.search + '#entrar');
+    lgAviso = /expired|invalid/i.test(d) ? 'Esse link expirou ou já foi usado. Peça outro.' : 'O link não funcionou: ' + d;
+    return;
   }
-}
-async function createAccount() {
-  if (!pendingSignup) return;
-  const { nome, pw } = pendingSignup; const msg = t => { $('#lg-msg', root).textContent = t; };
-  msg('criando a conta…');
   try {
-    const j = await authPost('signup', { email: emailOf(nome), password: pw, data: { nome } });
-    if (!j.access_token) return msg('A conta foi criada, mas o servidor pediu confirmação por e-mail. O Mestre precisa desligar "Confirm email" no Supabase.');
-    keepSess(fromToken(j)); try { localStorage.setItem(AUTH_KEY + '-nome', nome); } catch (e) {}
-    pendingSignup = null; afterLogin();
+    const tok = q.get('access_token');
+    const u = await authUser('user', 'GET', null, tok);
+    keepSess(fromToken({ access_token: tok, refresh_token: q.get('refresh_token'), expires_at: +q.get('expires_at') || 0, expires_in: +q.get('expires_in') || 3600, user: u }));
+    if (u.email) lembrar(u.email);
+    if (tipo === 'recovery') lgModo = 'nova';
   } catch (e) {
-    if (e.status === 422 || /already/i.test(e.message)) msg(`Já existe alguém chamado ${nome}. A senha é que está errada.`);
-    else msg('Não deu para criar: ' + e.message);
+    history.replaceState(null, '', location.pathname + location.search + '#entrar');
+    lgAviso = 'O link não funcionou: ' + e.message;
   }
 }
 function afterLogin() {
@@ -2933,7 +2996,7 @@ async function darItem(i) {
 }
 
 /* ---------- cliques das telas novas ---------- */
-root.addEventListener('submit', e => { if (e.target.id === 'lg-form') { e.preventDefault(); tryLogin(); } });
+root.addEventListener('submit', e => { if (e.target.id === 'lg-form') { e.preventDefault(); lgSubmit(); } });
 root.addEventListener('input', e => { if (e.target.id === 'cat-q') renderCat(); });
 root.addEventListener('change', async e => {
   const t = e.target;
@@ -2945,7 +3008,7 @@ root.addEventListener('change', async e => {
 root.addEventListener('click', async e => {
   const t = e.target.closest('button,a'); if (!t) return;
   const act = t.dataset.act;
-  if (act === 'lg-criar') return createAccount();
+  if (t.dataset.modo) { const em = ($('#lg-email', root) || {}).value; renderLogin('', t.dataset.modo); const el = $('#lg-email', root); if (em && el) el.value = em; const f = $('#lg-form input', root); if (f) f.focus(); return; }
   if (act === 'sair') return logout();
   if (act === 'voltar') { if (saveT && CUR) await save(); location.hash = CUR && CUR.mesa_id && CUR.dono !== me() ? '#mesa/' + CUR.mesa_id : '#fichas'; return; }
   if (act === 'nova-ficha') return novaFicha();
@@ -2998,19 +3061,21 @@ function route() {
   if (!app) { stopPolls(); if (h) { const t = document.getElementById(h); if (t) requestAnimationFrame(() => t.scrollIntoView()); } return; }
   window.scrollTo(0, 0);
   if (!sess) return renderLogin(v === 'entrar' ? '' : 'Entre para ver as fichas e as mesas.');
+  lgAviso = '';
+  if (lgModo === 'nova') return renderLogin('', 'nova');
   if (v === 'entrar' || v === 'fichas') return renderFichas();
   if (v === 'ficha' && id) return openFicha(id);
   if (v === 'mesas') return renderMesas();
   if (v === 'mesa' && id) return renderMesa(id);
   renderFichas();
 }
-window.addEventListener('hashchange', () => { if (CUR && saveT) save(); route(); });
+window.addEventListener('hashchange', () => { if (CUR && saveT) save(); if (/(^|&)(access_token|error_description|error_code)=/.test(location.hash.slice(1))) return authFromHash().then(route); route(); });
 window.addEventListener('beforeunload', () => { if (CUR && saveT) save(); });
 
 /* ---------- início ---------- */
 loadSess();
 wire();
-route();
+authFromHash().then(route);
 })();
 
 </script>
