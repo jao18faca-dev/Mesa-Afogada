@@ -4078,14 +4078,15 @@ function ruidoTile(r, per) {
     return a0 + (a1 - a0) * sy;
   };
 }
-function baseRuido(g, r, cores, grao, contraste = 1, relevo = 0) {
-  const S = TEX_S, img = g.createImageData(S, S), d = img.data;
-  const os = [3, 7, 15, 31].map(p => ruidoTile(r, p)), w = [.5, .26, .15, .09];
-  const cs = cores.map(hex), N = 128, q = new Float32Array(N * N);
+function fbmTile(r) {
+  const S = TEX_S, os = [3, 7, 15, 31].map(p => ruidoTile(r, p)), w = [.5, .26, .15, .09], N = 128, q = new Float32Array(N * N);
   // o ruído é calculado numa grade menor e esticado: fica igual e custa 16 vezes menos
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let k = 0; k < 4; k++) s += os[k](x / N, y / N) * w[k]; q[y * N + x] = s; }
-  const at = (x, y) => { x = ((x % S) + S) % S; y = ((y % S) + S) % S; const fx = x / S * N, fy = y / S * N, x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0, x1 = (x0 + 1) % N, y1 = (y0 + 1) % N;
+  return (x, y) => { x = ((x % S) + S) % S; y = ((y % S) + S) % S; const fx = x / S * N, fy = y / S * N, x0 = Math.floor(fx), y0 = Math.floor(fy), tx = fx - x0, ty = fy - y0, x1 = (x0 + 1) % N, y1 = (y0 + 1) % N;
     const a = q[y0 * N + x0] + (q[y0 * N + x1] - q[y0 * N + x0]) * tx, b = q[y1 * N + x0] + (q[y1 * N + x1] - q[y1 * N + x0]) * tx; return a + (b - a) * ty; };
+}
+function baseRuido(g, r, cores, grao, contraste = 1, relevo = 0) {
+  const S = TEX_S, img = g.createImageData(S, S), d = img.data, at = fbmTile(r), cs = cores.map(hex);
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
     let t = Math.max(0, Math.min(1, ((at(x, y) - .5) * 2.2 * contraste) + .5));
     const seg = t * (cs.length - 1), i0 = Math.min(cs.length - 2, Math.floor(seg)), f = seg - i0, gr = (r() - .5) * grao, o = (y * S + x) * 4;
@@ -4095,7 +4096,21 @@ function baseRuido(g, r, cores, grao, contraste = 1, relevo = 0) {
     d[o + 3] = 255;
   }
   g.putImageData(img, 0, 0);
+  return at;
 }
+// células de Voronoi que emendam na borda da textura: placas de pedra, facetas de rocha, terra rachada e a luz no fundo da água
+function worley(r, n) {
+  const S = TEX_S, c = S / n, px = new Float32Array(n * n), py = new Float32Array(n * n);
+  for (let i = 0; i < n * n; i++) { px[i] = (i % n + .12 + r() * .76) * c; py[i] = (Math.floor(i / n) + .12 + r() * .76) * c; }
+  const E = new Float32Array(S * S), ID = new Int32Array(S * S);
+  for (let y = 0; y < S; y++) { const cy = Math.floor(y / c); for (let x = 0; x < S; x++) { const cx = Math.floor(x / c); let d1 = 1e9, d2 = 1e9, id = 0;
+    for (let dy = -1; dy <= 1; dy++) { const gy = cy + dy, wy = (gy + n) % n; for (let dx = -1; dx <= 1; dx++) { const gx = cx + dx, wx = (gx + n) % n, j = wy * n + wx, ax = x - px[j] - (gx - wx) * c, ay = y - py[j] - (gy - wy) * c, dd = ax * ax + ay * ay; if (dd < d1) { d2 = d1; d1 = dd; id = j; } else if (dd < d2) d2 = dd; } }
+    const o = y * S + x; E[o] = Math.sqrt(d2) - Math.sqrt(d1); ID[o] = id; } }
+  return { E, ID };
+}
+// mexe nos pixels da textura já pintada
+function mexe(g, fn) { const S = TEX_S, img = g.getImageData(0, 0, S, S), d = img.data; for (let y = 0, i = 0; y < S; y++) for (let x = 0; x < S; x++, i++) fn(d, i * 4, x, y, i); g.putImageData(img, 0, 0); }
+const luzPx = (d, o, l) => { d[o] *= l; d[o + 1] *= l; d[o + 2] *= l; };
 function emVolta(g, x, y, m, fn) {
   const S = TEX_S;
   for (const dx of [-S, 0, S]) for (const dy of [-S, 0, S]) {
@@ -4123,9 +4138,10 @@ function blocos(g, r, alturas, larg, cores, junta, rel = .2, chanfro = 3) {
       let w = larg[0] + r() * (larg[1] - larg[0]);
       const cor = hex(cores[Math.floor(r() * cores.length)]), dv = (r() - .5) * 18;
       const fill = `rgb(${cor.map(c => Math.round(c + dv)).join(',')})`;
-      const x0 = x, ww = w;
+      const x0 = x, ww = w, pint = Array.from({ length: Math.round(ww * h / 140) }, () => [chanfro + r() * (ww - chanfro * 2), chanfro + r() * (h - chanfro * 2), r() < .5]);
       emVolta(g, x0, y, ww + 4, h2 => {
         h2.fillStyle = fill; h2.beginPath(); h2.roundRect(chanfro, chanfro, ww - chanfro * 2, h - chanfro * 2, 4); h2.fill();
+        for (const [px, py, cl] of pint) { h2.fillStyle = cl ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.1)'; h2.fillRect(px, py, 1.6, 1.6); }
         h2.strokeStyle = `rgba(255,255,255,${rel})`; h2.lineWidth = 2; h2.beginPath(); h2.moveTo(chanfro + 2, h - chanfro - 2); h2.lineTo(chanfro + 2, chanfro + 2); h2.lineTo(ww - chanfro - 2, chanfro + 2); h2.stroke();
         h2.strokeStyle = 'rgba(0,0,0,.35)'; h2.beginPath(); h2.moveTo(ww - chanfro - 1, chanfro + 2); h2.lineTo(ww - chanfro - 1, h - chanfro - 1); h2.lineTo(chanfro + 2, h - chanfro - 1); h2.stroke();
       });
@@ -4135,21 +4151,28 @@ function blocos(g, r, alturas, larg, cores, junta, rel = .2, chanfro = 3) {
   }
 }
 // lajes: o quadrado da textura é cortado ao meio várias vezes, em tamanhos diferentes, como piso de pedra antigo
+// cada pedra ganha desgaste no meio, pintinhas e às vezes uma quina lascada; devolve as pedras (o musgo usa as juntas)
 function lajes(g, r, cores, junta) {
   g.fillStyle = junta; g.fillRect(0, 0, TEX_S, TEX_S);
+  const lista = [];
   const corta = (x, y, w, h, n) => {
     if (n > 0 && (w > 120 || h > 120 || (r() < .55 && (w > 70 || h > 70)))) {
       if (w > h * (0.8 + r() * .4)) { const c = w * (.35 + r() * .3); corta(x, y, c, h, n - 1); corta(x + c, y, w - c, h, n - 1); }
       else { const c = h * (.35 + r() * .3); corta(x, y, w, c, n - 1); corta(x, y + c, w, h - c, n - 1); }
       return;
     }
-    const cor = hex(cores[Math.floor(r() * cores.length)]), dv = (r() - .5) * 16, m = 3 + r() * 1.5;
-    g.fillStyle = `rgb(${cor.map(c => Math.round(c + dv)).join(',')})`; g.beginPath(); g.roundRect(x + m, y + m, w - m * 2, h - m * 2, 3 + r() * 5); g.fill();
+    lista.push([x, y, w, h]);
+    const cor = hex(cores[Math.floor(r() * cores.length)]), dv = (r() - .5) * 16, m = 3 + r() * 1.5, x0 = x + m, y0 = y + m, ww = w - m * 2, hh = h - m * 2, raio = 3 + r() * 5;
+    g.fillStyle = `rgb(${cor.map(c => Math.round(c + dv)).join(',')})`; g.beginPath(); g.roundRect(x0, y0, ww, hh, raio); g.fill();
+    const gr = g.createRadialGradient(x0 + ww * .42, y0 + hh * .42, 0, x0 + ww / 2, y0 + hh / 2, Math.max(ww, hh) * .62); gr.addColorStop(0, 'rgba(255,250,236,.07)'); gr.addColorStop(1, 'rgba(0,0,0,.1)'); g.fillStyle = gr; g.beginPath(); g.roundRect(x0, y0, ww, hh, raio); g.fill();
+    for (let i = 0; i < Math.round(ww * hh / 150); i++) { g.fillStyle = r() < .5 ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.12)'; g.fillRect(x0 + r() * (ww - 2), y0 + r() * (hh - 2), 1 + r() * 1.8, 1 + r() * 1.8); }
     g.strokeStyle = 'rgba(255,255,255,.13)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x + m + 2, y + h - m - 3); g.lineTo(x + m + 2, y + m + 2); g.lineTo(x + w - m - 3, y + m + 2); g.stroke();
     g.strokeStyle = 'rgba(0,0,0,.32)'; g.beginPath(); g.moveTo(x + w - m - 1, y + m + 3); g.lineTo(x + w - m - 1, y + h - m - 1); g.lineTo(x + m + 3, y + h - m - 1); g.stroke();
+    if (r() < .35) { const sx = r() < .5 ? 1 : -1, sy = r() < .5 ? 1 : -1, cx = sx > 0 ? x0 : x0 + ww, cy = sy > 0 ? y0 : y0 + hh, s = 4 + r() * 7, s2 = s * (.6 + r() * .6); g.fillStyle = junta; g.beginPath(); g.moveTo(cx - sx * 2, cy - sy * 2); g.lineTo(cx + sx * s, cy - sy * 2); g.lineTo(cx + sx * s * .35, cy + sy * s2 * .45); g.lineTo(cx - sx * 2, cy + sy * s2); g.closePath(); g.fill(); g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 1; g.beginPath(); g.moveTo(cx + sx * s, cy); g.lineTo(cx + sx * s * .35, cy + sy * s2 * .45); g.lineTo(cx, cy + sy * s2); g.stroke(); }
     if (r() < .25) { g.strokeStyle = 'rgba(20,18,16,.45)'; g.lineWidth = 1.3; g.beginPath(); let px = x + w * r(), py = y + h * r(); g.moveTo(px, py); for (let i = 0; i < 4; i++) { px += (r() - .5) * 26; py += (r() - .5) * 26; g.lineTo(px, py); } g.stroke(); }
   };
   corta(0, 0, TEX_S, TEX_S, 9);
+  return lista;
 }
 function sujeira(g, r, alfa) {
   // uma camada de ruído escuro por cima, para nenhuma textura parecer limpa demais
@@ -4160,33 +4183,62 @@ function sujeira(g, r, alfa) {
 function gerarTextura(tipo) {
   const c = document.createElement('canvas'); c.width = c.height = TEX_S;
   const g = c.getContext('2d'), r = mapaRng(1000 + (tipo === 'K' ? 'k' : tipo).charCodeAt(0) * 7919), S = TEX_S;   // a laje com musgo usa as mesmas pedras da laje limpa
+  // tudo o que é sorteado sai antes de desenhar: a mesma marca aparece igual dos dois lados da emenda
   const linhas = (n, cores, comp, ang, larg, alfa) => { for (let i = 0; i < n; i++) { const x = r() * S, y = r() * S, l = comp[0] + r() * (comp[1] - comp[0]), a = ang[0] + r() * (ang[1] - ang[0]); g.strokeStyle = cores[Math.floor(r() * cores.length)]; g.globalAlpha = alfa; g.lineWidth = larg; emVolta(g, x, y, l, h => { h.beginPath(); h.moveTo(0, 0); h.lineTo(Math.cos(a) * l, Math.sin(a) * l); h.stroke(); }); } g.globalAlpha = 1; };
+  const tufos = (n, cores, comp, larg, abre, base) => { for (let i = 0; i < n; i++) { const x = r() * S, y = r() * S, m = 4 + Math.floor(r() * 5), f = Array.from({ length: m }, () => [-Math.PI / 2 + (r() - .5) * abre, comp[0] + r() * (comp[1] - comp[0]), cores[Math.floor(r() * cores.length)], (r() - .5) * 5]);
+    emVolta(g, x, y, comp[1] + 6, h => { h.lineCap = 'round'; if (base) { h.fillStyle = base; h.beginPath(); h.ellipse(0, 1, 3.5, 2, 0, 0, 7); h.fill(); } h.lineWidth = larg; for (const [a, L, cor, dob] of f) { h.strokeStyle = cor; h.beginPath(); h.moveTo(0, 0); h.quadraticCurveTo(Math.cos(a) * L * .5 + dob, Math.sin(a) * L * .5, Math.cos(a) * L, Math.sin(a) * L); h.stroke(); } }); } };
+  const manchas = (n, rmin, rmax, cor, achata = .6) => { for (let i = 0; i < n; i++) { const x = r() * S, y = r() * S, rx = rmin + r() * (rmax - rmin), ry = rx * achata * (.7 + r() * .6), a = r() * 3; emVolta(g, x, y, rx, h => { h.fillStyle = cor; h.beginPath(); h.ellipse(0, 0, rx, ry, a, 0, 7); h.fill(); }); } };
+  const flores = (n, cores) => { for (let i = 0; i < n; i++) { const x = r() * S, y = r() * S, cor = cores[i % cores.length]; emVolta(g, x, y, 4, h => { h.fillStyle = cor; for (let k = 0; k < 5; k++) { h.beginPath(); h.arc(Math.cos(k * 1.26) * 2.4, Math.sin(k * 1.26) * 2.4, 1.6, 0, 7); h.fill(); } h.fillStyle = '#e8c040'; h.beginPath(); h.arc(0, 0, 1.1, 0, 7); h.fill(); }); } };
   switch (tipo) {
-    case 'g':
-      baseRuido(g, r, ['#2c4520', '#40602a', '#557a33', '#3c5a27'], 12);
-      linhas(3200, ['#73a040', '#3b5c24', '#86b24c', '#2a461c', '#5f8a36'], [5, 12], [-2.2, -.9], 1.6, .55);
-      for (let i = 0; i < 18; i++) { const x = r() * S, y = r() * S, cor = ['#efe6a6', '#e9e3f2', '#f0b8c4'][i % 3]; emVolta(g, x, y, 4, h => { h.fillStyle = cor; for (let k = 0; k < 5; k++) { h.beginPath(); h.arc(Math.cos(k * 1.26) * 2.4, Math.sin(k * 1.26) * 2.4, 1.6, 0, 7); h.fill(); } }); }
+    case 'g': {
+      baseRuido(g, r, ['#2c4520', '#40602a', '#557a33', '#3c5a27'], 12, 1, .45);
+      // três camadas de capim: o fundo escuro, os tufos e as pontas que pegam sol
+      linhas(1500, ['#1f3415', '#27421a', '#2e4c1e'], [4, 9], [-2.4, -.7], 2, .6);
+      tufos(620, ['#4a7a2c', '#5f8a36', '#6f9c3e', '#3f6a26'], [6, 12], 1.5, 1.8, 'rgba(16,30,10,.35)');
+      linhas(900, ['#9cc85a', '#b4d870', '#86b24c'], [2, 5], [-2.2, -1], 1.2, .5);
+      for (let i = 0; i < 26; i++) { const x = r() * S, y = r() * S, cor = r() < .5 ? '#4f8a34' : '#5e9a3c', rot = r() * 6.3; emVolta(g, x, y, 6, h => { h.fillStyle = cor; for (let k = 0; k < 3; k++) { const a = rot + k * 2.09; h.beginPath(); h.arc(Math.cos(a) * 2.2, Math.sin(a) * 2.2, 2, 0, 7); h.fill(); } }); }
+      flores(18, ['#efe6a6', '#e9e3f2', '#f0b8c4']);
       break;
+    }
     case 'v':
-      baseRuido(g, r, ['#1d3016', '#2b4520', '#3a5a29'], 12);
-      for (let i = 0; i < 420; i++) { const x = r() * S, y = r() * S, n = 6 + Math.floor(r() * 5); emVolta(g, x, y, 22, h => { for (let k = 0; k < n; k++) { const a = -Math.PI / 2 + (r() - .5) * 1.6, l = 10 + r() * 14; h.strokeStyle = ['#5f8c35', '#78a544', '#3d6326', '#93bd58'][Math.floor(r() * 4)]; h.lineWidth = 1.8; h.globalAlpha = .75; h.beginPath(); h.moveTo(0, 0); h.quadraticCurveTo(Math.cos(a) * l * .5 + (r() - .5) * 6, Math.sin(a) * l * .5, Math.cos(a) * l, Math.sin(a) * l); h.stroke(); } h.globalAlpha = 1; }); }
+      baseRuido(g, r, ['#1d3016', '#2b4520', '#3a5a29'], 12, 1, .5);
+      linhas(900, ['#16260f', '#1d3214'], [6, 12], [-2.4, -.7], 2.2, .7);
+      tufos(380, ['#5f8c35', '#78a544', '#3d6326', '#93bd58'], [10, 22], 1.8, 1.6, 'rgba(8,18,4,.45)');
+      linhas(500, ['#a8d468', '#c0e080'], [2, 5], [-2.2, -1], 1.2, .5);
+      for (let i = 0; i < 40; i++) { const x = r() * S, y = r() * S, a = -.3 + (r() - .5) * .6; emVolta(g, x, y, 4, h => { h.fillStyle = 'rgba(214,200,140,.8)'; h.beginPath(); h.ellipse(0, 0, 1.6, 3, a, 0, 7); h.fill(); }); }
       break;
-    case 'r':
-      baseRuido(g, r, ['#45321f', '#5c4430', '#735738', '#5a412b'], 16, 1, .8);
-      pedrinhas(g, r, 220, 1.5, 4.5, ['#8b7b66', '#6f604f', '#a39079', '#5c4f41']);
-      linhas(40, ['rgba(30,20,10,.6)'], [8, 22], [0, 6.3], 1.2, .5);
+    case 'r': {
+      baseRuido(g, r, ['#45321f', '#5c4430', '#735738', '#5a412b'], 16, 1.1, 1.1);
+      // em algumas manchas a terra secou e rachou em placas
+      const W = worley(r, 18), seca = fbmTile(r);
+      mexe(g, (d, o, x, y, i) => { const f = lisa(.52, .66, seca(x, y)); if (!f) return; const e = W.E[i]; luzPx(d, o, e < 1.5 ? 1 - .4 * f : e < 3.2 ? 1 + .08 * f : 1); });
+      manchas(30, 8, 22, 'rgba(28,18,8,.18)');
+      pedrinhas(g, r, 240, 1.2, 4.5, ['#8b7b66', '#6f604f', '#a39079', '#5c4f41']);
+      // raízes e gravetos
+      for (let i = 0; i < 22; i++) { const x = r() * S, y = r() * S, pts = [[0, 0]], lw = 1.2 + r() * 1.4; let a = r() * 6.3, px = 0, py = 0; for (let k = 0; k < 4; k++) { a += (r() - .5) * .9; px += Math.cos(a) * (5 + r() * 6); py += Math.sin(a) * (5 + r() * 6); pts.push([px, py]); }
+        emVolta(g, x, y, 44, h => { h.lineCap = 'round'; h.strokeStyle = 'rgba(40,26,12,.8)'; h.lineWidth = lw; h.beginPath(); pts.forEach(([a, b], k) => k ? h.lineTo(a, b) : h.moveTo(a, b)); h.stroke(); h.strokeStyle = 'rgba(170,130,90,.25)'; h.lineWidth = lw * .4; h.beginPath(); pts.forEach(([a, b], k) => k ? h.lineTo(a - .5, b - .5) : h.moveTo(a - .5, b - .5)); h.stroke(); }); }
+      linhas(30, ['rgba(30,20,10,.6)'], [8, 22], [0, 6.3], 1.2, .5);
       break;
-    case 's':
+    }
+    case 's': {
       baseRuido(g, r, ['#ae925e', '#c4a979', '#d6bf8f', '#c9b183'], 12, .8, .5);
-      for (let i = 0; i < 70; i++) { const x = r() * S, y = r() * S, l = 30 + r() * 60; emVolta(g, x, y, l, h => { h.strokeStyle = 'rgba(255,248,225,.22)'; h.lineWidth = 2; h.beginPath(); h.moveTo(-l / 2, 0); h.quadraticCurveTo(0, -6, l / 2, 0); h.stroke(); h.strokeStyle = 'rgba(90,70,40,.16)'; h.beginPath(); h.moveTo(-l / 2, 3); h.quadraticCurveTo(0, -3, l / 2, 3); h.stroke(); }); }
+      // ondulações do vento: listras que fecham certinho na borda da textura, entortadas pelo ruído
+      const ond = fbmTile(r), forca = fbmTile(r);
+      mexe(g, (d, o, x, y) => { const f = .3 + lisa(.4, .62, forca(x, y)) * .7, ph = 6.2832 * (2 * x / S + 20 * y / S) + (ond(x, y) - .5) * 18, s = Math.sin(ph); luzPx(d, o, 1 + (Math.cos(ph) * .055 + (s > .82 ? (s - .82) * .5 : 0)) * f); });
       for (let i = 0; i < 2600; i++) { g.fillStyle = r() < .5 ? 'rgba(255,250,230,.35)' : 'rgba(80,60,30,.25)'; g.fillRect(r() * S, r() * S, 1.5, 1.5); }
+      for (let i = 0; i < 26; i++) { const x = r() * S, y = r() * S, a = r() * 6.3, s = 1.6 + r() * 2.2, cor = ['#f4ece0', '#e8d4c8', '#d8c8b0'][Math.floor(r() * 3)]; emVolta(g, x, y, 6, h => { h.rotate(a); h.fillStyle = 'rgba(90,70,40,.3)'; h.beginPath(); h.arc(.6, .8, s, Math.PI, 0); h.closePath(); h.fill(); h.fillStyle = cor; h.beginPath(); h.arc(0, 0, s, Math.PI, 0); h.closePath(); h.fill(); h.strokeStyle = 'rgba(140,110,90,.55)'; h.lineWidth = .6; h.beginPath(); h.moveTo(0, 0); h.lineTo(0, -s); h.stroke(); }); }
       pedrinhas(g, r, 14, 2, 4, ['#e8e0d0', '#cfc2a8', '#f1ebe0'], .2);
       break;
-    case 'o':
+    }
+    case 'o': {
       baseRuido(g, r, ['#24212a', '#2f2b33', '#3d3842', '#2b2730'], 12, 1.1, 1.2);
-      pedrinhas(g, r, 160, 1.5, 4, ['#4a433c', '#3a342f', '#57504a']);
-      for (let i = 0; i < 26; i++) { const x = r() * S, y = r() * S, rx = 10 + r() * 26; emVolta(g, x, y, rx, h => { h.fillStyle = 'rgba(0,0,0,.22)'; h.beginPath(); h.ellipse(0, 0, rx, rx * .6, r() * 3, 0, 7); h.fill(); }); }
+      // o chão da caverna quebrado em placas, cada uma de um tom, com a beirada lascada pegando luz
+      const W = worley(r, 9), tom = Array.from({ length: 81 }, () => .84 + r() * .3), fr = fbmTile(r);
+      mexe(g, (d, o, x, y, i) => { const e = W.E[i], q = .35 + lisa(.35, .6, fr(x, y)) * .65; luzPx(d, o, tom[W.ID[i]] * (e < 1.8 ? 1 - .55 * q : e < 3.6 ? 1 + .12 * q : 1)); });
+      pedrinhas(g, r, 130, 1.5, 4, ['#4a433c', '#3a342f', '#57504a']);
+      manchas(22, 10, 30, 'rgba(0,0,0,.2)');
       break;
+    }
     case 'k':
       lajes(g, r, ['#6d6a66', '#5f5c59', '#78746f', '#66625e', '#706b67', '#5a5753'], '#24221f');
       sujeira(g, r, .45);
@@ -4199,12 +4251,17 @@ function gerarTextura(tipo) {
         while (x < S) {
           const w = 150 + r() * 160, cor = hex(['#7a5434', '#6b482b', '#856040', '#5f3f25', '#734f30'][Math.floor(r() * 5)]), dv = (r() - .5) * 14, y = row * 64;
           const fill = `rgb(${cor.map(c => Math.round(c + dv)).join(',')})`, x0 = x, sem = r() * 100;
+          const no = r() < .45 ? [30 + r() * Math.max(10, w - 60), 14 + r() * 34, 2.5 + r() * 3] : null, gasto = r() < .5 ? 10 + r() * 40 : -1, limo = r() < .18;
           emVolta(g, x0, y, w + 4, h => {
             h.fillStyle = fill; h.fillRect(2, 3, w - 4, 58);
+            if (limo) { const lg = h.createLinearGradient(0, 3, 0, 61); lg.addColorStop(0, 'rgba(70,90,40,0)'); lg.addColorStop(1, 'rgba(70,90,40,.28)'); h.fillStyle = lg; h.fillRect(2, 3, w - 4, 58); }
+            if (gasto >= 0) { h.fillStyle = 'rgba(255,235,200,.06)'; h.fillRect(4, gasto, w - 8, 9); }
             h.strokeStyle = 'rgba(40,24,10,.32)'; h.lineWidth = 1.3;
             for (let k = 0; k < 7; k++) { const yy = 8 + k * 7.5 + Math.sin(sem + k) * 2; h.beginPath(); h.moveTo(4, yy); for (let xx = 4; xx < w - 4; xx += 16) h.lineTo(xx, yy + Math.sin((xx + sem * 10 + k * 13) / 23) * 1.8); h.stroke(); }
+            if (no) { const [nx, ny, s] = no; h.strokeStyle = 'rgba(40,24,10,.3)'; h.lineWidth = 1; for (const q of [2.8, 2]) { h.beginPath(); h.ellipse(nx, ny, s * q * 1.5, s * q * .8, 0, 0, 7); h.stroke(); } h.fillStyle = 'rgba(60,36,16,.6)'; h.beginPath(); h.ellipse(nx, ny, s * 1.5, s * .9, 0, 0, 7); h.fill(); h.fillStyle = 'rgba(28,14,6,.8)'; h.beginPath(); h.ellipse(nx, ny, s * .7, s * .45, 0, 0, 7); h.fill(); }
             h.strokeStyle = 'rgba(255,230,190,.12)'; h.beginPath(); h.moveTo(3, 4); h.lineTo(w - 3, 4); h.stroke();
-            h.fillStyle = '#2a2a2a'; for (const nx of [10, w - 12]) for (const ny of [16, 46]) { h.beginPath(); h.arc(nx, ny, 2.2, 0, 7); h.fill(); h.fillStyle = 'rgba(255,255,255,.25)'; h.fillRect(nx - 1, ny - 1.5, 1, 1); h.fillStyle = '#2a2a2a'; }
+            h.strokeStyle = 'rgba(0,0,0,.3)'; h.beginPath(); h.moveTo(3, 60); h.lineTo(w - 3, 60); h.stroke();
+            h.fillStyle = '#2a2a2a'; for (const nx of [10, w - 12]) for (const ny of [16, 46]) { h.beginPath(); h.arc(nx, ny, 2.2, 0, 7); h.fill(); h.fillStyle = 'rgba(255,255,255,.25)'; h.fillRect(nx - 1, ny - 1.5, 1, 1); h.fillStyle = 'rgba(120,60,30,.35)'; h.beginPath(); h.ellipse(nx + 1.5, ny + 3, 1.5, 3, 0, 0, 7); h.fill(); h.fillStyle = '#2a2a2a'; }
           });
           x += w;
         }
@@ -4212,18 +4269,25 @@ function gerarTextura(tipo) {
       sujeira(g, r, .25);
       break;
     }
-    case 'a':
+    case 'a': {
       baseRuido(g, r, ['#24636c', '#2f7781', '#3e8d94', '#2a6c75'], 8);
-      for (let i = 0; i < 90; i++) { const x = r() * S, y = r() * S, l = 20 + r() * 50, a = r() * 6.3; emVolta(g, x, y, l, h => { h.rotate(a); h.strokeStyle = 'rgba(210,248,242,.18)'; h.lineWidth = 2.2; h.beginPath(); h.moveTo(-l / 2, 0); h.bezierCurveTo(-l / 4, -8, l / 4, 8, l / 2, 0); h.stroke(); }); }
-      for (let i = 0; i < 500; i++) { g.fillStyle = 'rgba(230,255,250,.25)'; g.fillRect(r() * S, r() * S, 1.5, 1.5); }
+      // a luz desenhando uma rede clara no fundo da água rasa
+      // as linhas são lidas num lugar entortado pelo ruído: ficam onduladas, não com cara de rede
+      const W1 = worley(r, 7), W2 = worley(r, 11), mm = fbmTile(r), wx = fbmTile(r), wy = fbmTile(r);
+      mexe(g, (d, o, x, y) => { const ax = ((x + Math.round((wx(x, y) - .5) * 26)) % S + S) % S, ay = ((y + Math.round((wy(x, y) - .5) * 26)) % S + S) % S, j = ay * S + ax, q = lisa(.35, .75, mm(x, y)), c = ((1 - lisa(0, 6, W1.E[j])) * .65 + (1 - lisa(0, 3.5, W2.E[j])) * .35) * (.12 + q * .7); d[o] += c * 40; d[o + 1] += c * 62; d[o + 2] += c * 58; });
+      for (let i = 0; i < 60; i++) { const x = r() * S, y = r() * S, l = 20 + r() * 50, a = r() * 6.3; emVolta(g, x, y, l, h => { h.rotate(a); h.strokeStyle = 'rgba(210,248,242,.16)'; h.lineWidth = 2.2; h.beginPath(); h.moveTo(-l / 2, 0); h.bezierCurveTo(-l / 4, -8, l / 4, 8, l / 2, 0); h.stroke(); }); }
+      for (let i = 0; i < 400; i++) { g.fillStyle = 'rgba(230,255,250,.25)'; g.fillRect(r() * S, r() * S, 1.5, 1.5); }
       break;
+    }
     case 'f':
       baseRuido(g, r, ['#0e2a3a', '#143748', '#1b4659', '#17405a'], 6);
       for (let i = 0; i < 70; i++) { const x = r() * S, y = r() * S, l = 18 + r() * 34; emVolta(g, x, y, l, h => { h.strokeStyle = 'rgba(150,205,225,.13)'; h.lineWidth = 2; h.beginPath(); h.arc(0, l, l, -Math.PI * .7, -Math.PI * .3); h.stroke(); }); }
       break;
     case 'l':
-      baseRuido(g, r, ['#2f2216', '#3e2d1e', '#4d3926', '#3a2a1c'], 10, 1, .6);
-      for (let i = 0; i < 34; i++) { const x = r() * S, y = r() * S, rx = 8 + r() * 22; emVolta(g, x, y, rx, h => { h.fillStyle = 'rgba(70,82,80,.32)'; h.beginPath(); h.ellipse(0, 0, rx, rx * .55, r() * 3, 0, 7); h.fill(); h.strokeStyle = 'rgba(200,220,215,.18)'; h.lineWidth = 1.5; h.beginPath(); h.ellipse(0, 0, rx, rx * .55, 0, 3.6, 5.2); h.stroke(); }); }
+      baseRuido(g, r, ['#2f2216', '#3e2d1e', '#4d3926', '#3a2a1c'], 10, 1, .8);
+      for (let i = 0; i < 34; i++) { const x = r() * S, y = r() * S, rx = 8 + r() * 22, a = r() * 3; emVolta(g, x, y, rx, h => { h.rotate(a); h.fillStyle = 'rgba(70,82,80,.32)'; h.beginPath(); h.ellipse(0, 0, rx, rx * .55, 0, 0, 7); h.fill(); h.strokeStyle = 'rgba(200,220,215,.18)'; h.lineWidth = 1.5; h.beginPath(); h.ellipse(0, 0, rx, rx * .55, 0, 3.6, 5.2); h.stroke(); }); }
+      // lama revirada: torrões com a ponta brilhando
+      for (let i = 0; i < 160; i++) { const x = r() * S, y = r() * S, rr = 1.5 + r() * 3; emVolta(g, x, y, 6, h => { h.fillStyle = 'rgba(20,12,6,.45)'; h.beginPath(); h.ellipse(.8, 1, rr, rr * .7, 0, 0, 7); h.fill(); h.fillStyle = 'rgba(90,66,44,.8)'; h.beginPath(); h.ellipse(0, 0, rr, rr * .7, 0, 0, 7); h.fill(); h.fillStyle = 'rgba(220,210,190,.25)'; h.beginPath(); h.arc(-rr * .3, -rr * .25, rr * .3, 0, 7); h.fill(); }); }
       break;
     case 'd':
       baseRuido(g, r, ['#3d3127', '#4e4034', '#5d4f41'], 14, 1, .9);
@@ -4237,15 +4301,20 @@ function gerarTextura(tipo) {
       blocos(g, r, [64, 64, 64, 64, 64, 64, 64, 64], [96, 150], ['#4e4b47', '#45423f', '#55524d', '#3f3d3a'], '#161514', .14, 3);
       sujeira(g, r, .35);
       break;
-    case 'b':
+    case 'b': {
       baseRuido(g, r, ['#3b3a44', '#504d5a', '#666270', '#46434f'], 14, 1.4, 1.6);
-      for (let i = 0; i < 60; i++) { let x = r() * S, y = r() * S, a = r() * 6.3; g.strokeStyle = 'rgba(15,15,15,.55)'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 6; k++) { a += (r() - .5) * 1.2; x += Math.cos(a) * 9; y += Math.sin(a) * 9; g.lineTo(x, y); } g.stroke(); }
-      for (let i = 0; i < 70; i++) { const x = r() * S, y = r() * S, rr = 10 + r() * 24; emVolta(g, x, y, rr, h => { h.fillStyle = 'rgba(255,255,255,.05)'; h.beginPath(); h.moveTo(-rr, 0); h.lineTo(0, -rr * .6); h.lineTo(rr * .7, 0); h.closePath(); h.fill(); }); }
+      // facetas: cada pedaço da rocha vira para um lado e pega mais ou menos luz; a quebra entre eles é uma fresta escura
+      const W = worley(r, 12), fac = Array.from({ length: 144 }, () => { const a = r() * 6.283, s = .3 + r() * .7; return 1 - (Math.cos(a) + Math.sin(a)) * .7 * s * .3; }), fr = fbmTile(r);
+      mexe(g, (d, o, x, y, i) => { const e = W.E[i], q = lisa(.38, .62, fr(x, y)); luzPx(d, o, fac[W.ID[i]] * (e < 1.4 ? 1 - .38 * q : e < 2.6 ? 1 + .08 * q : 1)); });
+      for (let i = 0; i < 40; i++) { let x = r() * S, y = r() * S, a = r() * 6.3; g.strokeStyle = 'rgba(15,15,15,.55)'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 6; k++) { a += (r() - .5) * 1.2; x += Math.cos(a) * 9; y += Math.sin(a) * 9; g.lineTo(x, y); } g.stroke(); }
       break;
+    }
     // variantes: manchas grandes por cima do terreno principal, para o chão não parecer repetido
     case 'G':
-      baseRuido(g, r, ['#4a5526', '#5f6c34', '#76803f', '#55602c'], 12);
-      linhas(2600, ['#9aa04e', '#6e7a36', '#b3b25c', '#4f5a26'], [5, 11], [-2.2, -.9], 1.5, .55);
+      baseRuido(g, r, ['#4a5526', '#5f6c34', '#76803f', '#55602c'], 12, 1, .4);
+      linhas(1200, ['#3a4420', '#45501f'], [4, 9], [-2.4, -.7], 2, .6);
+      tufos(420, ['#9aa04e', '#6e7a36', '#b3b25c', '#86903f'], [5, 11], 1.5, 1.8, 'rgba(40,40,10,.3)');
+      flores(10, ['#f2e08a', '#ffffff']);
       break;
     case 'S':
       baseRuido(g, r, ['#8a7350', '#9c8460', '#ae9670', '#94805c'], 10, .9, .5);
@@ -4253,16 +4322,26 @@ function gerarTextura(tipo) {
       break;
     case 'O':
       baseRuido(g, r, ['#1f2826', '#2a3633', '#34443d', '#26302d'], 12, 1.1, 1.0);
-      for (let i = 0; i < 90; i++) { const x = r() * S, y = r() * S, rr = 6 + r() * 16; emVolta(g, x, y, rr, h => { h.fillStyle = 'rgba(70,110,80,.22)'; h.beginPath(); h.ellipse(0, 0, rr, rr * .7, r() * 3, 0, 7); h.fill(); }); }
+      manchas(90, 6, 22, 'rgba(70,110,80,.22)', .7);
+      for (let i = 0; i < 400; i++) { g.fillStyle = r() < .5 ? 'rgba(120,170,120,.25)' : 'rgba(0,0,0,.25)'; g.fillRect(r() * S, r() * S, 1.5, 1.5); }
       break;
     case 'R':
       baseRuido(g, r, ['#33241a', '#433021', '#523c29', '#3c2b1e'], 14, 1, .8);
-      for (let i = 0; i < 260; i++) { const x = r() * S, y = r() * S, cor = ['#7a5a26', '#8a4a1e', '#6a6a2a', '#5a3a1a'][Math.floor(r() * 4)]; emVolta(g, x, y, 8, h => { h.fillStyle = cor; h.globalAlpha = .7; h.beginPath(); h.ellipse(0, 0, 4 + r() * 3, 2 + r() * 1.5, r() * 3, 0, 7); h.fill(); h.globalAlpha = 1; }); }
+      // folhas caídas: algumas inteiras, com o veio no meio
+      for (let i = 0; i < 300; i++) { const x = r() * S, y = r() * S, cor = ['#7a5a26', '#8a4a1e', '#6a6a2a', '#5a3a1a', '#9a6a28'][Math.floor(r() * 5)], rx = 3.5 + r() * 3.5, ry = rx * (.4 + r() * .2), a = r() * 3.1; emVolta(g, x, y, 9, h => { h.rotate(a); h.fillStyle = 'rgba(20,12,4,.3)'; h.beginPath(); h.ellipse(.8, 1, rx, ry, 0, 0, 7); h.fill(); h.fillStyle = cor; h.beginPath(); h.ellipse(0, 0, rx, ry, 0, 0, 7); h.fill(); h.strokeStyle = 'rgba(40,24,8,.5)'; h.lineWidth = .7; h.beginPath(); h.moveTo(-rx, 0); h.lineTo(rx, 0); h.stroke(); }); }
       break;
-    case 'K':
-      lajes(g, r, ['#6d6a66', '#5f5c59', '#78746f', '#66625e', '#706b67', '#5a5753'], '#24221f'); sujeira(g, r, .45);
-      for (let i = 0; i < 120; i++) { const x = r() * S, y = r() * S, rr = 5 + r() * 18; emVolta(g, x, y, rr, h => { h.fillStyle = `rgba(${70 + r() * 20},${100 + r() * 25},${50 + r() * 15},.42)`; h.beginPath(); h.ellipse(0, 0, rr, rr * (.5 + r() * .4), r() * 3, 0, 7); h.fill(); }); }
+    case 'K': {
+      const pedras = lajes(g, r, ['#6d6a66', '#5f5c59', '#78746f', '#66625e', '#706b67', '#5a5753'], '#24221f'); sujeira(g, r, .45);
+      // musgo crescendo nas juntas entre as pedras, e algumas almofadas por cima
+      const musgo = ['#4f6e2a', '#5f7f32', '#6a8c3a', '#3f5a22'];
+      for (const [x, y, w, h] of pedras) for (const [x0, y0, x1, y1] of [[x, y, x + w, y], [x, y, x, y + h]]) {
+        if (r() > .45) continue;
+        const n = Math.floor(Math.hypot(x1 - x0, y1 - y0) / 3), bl = Array.from({ length: n }, (_, j) => [x0 + (x1 - x0) * j / n + (r() - .5) * 3, y0 + (y1 - y0) * j / n + (r() - .5) * 3, (1.4 + r() * 2.4) * (r() < .15 ? 2 : 1), musgo[Math.floor(r() * 4)]]);
+        for (const [px, py, rr, cor] of bl) emVolta(g, px, py, rr + 1, h2 => { h2.fillStyle = cor; h2.globalAlpha = .85; h2.beginPath(); h2.arc(0, 0, rr, 0, 7); h2.fill(); h2.globalAlpha = 1; });
+      }
+      manchas(40, 4, 13, 'rgba(84,112,52,.32)', .7);
       break;
+    }
     default:
       baseRuido(g, r, ['#1b2629', '#162023', '#1f2b2e'], 6);
   }
@@ -4287,7 +4366,8 @@ function ruidoBorda(u, v) {
 function ruidoDaRegiao(reg) {
   const R = MASK_R, w = (reg.x1 - reg.x0 + 1) * R, h = (reg.y1 - reg.y0 + 1) * R, N = new Float32Array(w * h);
   for (let py = 0; py < h; py++) { const v = reg.y0 + (py + .5) / R; for (let px = 0; px < w; px++) { const u = reg.x0 + (px + .5) / R; N[py * w + px] = (ruidoBorda(u * .55 + 2.3, v * .55 + 7.1) - .5) * .7 + (ruidoBorda(u * 1.7 + .5, v * 1.7 + .5) - .5) * .42 + (ruidoBorda(u * 4.1, v * 4.1) - .5) * .18; } }
-  return (u, v) => N[Math.min(h - 1, Math.max(0, Math.floor((v - reg.y0) * R))) * w + Math.min(w - 1, Math.max(0, Math.floor((u - reg.x0) * R)))];
+  // lido com interpolação: com zoom, as bordas finas (espuma, brilho da margem) não ficam em degrau
+  return (u, v) => { const fx = Math.min(w - 1.001, Math.max(0, (u - reg.x0) * R - .5)), fy = Math.min(h - 1.001, Math.max(0, (v - reg.y0) * R - .5)), x0 = fx | 0, y0 = fy | 0, tx = fx - x0, ty = fy - y0, i = y0 * w + x0, a = N[i] + (N[i + 1] - N[i]) * tx, b = N[i + w] + (N[i + w + 1] - N[i + w]) * tx; return a + (b - a) * ty; };
 }
 // as bordas são "entortadas" pelo mesmo ruído em todas as camadas: duas camadas vizinhas se encaixam sem buraco
 const torce = nz => (u, v) => [u + nz(u, v) * .9, v + nz(u + 1.37, v + .61) * .9];
@@ -4304,7 +4384,9 @@ function cobertura(grade, cols, linhas, reg, nz, R = MASK_R) {
   }
   return { out, w, h };
 }
-function canvasDe(w, h, preenche) { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'), img = g.createImageData(w, h); preenche(img.data); g.putImageData(img, 0, 0); return c; }
+function canvasDe(w, h, preenche) { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'), img = g.createImageData(w, h); preenche(img.data); g.putImageData(img, 0, 0); c.px = img.data; return c; }
+// desfoque de caixa (duas passadas parecem um desfoque de verdade)
+function borraCaixa(A, w, h, r) { const t = new Float32Array(A.length), n = 2 * r + 1; for (let y = 0; y < h; y++) { let s = 0; for (let x = -r; x <= r; x++) s += A[y * w + Math.max(0, Math.min(w - 1, x))]; for (let x = 0; x < w; x++) { t[y * w + x] = s / n; s += A[y * w + Math.min(w - 1, x + r + 1)] - A[y * w + Math.max(0, x - r)]; } } for (let x = 0; x < w; x++) { let s = 0; for (let y = -r; y <= r; y++) s += t[Math.max(0, Math.min(h - 1, y)) * w + x]; for (let y = 0; y < h; y++) { A[y * w + x] = s / n; s += t[Math.min(h - 1, y + r + 1) * w + x] - t[Math.max(0, y - r) * w + x]; } } }
 // pinta pixel a pixel numa região; fn recebe (u, v) em quadrados e preenche o = [r, g, b, alfa 0..1]
 function pixels(reg, R, fn) {
   const w = (reg.x1 - reg.x0 + 1) * R, h = (reg.y1 - reg.y0 + 1) * R;
@@ -4315,14 +4397,39 @@ function porCima(g, k, reg, cv, modo) {
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0); if (modo) g.globalCompositeOperation = modo; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   g.drawImage(cv, Math.round(reg.x0 * TQ * k), Math.round(reg.y0 * TQ * k), Math.round((reg.x1 - reg.x0 + 1) * TQ * k), Math.round((reg.y1 - reg.y0 + 1) * TQ * k)); g.restore();
 }
+// uma camada de terreno: a textura recortada pela máscara. O mapa é dividido em ladrilhos de 4 quadrados:
+// ladrilho todo coberto é só pintado, ladrilho vazio é pulado, e só os da borda passam pelo recorte
+let CAMADA_L = null;
 function camada(g, k, reg, mascara, tipo, sombra) {
-  const Q = TQ, X = Math.round(reg.x0 * Q * k), Y = Math.round(reg.y0 * Q * k), W = Math.round((reg.x1 - reg.x0 + 1) * Q * k), H = Math.round((reg.y1 - reg.y0 + 1) * Q * k);
-  const L = document.createElement('canvas'); L.width = W; L.height = H; const l = L.getContext('2d');
-  l.setTransform(k, 0, 0, k, -reg.x0 * Q * k, -reg.y0 * Q * k); l.fillStyle = textura(tipo, l); l.fillRect(reg.x0 * Q, reg.y0 * Q, W / k, H / k);
-  l.setTransform(1, 0, 0, 1, 0, 0); l.globalCompositeOperation = 'destination-in'; l.imageSmoothingEnabled = true; l.imageSmoothingQuality = 'high'; l.drawImage(mascara, 0, 0, W, H);
-  g.save(); g.setTransform(1, 0, 0, 1, 0, 0);
-  if (sombra) { g.shadowColor = sombra[0]; g.shadowBlur = sombra[1] * k; g.shadowOffsetX = sombra[2] * k; g.shadowOffsetY = sombra[3] * k; }
-  g.drawImage(L, X, Y); g.restore();
+  const Q = TQ, mw = mascara.width, mh = mascara.height, R = mw / (reg.x1 - reg.x0 + 1), al = mascara.px || mascara.getContext('2d').getImageData(0, 0, mw, mh).data;
+  const RX = Math.round(reg.x0 * Q * k), RY = Math.round(reg.y0 * Q * k), RW = Math.round((reg.x1 - reg.x0 + 1) * Q * k), RH = Math.round((reg.y1 - reg.y0 + 1) * Q * k);
+  if (!TEX[tipo]) TEX[tipo] = gerarTextura(tipo);
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  if (sombra) {
+    // a sombra sai da própria máscara, pequena e desfocada, e é esticada: bem mais leve que o shadowBlur na tela inteira
+    const [sr, sg, sb, sa] = /\(([^)]+)\)/.exec(sombra[0])[1].split(',').map(Number), A = new Float32Array(mw * mh);
+    for (let i = 0; i < A.length; i++) A[i] = al[i * 4 + 3] / 255;
+    const rr = Math.max(1, Math.round(sombra[1] / 2 * R / Q)); borraCaixa(A, mw, mh, rr); borraCaixa(A, mw, mh, rr);
+    g.drawImage(canvasDe(mw, mh, d => { for (let i = 0; i < A.length; i++) { d[i * 4] = sr; d[i * 4 + 1] = sg; d[i * 4 + 2] = sb; d[i * 4 + 3] = A[i] * sa * 255; } }), RX + sombra[2] * k, RY + sombra[3] * k, RW, RH);
+  }
+  const pat = g.createPattern(TEX[tipo], 'repeat'); pat.setTransform(new DOMMatrix().scale(k / TEX_R));
+  const TS = Math.round(R * 4), emX = m => RX + Math.round(m / mw * RW), emY = m => RY + Math.round(m / mh * RH);
+  for (let ty = 0; ty < mh; ty += TS) for (let tx = 0; tx < mw; tx += TS) {
+    // olha um ponto a mais em volta: a interpolação da máscara passa da borda do ladrilho
+    let cheio = true, vazio = true;
+    for (let y = Math.max(0, ty - 1); y < Math.min(mh, ty + TS + 1) && (cheio || vazio); y++) for (let x = Math.max(0, tx - 1); x < Math.min(mw, tx + TS + 1); x++) { const a = al[(y * mw + x) * 4 + 3]; if (a !== 255) cheio = false; if (a !== 0) vazio = false; if (!cheio && !vazio) break; }
+    if (vazio) continue;
+    const X0 = emX(tx), Y0 = emY(ty), w = emX(Math.min(mw, tx + TS)) - X0, h = emY(Math.min(mh, ty + TS)) - Y0;
+    if (w <= 0 || h <= 0) continue;
+    if (cheio) { g.fillStyle = pat; g.fillRect(X0, Y0, w, h); continue; }
+    if (!CAMADA_L || CAMADA_L.width < w || CAMADA_L.height < h) { CAMADA_L = document.createElement('canvas'); CAMADA_L.width = Math.max(w, CAMADA_L ? CAMADA_L.width : 0); CAMADA_L.height = Math.max(h, CAMADA_L ? CAMADA_L.height : 0); }
+    const l = CAMADA_L.getContext('2d'); l.globalCompositeOperation = 'copy'; l.setTransform(1, 0, 0, 1, -X0, -Y0);
+    const lp = l.createPattern(TEX[tipo], 'repeat'); lp.setTransform(new DOMMatrix().scale(k / TEX_R)); l.fillStyle = lp; l.fillRect(X0, Y0, w, h);
+    l.setTransform(1, 0, 0, 1, 0, 0); l.globalCompositeOperation = 'destination-in'; l.imageSmoothingEnabled = true; l.imageSmoothingQuality = 'high';
+    l.drawImage(mascara, RX - X0, RY - Y0, RW, RH);
+    g.drawImage(CAMADA_L, 0, 0, w, h, X0, Y0, w, h);
+  }
+  g.restore();
 }
 // distância (em quadrados) até a borda do conjunto: positiva dentro, negativa fora
 function chanfro(D, cols, linhas) {
@@ -4361,7 +4468,7 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
   const folga = { x0: Math.max(0, reg.x0 - 1), y0: Math.max(0, reg.y0 - 1), x1: Math.min(cols - 1, reg.x1 + 1), y1: Math.min(linhas - 1, reg.y1 + 1) };
   const usados = new Set(); for (let y = folga.y0; y <= folga.y1; y++) for (let x = folga.x0; x <= folga.x1; x++) usados.add(tipos[y * cols + x]);
   const temBloq = tipos.some(c => MAPA_BLOQ.has(c)), dBloq = campoSinal(tipos.map(c => MAPA_BLOQ.has(c) ? 1 : 0), cols, linhas);
-  const sombraDe = T => T === 'm' ? ['rgba(0,0,0,.5)', 6, 2, 4] : MAPA_ALTO.has(T) ? ['rgba(6,6,16,.66)', 12, 3, 7] : null;
+  const sombraDe = T => T === 'm' ? ['rgba(0,0,0,.5)', 6, 2, 4] : MAPA_ALTO.has(T) ? ['rgba(6,6,16,.66)', 12, 3, 7] : T === 'g' ? ['rgba(14,22,6,.4)', 5, 1.5, 2.5] : T === 'v' ? ['rgba(8,16,4,.5)', 7, 2, 3.5] : null;   // grama e mato ficam um pouco acima da terra
   let fezAgua = false, fezSombra = false;
   for (const T of MAPA_ORDEM) {
     // sombra de contato: antes de qualquer coisa alta, o chão perto de rochas e paredes escurece (azul, não preto)
@@ -4374,8 +4481,12 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
     if (T === 'b') { desenharRocha(g, k, reg, tipos, cols, linhas, nz, pal, tw); continue; }
     if (organico.has(T)) {
       // como num quadro pintado em camadas: cada terreno também passa por baixo dos que vêm depois
-      const oT = MAPA_ORDEM.indexOf(T), grade = tipos.map(c => MAPA_ORDEM.indexOf(c) >= oT ? 1 : 0), cob = cobertura(grade, cols, linhas, reg, nz);
-      const masc = canvasDe(cob.w, cob.h, d => { for (let i = 0; i < cob.out.length; i++) d[i * 4 + 3] = 255 * lisa(.45, .55, cob.out[i]); });
+      // passa por baixo dos terrenos de cima só até 2 quadrados de onde ele está (mais longe, eles já se cobrem sozinhos)
+      const oT = MAPA_ORDEM.indexOf(T), perto = new Uint8Array(cols * linhas);
+      for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) if (tipos[y * cols + x] === T) for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const yy = y + dy, xx = x + dx; if (yy >= 0 && xx >= 0 && yy < linhas && xx < cols) perto[yy * cols + xx] = 1; }
+      const grade = tipos.map((c, i) => c === T || (perto[i] && MAPA_ORDEM.indexOf(c) > oT) ? 1 : 0), cob = cobertura(grade, cols, linhas, reg, nz);
+      const [m0, m1] = T === 'a' ? [.2, .8] : [.45, .55];   // a água rasa vira funda aos poucos (a terra por cima esconde a borda do lado de fora)
+      const masc = canvasDe(cob.w, cob.h, d => { for (let i = 0; i < cob.out.length; i++) d[i * 4 + 3] = 255 * lisa(m0, m1, cob.out[i]); });
       camada(g, k, reg, masc, T, sombraDe(T));
       if (VARIANTES[T]) variacao(g, k, reg, tipos, cols, linhas, T, tw, bioma);
     } else {
@@ -4405,10 +4516,10 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
     if (!fezAgua && (T === 'a' || (T === 'f' && !usados.has('a')))) {
       fezAgua = true;
       const dAgua = campoSinal(tipos.map(c => MAPA_AGUA.has(c) ? 1 : 0), cols, linhas);
-      porCima(g, k, reg, pixels(reg, 8, (u, v, o) => {
-        const d = em(dAgua, u, v) + nz(u, v) * .3; if (d < 0) return;
+      porCima(g, k, reg, pixels(reg, MASK_R, (u, v, o) => {
+        const d = em(dAgua, u, v) + nz(u, v) * .3; if (d < -.1) return;
         o[0] = pal.fundoAgua[0]; o[1] = pal.fundoAgua[1]; o[2] = pal.fundoAgua[2]; o[3] = lisa(.3, 3, d) * .55;
-        if (d < .45) sobre(o, pal.beira, (1 - d / .45) * (bioma === 'gruta' ? .22 : .1));
+        if (d < .45) sobre(o, pal.beira, (1 - Math.max(0, d) / .45) * lisa(-.1, .06, d) * (bioma === 'gruta' ? .22 : .1));
       }));
       // espuma só onde a margem é natural; tábuas e cais de pedra entram na água sem espuma
       const grade = tipos.map(c => !MAPA_AGUA.has(c) && c !== 'x' && (organico.has(c) || c === 'b') ? 1 : 0), cob = cobertura(grade, cols, linhas, reg, nz, Math.min(32, Math.max(16, Math.round(16 * k))));
@@ -4420,7 +4531,7 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
   // areia e terra molhadas perto da água
   if (tipos.some(c => MAPA_AGUA.has(c))) {
     const dAg = campoSinal(tipos.map(c => MAPA_AGUA.has(c) ? 1 : 0), cols, linhas);
-    porCima(g, k, reg, pixels(reg, 8, (u, v, o) => { const d = em(dAg, u, v) + nz(u, v) * .3; if (d >= 0 || d < -.6) return; const t = tipos[Math.min(linhas - 1, Math.max(0, Math.floor(v))) * cols + Math.min(cols - 1, Math.max(0, Math.floor(u)))]; if (!'srlgo'.includes(t)) return; o[0] = 26; o[1] = 20; o[2] = 12; o[3] = Math.pow(1 + d / .6, 1.4) * .32; }));
+    porCima(g, k, reg, pixels(reg, MASK_R, (u, v, o) => { const d = em(dAg, u, v) + nz(u, v) * .3; if (d >= .08 || d < -.6) return; const t = tipos[Math.min(linhas - 1, Math.max(0, Math.floor(v))) * cols + Math.min(cols - 1, Math.max(0, Math.floor(u)))]; if (!'srlgo'.includes(t)) return; o[0] = 26; o[1] = 20; o[2] = 12; o[3] = Math.pow(Math.min(1, 1 + d / .6), 1.4) * .32 * (1 - lisa(-.06, .08, d)); }));
   }
   // luz e sombra em manchas largas: quebra a repetição das texturas
   porCima(g, k, reg, pixels(reg, 3, (u, v, o) => { const m = ruidoBorda(u * .2 + 5.1, v * .2 + 9.3) * .65 + ruidoBorda(u * .55, v * .55 + 2) * .35; if (m > .5) { o[0] = 255; o[1] = 236; o[2] = 196; o[3] = (m - .5) * .22; } else { o[0] = pal.sombra[0]; o[1] = pal.sombra[1]; o[2] = pal.sombra[2]; o[3] = (.5 - m) * .4; } }));
@@ -4498,7 +4609,21 @@ function desenharAbismo(g, k, reg, tipos, cols, linhas, nz, pal, tw) {
 }
 // detalhes espalhados: pedrinhas, rachaduras, musgo, conchas, folhas… mais perto das paredes, menos no meio
 function desenharDetalhes(g, tipos, cols, linhas, reg, bioma, dBloq, emissivos) {
-  const Q = TQ;
+  const Q = TQ, tt = (x, y) => x < 0 || y < 0 || x >= cols || y >= linhas ? null : tipos[y * cols + x], aberto = !['caverna', 'gruta', 'santuario'].includes(bioma);
+  // pegada: o bico aponta para onde a pessoa ia; a borda de baixo pega luz como um buraquinho
+  const pegada = (px, py, a, cor, luz) => { g.save(); g.translate(px, py); g.rotate(a + Math.PI / 2); g.fillStyle = cor; g.beginPath(); g.ellipse(0, -1.7, 2.5, 3.7, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(0, 3.9, 1.9, 2.1, 0, 0, 7); g.fill(); if (luz) { g.strokeStyle = luz; g.lineWidth = 1; g.beginPath(); g.ellipse(.6, -1.2, 2.5, 3.7, 0, -.6, 1.4); g.stroke(); g.beginPath(); g.ellipse(.5, 4.1, 1.9, 2.1, 0, -.6, 1.4); g.stroke(); } g.restore(); };
+  const poca = (px, py, rr, c1, c2, borda) => { g.save(); g.translate(px, py); g.rotate(mapaHash(px, py, 3) * 3); g.scale(1, .62); g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.arc(0, 0, rr + 1.6, 0, 7); g.fill(); const gr = g.createRadialGradient(-rr * .3, -rr * .4, 0, 0, 0, rr); gr.addColorStop(0, c1); gr.addColorStop(1, c2); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rr, 0, 7); g.fill(); g.strokeStyle = borda; g.lineWidth = 1.2; g.beginPath(); g.arc(0, 0, rr - 1, 3.4, 5.3); g.stroke(); g.restore(); };
+  // trilhas de pegadas na areia: alguém passou por aqui (a pessoa desvia quando a areia acaba; fica a trilha mais longa de algumas tentativas)
+  if (aberto && tipos.includes('s')) {
+    const r = mapaRng(cols * 977 + linhas * 31 + 5);
+    const anda = (x, y, a) => { const pts = []; for (let p = 0; p < 64; p++) { let ok = false; for (const da of [0, .5, -.5, 1, -1]) { const b = a + da, nx = x + Math.cos(b) * .34, ny = y + Math.sin(b) * .34; if (tt(Math.floor(nx), Math.floor(ny)) === 's') { a = b; x = nx; y = ny; ok = true; break; } } if (!ok) break; a += (r() - .5) * .3; pts.push([x, y, a]); } return pts; };
+    for (let t = 0, n = 1 + Math.floor(r() * 2); t < n; t++) {
+      let melhor = [];
+      for (let tent = 0; tent < 8; tent++) { const x = r() * cols, y = r() * linhas; if (tt(Math.floor(x), Math.floor(y)) !== 's') continue; const pts = anda(x, y, r() * 6.283); if (pts.length > melhor.length) melhor = pts; }
+      if (melhor.length < 10) continue;
+      melhor.forEach(([x, y, a], p) => { const lado = p % 2 ? 1 : -1; pegada((x + Math.cos(a + 1.57) * .09 * lado) * Q, (y + Math.sin(a + 1.57) * .09 * lado) * Q, a + (r() - .5) * .2, 'rgba(104,78,44,.42)', 'rgba(255,248,226,.45)'); });
+    }
+  }
   for (let y = reg.y0; y <= reg.y1; y++) for (let x = reg.x0; x <= reg.x1; x++) {
     const T = tipos[y * cols + x]; if (MAPA_BLOQ.has(T) || T === 'x' || T === 'f') continue;
     const r = mapaRng(Math.floor(mapaHash(x, y, 31) * 4e9)), perto = 1 - lisa(.2, 2.6, -dBloq(x + .5, y + .5));
@@ -4509,6 +4634,11 @@ function desenharDetalhes(g, tipos, cols, linhas, reg, bioma, dBloq, emissivos) 
     const brilho = (n, cores) => { for (let i = 0; i < n; i++) { const [px, py] = em(); emissivos.push([px, py, .8 + r() * 1.8, cores[Math.floor(r() * cores.length)]]); } };
     if (T === 'o' || T === 'k' || T === 'd') {
       if (r() < .3 + perto * .55) pedras(2 + Math.floor(r() * 5 + perto * 4), 2.2, ['#5c5866', '#6f6a78', '#4a4652', '#7a7484']);
+      // poças no chão da caverna (na gruta elas brilham), crosta de mineral e, nas lajes de fora, mato nas frestas
+      if (T === 'o' && r() < (bioma === 'gruta' ? .035 : .07)) { const [px, py] = em(); if (bioma === 'gruta') { poca(px, py, 5 + r() * 7, '#5ab4cc', '#123c5c', 'rgba(220,250,255,.45)'); emissivos.push([px, py, 1.8, '80,210,240']); } else poca(px, py, 5 + r() * 7, '#4a6276', '#141c26', 'rgba(210,225,240,.35)'); }
+      if (T === 'o' && r() < .08) { const [px, py] = em(); g.fillStyle = 'rgba(220,214,200,.32)'; for (let i = 0; i < 9; i++) { g.beginPath(); g.arc(px + (r() - .5) * 10, py + (r() - .5) * 8, .8 + r() * 1.6, 0, 7); g.fill(); } }
+      if (T === 'k' && aberto && bioma !== 'cais') { const verde = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => 'gvd'.includes(tt(x + dx, y + dy))); if (r() < (verde ? .65 : .14)) for (let j = 0; j < 1 + Math.floor(r() * 3); j++) { const [px, py] = em(); for (let i = 0; i < 4 + Math.floor(r() * 4); i++) { const a = r() * 6.283, L = 3 + r() * 5; g.strokeStyle = ['#4f7a30', '#6a9a3c', '#3c6024'][Math.floor(r() * 3)]; g.lineWidth = 1.3; g.lineCap = 'round'; g.beginPath(); g.moveTo(px, py); g.quadraticCurveTo(px + Math.cos(a + .4) * L * .6, py + Math.sin(a + .4) * L * .6, px + Math.cos(a) * L, py + Math.sin(a) * L); g.stroke(); } } }
+      if (T === 'k' && r() < .03) { const [px, py] = em(); poca(px, py, 4 + r() * 5, aberto ? '#7a8a90' : '#3a4450', aberto ? '#3a4448' : '#121820', 'rgba(230,240,245,.35)'); }
       if (r() < .16) racha();
       if (bioma !== 'santuario' && r() < .05 + perto * .25) mancha(bioma === 'gruta' ? 'rgba(60,120,170,.28)' : 'rgba(70,110,50,.32)', 9);
       if ((bioma === 'santuario' || bioma === 'caverna') && r() < .05) { const [px, py] = em(); g.strokeStyle = '#d8d0bc'; g.lineWidth = 2.2; g.lineCap = 'round'; const a = r() * 3; g.beginPath(); g.moveTo(px - Math.cos(a) * 6, py - Math.sin(a) * 6); g.lineTo(px + Math.cos(a) * 6, py + Math.sin(a) * 6); g.stroke(); }
@@ -4517,6 +4647,9 @@ function desenharDetalhes(g, tipos, cols, linhas, reg, bioma, dBloq, emissivos) 
     } else if (T === 'r') {
       if (r() < .25) pedras(1 + Math.floor(r() * 3), 1.8, ['#8b7b66', '#6f604f', '#a39079']);
       if (bioma === 'floresta' && r() < .12) { const [px, py] = em(); g.strokeStyle = 'rgba(70,46,26,.7)'; g.lineWidth = 2; g.beginPath(); g.moveTo(px, py); g.bezierCurveTo(px + 8, py - 6, px + 12, py + 6, px + 20, py); g.stroke(); }
+      // pegadas seguindo o caminho, e às vezes uma poça
+      if (aberto && r() < .24) { const hz = (tt(x - 1, y) === 'r') + (tt(x + 1, y) === 'r') >= (tt(x, y - 1) === 'r') + (tt(x, y + 1) === 'r'), a = (hz ? 0 : Math.PI / 2) + (r() < .5 ? Math.PI : 0) + (r() - .5) * .3, ox = x + .25 + r() * .5, oy = y + .25 + r() * .5; for (let p = 0; p < 3; p++) { const l = p % 2 ? 1 : -1, d = (p - 1) * .3; pegada((ox + Math.cos(a) * d + Math.cos(a + 1.57) * .08 * l) * Q, (oy + Math.sin(a) * d + Math.sin(a + 1.57) * .08 * l) * Q, a, 'rgba(32,20,8,.42)', 'rgba(200,160,110,.22)'); } }
+      if (aberto && r() < .04) { const [px, py] = em(); poca(px, py, 6 + r() * 6, '#8a9aa0', '#3a3a30', 'rgba(240,245,250,.4)'); }
     } else if (T === 'g' || T === 'v') {
       if (r() < .07) { const [px, py] = em(), c = ['#efe6a6', '#e9e3f2', '#f0b8c4', '#a8c8f0'][Math.floor(r() * 4)]; g.fillStyle = c; for (let i = 0; i < 5; i++) { g.beginPath(); g.arc(px + (r() - .5) * 12, py + (r() - .5) * 12, 1.8, 0, 7); g.fill(); } }
       if (bioma === 'floresta' && r() < .2) for (let i = 0; i < 3; i++) { const [px, py] = em(); g.fillStyle = ['#7a6a2a', '#8a5a26', '#5f6e2a'][Math.floor(r() * 3)]; g.beginPath(); g.ellipse(px, py, 3.2, 1.6, r() * 3, 0, 7); g.fill(); }
@@ -4524,7 +4657,6 @@ function desenharDetalhes(g, tipos, cols, linhas, reg, bioma, dBloq, emissivos) 
       if (bioma === 'gruta' && r() < .4) brilho(1 + Math.floor(r() * 3), ['120,255,200']);
     } else if (T === 's') {
       const agua = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => { const q = tipos[(y + dy) * cols + x + dx]; return y + dy >= 0 && y + dy < linhas && x + dx >= 0 && x + dx < cols && MAPA_AGUA.has(q); });
-      if (agua && r() < .6) for (let i = 0; i < 3; i++) { const [px, py] = em(); g.strokeStyle = 'rgba(46,70,36,.65)'; g.lineWidth = 2.2; g.beginPath(); g.moveTo(px, py); g.quadraticCurveTo(px + 6, py - 5, px + 12, py + 1); g.stroke(); }
       if (r() < .07) { const [px, py] = em(); g.fillStyle = '#f2e6d8'; g.beginPath(); g.arc(px, py, 2.6, Math.PI, 0); g.closePath(); g.fill(); g.strokeStyle = 'rgba(150,120,100,.6)'; g.lineWidth = .8; g.stroke(); }
       if (r() < .05) pedras(1, 2, ['#e8e0d0', '#cfc2a8']);
     } else if (T === 'm') {
@@ -4532,6 +4664,8 @@ function desenharDetalhes(g, tipos, cols, linhas, reg, bioma, dBloq, emissivos) 
       if (r() < .03) { const [px, py] = em(); g.strokeStyle = '#b9a173'; g.lineWidth = 2; for (let i = 0; i < 3; i++) { g.beginPath(); g.arc(px, py, 3 + i * 2.2, 0, 6); g.stroke(); } }
     } else if (T === 'l') {
       if (r() < .3) { const [px, py] = em(); g.strokeStyle = 'rgba(200,210,200,.25)'; g.lineWidth = 1; g.beginPath(); g.arc(px, py, 2 + r() * 3, 0, 7); g.stroke(); }
+      if (r() < .3) { const [px, py] = em(); poca(px, py, 5 + r() * 8, '#6a7a76', '#262620', 'rgba(230,240,235,.4)'); }
+      if (aberto && r() < .35) { const a = r() * 6.283, ox = x + .3 + r() * .4, oy = y + .3 + r() * .4; for (let p = 0; p < 3; p++) { const l = p % 2 ? 1 : -1, d = (p - 1) * .3; pegada((ox + Math.cos(a) * d + Math.cos(a + 1.57) * .08 * l) * Q, (oy + Math.sin(a) * d + Math.sin(a + 1.57) * .08 * l) * Q, a, 'rgba(14,8,2,.5)', 'rgba(200,190,170,.25)'); } }
     }
   }
 }
@@ -4562,6 +4696,14 @@ function desenharBordas(g, tipos, cols, linhas, reg, bioma, tw, emissivos, veios
     if (!MAPA_AGUA.has(t) && t !== 'x' && !MAPA_BLOQ.has(t) && t !== 'm' && viz.some(v => MAPA_AGUA.has(v[2]))) amostra(8, (u, v) => {
       const c = agua(u, v); if (c < .28 || c > .5) return;
       const px = u * Q, py = v * Q, rr = 1.2 + r() * 2.2; g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(px + 1, py + 1.4, rr, rr * .8, 0, 0, 7); g.fill(); g.fillStyle = ['#bdb6a6', '#8f897c', '#d8d2c4', '#6f6a60'][Math.floor(r() * 4)]; g.beginPath(); g.ellipse(px, py, rr, rr * .8, r() * 3, 0, 7); g.fill();
+    });
+    // linha da maré na areia: algas secas, conchinhas e gravetos que a água deixou
+    if (t === 's' && viz.some(v => MAPA_AGUA.has(v[2]))) amostra(26, (u, v) => {
+      const c = agua(u, v); if (c < .05 || c > .26) return;
+      const px = u * Q, py = v * Q, q = r();
+      if (q < .6) { const a = r() * 6.3, L = 5 + r() * 9; g.strokeStyle = ['rgba(52,62,28,.85)', 'rgba(70,52,26,.8)', 'rgba(40,52,30,.85)'][Math.floor(r() * 3)]; g.lineWidth = 1.4 + r(); g.lineCap = 'round'; g.beginPath(); g.moveTo(px, py); g.bezierCurveTo(px + Math.cos(a + .8) * L * .4, py + Math.sin(a + .8) * L * .4, px + Math.cos(a - .8) * L * .7, py + Math.sin(a - .8) * L * .7, px + Math.cos(a) * L, py + Math.sin(a) * L); g.stroke(); }
+      else if (q < .85) { g.fillStyle = ['#f4ece0', '#e8c8c0', '#f0e0c8'][Math.floor(r() * 3)]; g.beginPath(); g.arc(px, py, 1.4 + r() * 1.4, Math.PI, 0); g.closePath(); g.fill(); }
+      else { const a = r() * 3.1, L = 5 + r() * 6; g.strokeStyle = '#8a7458'; g.lineWidth = 1.8; g.beginPath(); g.moveTo(px - Math.cos(a) * L / 2, py - Math.sin(a) * L / 2); g.lineTo(px + Math.cos(a) * L / 2, py + Math.sin(a) * L / 2); g.stroke(); }
     });
     if (MAPA_AGUA.has(t)) {
       // juncos e vitórias-régias na água doce
@@ -4597,6 +4739,17 @@ function desenharBordas(g, tipos, cols, linhas, reg, bioma, tw, emissivos, veios
         if (bioma === 'gruta') emissivos.push([px, py, 2.4, '90,215,255']);
       });
       if (bioma === 'gruta' && r() < .35) { let px = (x + r()) * Q, py = (y + r()) * Q, a = r() * 6.3; const pts = [[px, py]]; for (let j = 0; j < 6; j++) { a += (r() - .5) * 1.4; px += Math.cos(a) * 7; py += Math.sin(a) * 7; pts.push([px, py]); } if (rocha(px / Q, py / Q) > .75 && rocha(pts[0][0] / Q, pts[0][1] / Q) > .75) veios.push([pts, r() < .6 ? '80,220,255' : '170,120,255']); }
+    }
+  }
+  // folhas caídas em volta das árvores (as de baixo da copa ficam escondidas por ela)
+  for (const p of props) {
+    if (p.t !== 'arvore' && p.t !== 'pinheiro') continue;
+    const r = mapaRng((p.v >>> 0) + 99), cx = (p.x + .5) * Q, cy = (p.y + .5) * Q, ok = c => c && 'grvsk'.includes(c);
+    for (let i = 0; i < 18; i++) {
+      const a = r() * 6.283, d = Q * (.42 + r() * .6), px = cx + Math.cos(a) * d + Q * .12, py = cy + Math.sin(a) * d + Q * .16, rot = r() * 3.1, q = r();
+      if (!ok(T(Math.floor(px / Q), Math.floor(py / Q)))) continue;
+      if (p.t === 'pinheiro') { g.strokeStyle = q < .5 ? 'rgba(120,80,40,.7)' : 'rgba(90,60,30,.7)'; g.lineWidth = 1; g.beginPath(); g.moveTo(px, py); g.lineTo(px + Math.cos(rot) * 4, py + Math.sin(rot) * 4); g.stroke(); if (q < .12) bola(g, px, py, 2.6, '#9a6a3a', '#4a2c14'); }
+      else { g.fillStyle = ['#6a7a2a', '#8a6a26', '#5a6e2a', '#9a5a22', '#7a8a32'][Math.floor(q * 5)]; g.beginPath(); g.ellipse(px, py, 3.2, 1.7, rot, 0, 7); g.fill(); g.strokeStyle = 'rgba(30,20,8,.4)'; g.lineWidth = .6; g.beginPath(); g.moveTo(px - Math.cos(rot) * 3, py - Math.sin(rot) * 3); g.lineTo(px + Math.cos(rot) * 3, py + Math.sin(rot) * 3); g.stroke(); }
     }
   }
   // ondinhas em volta do que está na água
