@@ -903,6 +903,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx .tb-terreno canvas{position:absolute;left:0;top:0}
 .fx .tb-geral{image-rendering:auto}
 
+/* nomes no mapa de viagem: tinta escura com halo claro, como numa carta */
+.fx .tb-rotulos{z-index:2;width:0;height:0;pointer-events:none}
+.fx .tb-rotulo{position:absolute;transform:translate(-50%,-50%) scale(var(--iz,1));transform-origin:50% 50%;white-space:nowrap;font:600 13px/1.1 Georgia,'Times New Roman',serif;letter-spacing:.04em;color:#1d150c;text-shadow:0 0 3px #f3e6c8,0 0 6px #f3e6c8,0 0 10px rgba(243,230,200,.7);pointer-events:none;background:none;border:0;padding:2px 4px}
+.fx .tb-rotulo.grande{font-size:17px;letter-spacing:.12em;text-transform:uppercase}
+.fx .tb-rotulo.secreto{color:#5b1d12;font-style:italic}
+.fx button.tb-rotulo{pointer-events:auto;cursor:pointer;border-radius:4px}
+.fx button.tb-rotulo:hover,.fx button.tb-rotulo:focus-visible{background:rgba(243,230,200,.55);outline:1px solid #8a6a2a}
+.fx .tb-chip-mapa{border-color:#b8933c}
+
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
 </style>
@@ -4097,7 +4106,7 @@ const MAPA_PROPS = {
   arvore: ['Árvore', 'meia cobertura'], palmeira: ['Palmeira', 'meia cobertura'], arbusto: ['Arbusto', 'terreno difícil'], rocha: ['Rocha', 'meia cobertura'],
   caixote: ['Caixote', 'meia cobertura'], barril: ['Barril', 'meia cobertura'], pilar: ['Pilar', 'cobertura total'], tronco: ['Tronco caído', 'meia cobertura'],
   fogueira: ['Fogueira', 'quem entra se queima'], cristal: ['Cristal', 'meia cobertura'], cogumelo: ['Cogumelos', ''], ossos: ['Ossos', ''],
-  barco: ['Barco', ''], poste: ['Poste', ''],
+  barco: ['Barco', ''], navio: ['Navio', 'convés: dá para andar em cima'], poste: ['Poste', ''],
   braseiro: ['Braseiro', 'quem entra se queima'], chama: ['Chama azul', 'quem entra se queima'], tocha: ['Tocha', ''], altar: ['Altar', 'meia cobertura'],
   estatua: ['Estátua', 'cobertura total'], estalagmite: ['Estalagmite', 'meia cobertura'], bau: ['Baú', 'meia cobertura'], teia: ['Teia', 'terreno difícil'],
   runas: ['Círculo de runas', ''], escada: ['Escada', ''],
@@ -4110,7 +4119,7 @@ const MAPA_PROPS = {
   fungo: ['Fungo gigante', 'cobertura total'],
 };
 // objetos maiores que um quadrado: largura × altura, contando do quadrado de cima à esquerda
-const PROP_TAM = { runas: [4, 4], escada: [2, 3], altar: [2, 1], coluna: [2, 1], rede: [2, 2], farol: [3, 3], tenda: [2, 2], barricada: [2, 1], barraca: [2, 1], maquina: [2, 1], maca: [1, 2], estante: [2, 1], cratera: [2, 2], lamina: [1, 3] };
+const PROP_TAM = { navio: [10, 3], runas: [4, 4], escada: [2, 3], altar: [2, 1], coluna: [2, 1], rede: [2, 2], farol: [3, 3], tenda: [2, 2], barricada: [2, 1], barraca: [2, 1], maquina: [2, 1], maca: [1, 2], estante: [2, 1], cratera: [2, 2], lamina: [1, 3] };
 const propTam = t => PROP_TAM[t] || [1, 1];
 // luz que cada objeto solta: alcance em quadrados, cor e força
 const LUZES = { fogueira: [6, [255, 160, 80], 1], braseiro: [5.5, [255, 118, 52], 1], chama: [5.5, [70, 228, 214], 1], tocha: [4.5, [255, 172, 92], .9],
@@ -4586,7 +4595,7 @@ const PALETA = {
   laboratorio: { sombra: [8, 16, 22], fundo: [12, 18, 24], risco: [6, 8, 10], borda: [170, 210, 220], fundoAgua: [4, 20, 30], beira: [150, 230, 220] },
 };
 function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
-  MASK_R = k >= 1.4 ? 16 : k >= 1 ? 12 : 10;
+  MASK_R = k >= 1.4 ? 16 : k >= 1 ? 12 : k >= .4 ? 10 : 6;
   const { cols, linhas, terreno } = t, Q = TQ, bioma = cena.bioma && MAPA_BIOMAS[cena.bioma] ? cena.bioma : '';
   const chao = bioma ? MAPA_BIOMAS[bioma][1] : '', pal = PALETA[bioma] || PALETA.padrao;
   const reg = parte ? { x0: Math.max(0, parte.x0), y0: Math.max(0, parte.y0), x1: Math.min(cols - 1, parte.x1), y1: Math.min(linhas - 1, parte.y1) } : { x0: 0, y0: 0, x1: cols - 1, y1: linhas - 1 };
@@ -4893,7 +4902,7 @@ function desenharBordas(g, tipos, cols, linhas, reg, bioma, tw, emissivos, veios
     }
   }
   // ondinhas em volta do que está na água
-  for (const p of props) { if (!MAPA_AGUA.has(T(p.x, p.y))) continue; const cx = (p.x + .5) * Q, cy = (p.y + .5) * Q, s = p.t === 'barco' ? 1.5 : .7; for (const [q, a] of [[.55, .35], [.85, .18]]) { g.strokeStyle = `rgba(230,250,250,${a})`; g.lineWidth = 1.3; g.beginPath(); g.ellipse(cx, cy, Q * q * s, Q * q * s * .7, 0, 0, 7); g.stroke(); } }
+  for (const p of props) { if (p.t === 'navio' || !MAPA_AGUA.has(T(p.x, p.y))) continue; const cx = (p.x + .5) * Q, cy = (p.y + .5) * Q, s = p.t === 'barco' ? 1.5 : .7; for (const [q, a] of [[.55, .35], [.85, .18]]) { g.strokeStyle = `rgba(230,250,250,${a})`; g.lineWidth = 1.3; g.beginPath(); g.ellipse(cx, cy, Q * q * s, Q * q * s * .7, 0, 0, 7); g.stroke(); } }
 }
 // luz: escuridão do ambiente cortada pelas fontes de luz; paredes e rochas fazem sombra
 function desenharLuz(g, cena, tipos, cols, linhas, W, H, bioma, emissivos, dBloq) {
@@ -5238,6 +5247,35 @@ function desenharObjeto(g, p, k, bioma) {
         const gr = g.createRadialGradient(-s * .3, -s * .35, 0, 0, 0, s * 1.1); gr.addColorStop(0, '#fbf5e4'); gr.addColorStop(1, '#b0a688'); g.fillStyle = gr; g.beginPath(); g.ellipse(0, 0, s, s * .92, 0, 0, 7); g.fill(); g.fillStyle = '#cfc5a8'; g.beginPath(); g.roundRect(-s * .55, s * .55, s * 1.1, s * .55, 2); g.fill();
         g.fillStyle = '#1e1812'; for (const sx of [-1, 1]) { g.beginPath(); g.ellipse(sx * s * .38, s * .12, s * .24, s * .2, 0, 0, 7); g.fill(); } g.beginPath(); g.moveTo(0, s * .38); g.lineTo(-s * .1, s * .58); g.lineTo(s * .1, s * .58); g.closePath(); g.fill();
         g.strokeStyle = '#3a3024'; g.lineWidth = .8; for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(i * s * .2, s * .7); g.lineTo(i * s * .2, s * 1.05); g.stroke(); } g.restore(); }
+      break;
+    }
+    case 'navio': {
+      // navio de verdade (dez quadrados): casco de tábuas, cabine na popa, três mastros com as velas enroladas
+      const L = 10 * Q, B = 3 * Q, hl = L * .48, hw = B * .4;
+      g.translate(p.x * Q + L / 2, p.y * Q + B / 2); if (p.r) g.scale(-1, 1);
+      const casco = () => { g.beginPath(); g.moveTo(-hl, -hw * .78); g.lineTo(hl * .42, -hw); g.quadraticCurveTo(hl * .92, -hw * .72, hl, 0); g.quadraticCurveTo(hl * .92, hw * .72, hl * .42, hw); g.lineTo(-hl, hw * .78); g.quadraticCurveTo(-hl * 1.05, 0, -hl, -hw * .78); g.closePath(); };
+      g.save(); g.scale(1.05, 1.22); g.strokeStyle = 'rgba(225,245,245,.28)'; g.lineWidth = 4; casco(); g.stroke(); g.restore();
+      g.save(); g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 16 * k; g.shadowOffsetX = 6 * k; g.shadowOffsetY = 10 * k; g.fillStyle = '#3a2412'; casco(); g.fill(); g.restore();
+      g.save(); g.scale(.92, .8); casco(); g.clip(); g.fillStyle = '#9a7246'; g.fillRect(-hl, -hw, 2 * hl, 2 * hw);
+      g.strokeStyle = 'rgba(60,36,16,.55)'; g.lineWidth = 1; for (let y = -hw; y < hw; y += Q * .28) { g.beginPath(); g.moveTo(-hl, y); g.lineTo(hl, y); g.stroke(); const s0 = r() * Q * 2; for (let x = -hl + s0; x < hl; x += Q * 2.2) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + Q * .28); g.stroke(); } }
+      g.fillStyle = 'rgba(255,240,200,.12)'; g.fillRect(-hl, -hw, 2 * hl, hw * .5); g.restore();
+      g.strokeStyle = TINTA; g.lineWidth = 2.6; casco(); g.stroke();
+      g.save(); g.scale(.92, .8); g.strokeStyle = 'rgba(30,18,8,.85)'; g.lineWidth = 1.6; casco(); g.stroke(); g.restore();
+      // cabine e escotilhas
+      g.fillStyle = '#6a4426'; g.strokeStyle = TINTA; g.lineWidth = 2; g.beginPath(); g.rect(-hl * .9, -hw * .55, hl * .32, hw * 1.1); g.fill(); g.stroke();
+      g.strokeStyle = 'rgba(30,18,8,.6)'; g.lineWidth = 1; for (let i = 1; i < 4; i++) { g.beginPath(); g.moveTo(-hl * .9 + i * hl * .08, -hw * .55); g.lineTo(-hl * .9 + i * hl * .08, hw * .55); g.stroke(); }
+      for (const hx of [-.1, .62]) { g.fillStyle = '#2a1a0c'; g.fillRect(hx * hl - Q * .3, -Q * .25, Q * .6, Q * .5); g.strokeStyle = '#7a5634'; g.lineWidth = 1; g.strokeRect(hx * hl - Q * .3, -Q * .25, Q * .6, Q * .5); }
+      // gurupés e cordas
+      g.strokeStyle = TINTA; g.lineWidth = 3; g.beginPath(); g.moveTo(hl * .95, 0); g.lineTo(hl * 1.14, 0); g.stroke();
+      const mastros = [-.28, .14, .5];
+      g.strokeStyle = 'rgba(40,26,12,.7)'; g.lineWidth = .9; for (const mx of mastros) for (const sy of [-1, 1]) { g.beginPath(); g.moveTo(mx * hl, 0); g.lineTo(mx * hl - Q * .5, sy * hw * .76); g.moveTo(mx * hl, 0); g.lineTo(mx * hl + Q * .5, sy * hw * .76); g.stroke(); }
+      for (const mx of mastros) {
+        const x = mx * hl, vl = hw * 1.25;
+        g.lineCap = 'round'; g.strokeStyle = TINTA; g.lineWidth = 9; g.beginPath(); g.moveTo(x, -vl); g.lineTo(x, vl); g.stroke();
+        g.strokeStyle = '#d9ccaa'; g.lineWidth = 6; g.stroke(); g.strokeStyle = 'rgba(120,100,70,.6)'; g.lineWidth = 1; for (let t = -vl + 6; t < vl; t += 9) { g.beginPath(); g.moveTo(x - 3, t); g.lineTo(x + 3, t + 3); g.stroke(); }
+        bolaT(g, x, 0, Q * .16, '#8a6238', '#3a2412', 1.6);
+      }
+      g.lineCap = 'butt';
       break;
     }
     case 'barco': {
@@ -5700,33 +5738,114 @@ function fazerLugar(cols, linhas, base, semente, desenho) {
   const ilha = (cx, cy, rx, ry, terra, o = {}) => { const irr = o.irr ?? .35, D = new Float32Array(cols * linhas); for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) { const d = Math.hypot((x + .5 - cx) / rx, (y + .5 - cy) / ry) + (n3(x, y) - .5) * irr * 1.6 + (n(x * 1.2, y * 1.2) - .5) * irr * .5; D[y * cols + x] = d; const c = get(x, y); if (d < 1) set(x, y, o.praia && d > 1 - (o.lp || .1) ? o.praia : terra); else if (d < 1 + (o.raso ?? .1) && (c === 'f' || c === 'x')) set(x, y, 'a'); } return (x, y) => dentro(x, y) ? D[y * cols + x] : 9; };
   // casa: paredes, piso e uma porta no lado pedido (n, s, l, o)
   const casa = (x0, y0, w, h, porta = 's', piso = 'm') => { ret(x0, y0, x0 + w - 1, y0 + h - 1, 'p'); ret(x0 + 1, y0 + 1, x0 + w - 2, y0 + h - 2, piso); const mx = x0 + Math.floor(w / 2), my = y0 + Math.floor(h / 2); if (porta === 's') set(mx, y0 + h - 1, piso); if (porta === 'n') set(mx, y0, piso); if (porta === 'l') set(x0 + w - 1, my, piso); if (porta === 'o') set(x0, my, piso); return [x0 + 1, y0 + 1, x0 + w - 2, y0 + h - 2]; };
-  desenho({ r, n, n2, n3, get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, livre, cols, linhas });
-  return { terreno: T.join(''), props };
+  const n4 = ruidoMapa(r, 28), rotulos = [];
+  // nome escrito no mapa: ir = abre outro lugar (botão do Mestre), g = nome grande, m = só o Mestre vê
+  const rotulo = (x, y, t, o = {}) => rotulos.push({ x, y, t, ...o });
+  const mobilia = (ix0, iy0, ix1, iy1, q, lista, piso) => { for (let i = 0; i < q * 6 && q > 0; i++) { const t = lista[Math.floor(r() * lista.length)], x = ix0 + Math.floor(r() * (ix1 - ix0 + 1)), y = iy0 + Math.floor(r() * (iy1 - iy0 + 1)); if ((!piso || get(x, y) === piso) && por(t, x, y)) q--; } };
+  // quadra de casas (escala de combate): casas lado a lado com becos de um quadrado; a porta dá para a borda mais perto
+  const quadra = (x0, y0, x1, y1, o = {}) => {
+    const chao = o.chao || 'k', ok = o.ok || ((x, y) => get(x, y) === chao), coisas = o.coisas || ['mesa', 'barril', 'caixote', 'estante', 'bau', 'saco', 'vaso', 'maca'];
+    for (let y = y0; y <= y1 - 3;) {
+      const h = Math.min(y1 - y + 1, (o.hmin || 5) + Math.floor(r() * 3));
+      for (let x = x0; x <= x1 - 3;) {
+        const w = Math.min(x1 - x + 1, (o.wmin || 5) + Math.floor(r() * 4));
+        let cabe = w >= 4 && h >= 4; for (let yy = y; yy < y + h && cabe; yy++) for (let xx = x; xx < x + w; xx++) if (!ok(xx, yy)) { cabe = false; break; }
+        if (cabe) {
+          if (r() < (o.verde ?? .1)) { ret(x, y, x + w - 1, y + h - 1, 'g'); por(r() < .6 ? 'arvore' : 'arbusto', x + Math.floor(w / 2), y + Math.floor(h / 2)); }
+          else {
+            const dn = y - y0, ds = y1 - (y + h - 1), dl = x1 - (x + w - 1), dw = x - x0, m = Math.min(dn, ds, dl, dw);
+            const [ix0, iy0, ix1, iy1] = casa(x, y, w, h, m === ds ? 's' : m === dn ? 'n' : m === dl ? 'l' : 'o', o.piso || 'm');
+            mobilia(ix0, iy0, ix1, iy1, 2 + Math.floor(r() * 3), coisas, o.piso || 'm');
+          }
+        }
+        x += w + 1;
+      }
+      y += h + 1;
+    }
+  };
+  // cidade vista de longe (mapa de viagem): telhados em lotes, com becos entre eles; às vezes um quintal
+  const telhados = (x0, y0, x1, y1, ok, o = {}) => {
+    const lw = o.lw || 3, lh = o.lh || 3;
+    for (let by = y0; by <= y1; by += lh) for (let bx = x0; bx <= x1; bx += lw) {
+      const w = r() < .3 ? lw : Math.max(1, lw - 1 - (r() < .2 ? 1 : 0)), h = r() < .2 ? lh : Math.max(1, lh - 1 - (r() < .2 ? 1 : 0));
+      let tudo = true; for (let y = by; y < by + h && tudo; y++) for (let x = bx; x < bx + w; x++) if (!ok(x, y)) { tudo = false; break; }
+      if (!tudo) continue;
+      if (r() < (o.verde ?? .07)) { ret(bx, by, bx + w - 1, by + h - 1, 'g'); por(r() < .6 ? 'arvore' : 'arbusto', bx, by); continue; }
+      ret(bx, by, bx + w - 1, by + h - 1, o.tel || 'u');
+    }
+  };
+  // mata: chão de mato com árvores sorteadas dentro
+  const mata = (cx, cy, rx, ry, arv = 'arvore', dens = .22, so) => { bolha(cx, cy, rx, ry, 'v', .45, so); for (let y = Math.floor(cy - ry); y <= cy + ry; y++) for (let x = Math.floor(cx - rx); x <= cx + rx; x++) if (get(x, y) === 'v' && r() < dens) por(arv, x, y); };
+  desenho({ r, n, n2, n3, n4, get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, livre, cols, linhas, rotulo, mobilia, quadra, telhados, mata });
+  return { terreno: T.join(''), props, rotulos };
 }
 
 // grupo: a ilha (ou região); o primeiro mapa de cada grupo é ela inteira, os outros são partes de dentro dela
 const LUGARES = [
   // ================= O Farol Velho =================
-  { id: 'farol-ilha', grupo: 'O Farol Velho', nome: 'A ilha inteira', onde: 'Kósmos · no Mar do Vazio', cols: 56, linhas: 44, bioma: 'farol', luz: 'noite',
-    texto: 'A ilhota do farol coberto de musgo, com os recifes e os navios que encalharam em volta. Foi daqui que o Kósmos foi visto pela primeira vez.',
+  { id: 'farol-mar', grupo: 'O Farol Velho', nome: 'O mar em volta', onde: 'Kósmos · no Mar do Vazio', cols: 96, linhas: 72, escala: 10, bioma: 'farol', luz: 'noite', base: 'f',
+    texto: 'Quase um quilômetro de mar em volta da ilhota do farol: recifes, navios encalhados e, a leste, a parede de Música que separa o Mar do Vazio do Kósmos.',
     fazer: L => {
-      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, r } = L;
-      ilha(26, 22, 13, 10.5, 'g', { irr: .3, raso: .14 });
-      for (let y = 0; y < 44; y++) for (let x = 0; x < 56; x++) if (get(x, y) === 'g' && (y < 17 || x < 17) && vizinho(x, y, 'af') && r() < .85) set(x, y, 'b');
-      for (const [cx, cy, rx, ry] of [[8, 8, 4.5, 3.4], [47, 9, 5, 4], [45, 35, 4, 3], [9, 36, 3.2, 2.6], [36, 40, 2.4, 1.8]]) { ilha(cx, cy, rx, ry, 'g', { irr: .5, raso: .25 }); bolha(cx - .5, cy - .6, rx * .55, ry * .5, 'b', .5); }
-      for (let i = 0; i < 18; i++) { const x = 2 + Math.floor(r() * 52), y = 2 + Math.floor(r() * 40); if (get(x, y) === 'f') { bolha(x, y, 1.6, 1.2, 'a', .4, 'f'); bolha(x, y, .7, .6, 'b', .3, 'a'); } }
-      bolha(26, 17, 3.8, 3.4, 'k', .12, 'gb');
-      for (let i = 0; i < 30; i++) { const a = i / 30 * 6.283, x = Math.floor(26 + Math.cos(a) * 4.3), y = Math.floor(17 + Math.sin(a) * 4); if (get(x, y) === 'g' && r() < .4) set(x, y, 'c'); }
-      por('farol', 25, 16, { r: 0 });
-      casa(32, 20, 7, 5, 'o'); por('mesa', 34, 21); por('bau', 36, 22); por('estante', 33, 23);
-      bolha(30, 27, 2.4, 1.6, 'r', .4, 'g'); espalha(4, 'arbusto', (c, x, y) => c === 'r');
-      caminho([[26, 20], [27.5, 25], [26.5, 30]], 1.4, 'r', 'gc');
-      ret(25, 30, 26, 38, 'm'); for (const [x, y] of [[24, 32], [27, 32], [24, 35], [27, 35], [24, 38], [27, 38]]) por('poste', x, y);
-      por('barco', 29, 36); por('lanterna', 26, 38); por('caixote', 24, 29); por('barril', 27, 29);
-      for (const [x, y] of [[18, 25], [20, 27], [17, 28]]) por('estatua', x, y); por('ossos', 19, 26);
-      por('barco', 44, 36, { r: 1 }); por('barco', 10, 9); bolha(44.5, 36.5, 2.2, 1.5, 'd', .5, 'ga'); bolha(9.5, 9.5, 1.8, 1.2, 'd', .5, 'ga');
-      espalha(14, 'rocha', (c, x, y) => c === 'g' && vizinho(x, y, 'ba')); espalha(5, 'cogumelo', c => c === 'g'); espalha(5, 'arbusto', c => c === 'g');
-      espalha(8, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'g')); espalha(4, 'entulho', c => c === 'd'); espalha(3, 'ossos', c => c === 'd' || c === 'g');
+      const { get, set, bolha, por, espalha, vizinho, ilha, r, n, rotulo } = L;
+      // a parede de Música fecha o lado leste: dali para lá é o vazio
+      for (let y = 0; y < 72; y++) { const e = 86 + Math.round((n(3, y * .5) - .5) * 6); for (let x = e; x < 96; x++) set(x, y, 'x'); }
+      const d = ilha(40, 36, 7, 5.5, 'g', { irr: .3, raso: .45 }); bolha(38.5, 33.5, 3.2, 2.2, 'b', .4, 'g');
+      for (let y = 30; y < 43; y++) for (let x = 32; x < 48; x++) if (get(x, y) === 'g' && d(x, y) > .82 && y < 36) set(x, y, 'b');
+      por('farol', 39, 34, { r: 0 });
+      set(40, 41, 'm'); set(40, 42, 'm'); set(40, 43, 'm');
+      // recifes: água rasa com pedra no meio, cada vez mais longe da ilha
+      for (let i = 0; i < 90; i++) { const a = r() * 6.283, dd = 11 + r() * 30, x = 40 + Math.cos(a) * dd * 1.25, y = 36 + Math.sin(a) * dd * .85; if (x < 82 && get(Math.floor(x), Math.floor(y)) === 'f') { bolha(x, y, 1.2 + r() * 1.8, 1 + r() * 1.2, 'a', .5, 'f'); if (r() < .65) bolha(x, y, .6 + r() * .7, .5 + r() * .5, 'b', .4, 'a'); } }
+      for (const [cx, cy, rx, ry] of [[14, 13, 3.6, 2.7], [63, 11, 3.1, 2.4], [64, 59, 3.8, 2.8], [13, 57, 2.9, 2.2], [30, 64, 2, 1.6], [72, 34, 2.2, 1.8]]) { ilha(cx, cy, rx, ry, 'g', { irr: .5, raso: .55 }); bolha(cx - .3, cy - .4, rx * .55, ry * .5, 'b', .5, 'g'); }
+      // naufrágios nos recifes (cada barco aqui é um navio inteiro)
+      espalha(18, 'barco', (c, x, y) => c === 'a' && Math.hypot(x - 40, y - 36) > 9);
+      espalha(10, 'entulho', c => c === 'a'); espalha(14, 'rocha', (c, x, y) => c === 'g' && vizinho(x, y, 'ab')); espalha(8, 'arbusto', c => c === 'g');
+      espalha(6, 'cristal', (c, x, y) => c === 'f' && vizinho(x, y, 'x'));
+      por('lanterna', 40, 43);
+      rotulo(40, 30, 'O Farol Velho', { ir: 'farol-ilha', g: 1 });
+      rotulo(22, 24, 'Recife dos naufrágios'); rotulo(60, 50, 'Recife dos naufrágios');
+      rotulo(90, 20, 'Parede de Música'); rotulo(90, 52, 'para o Kósmos →');
+      rotulo(14, 9, 'ilhota'); rotulo(64, 64, 'ilhota');
+      rotulo(40, 45, 'cais');
+    } },
+  { id: 'farol-ilha', grupo: 'O Farol Velho', nome: 'A ilhota', onde: 'Kósmos · no Mar do Vazio', cols: 120, linhas: 96, bioma: 'farol', luz: 'noite', base: 'f',
+    texto: 'A ilhota do farol coberto de musgo, de ponta a ponta: o farol no alto, a casa do faroleiro, as estátuas, o cais e os navios que encalharam nos recifes em volta.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, mobilia, r, rotulo } = L;
+      const d = ilha(58, 46, 40, 30, 'g', { irr: .32, raso: .12 });
+      // costa norte e oeste de pedra (o farol fica no alto)
+      for (let y = 0; y < 96; y++) for (let x = 0; x < 120; x++) if (get(x, y) === 'g' && d(x, y) > .8 && (y < 40 || x < 36) && r() < .9) set(x, y, 'b');
+      for (let i = 0; i < 26; i++) { const x = 10 + Math.floor(r() * 100), y = 10 + Math.floor(r() * 76); if (get(x, y) === 'g' && d(x, y) < .75) bolha(x, y, 1.5 + r() * 2.5, 1.2 + r() * 1.8, 'b', .5, 'g'); }
+      // praia de areia escura no sul
+      for (let y = 50; y < 96; y++) for (let x = 0; x < 120; x++) if (get(x, y) === 'g' && d(x, y) > .86) set(x, y, 's');
+      // o alto do farol: pátio de pedra, círculo de lajes e a torre
+      bolha(56, 30, 9, 7.5, 'k', .14, 'gb'); for (let i = 0; i < 60; i++) { const a = i / 60 * 6.283, x = Math.floor(56 + Math.cos(a) * 10), y = Math.floor(30 + Math.sin(a) * 8.5); if (get(x, y) === 'g' && r() < .5) set(x, y, 'c'); }
+      por('farol', 55, 29, { r: 0 });
+      for (const [x, y] of [[50, 25], [61, 25], [49, 34], [62, 34]]) por('pilar', x, y);
+      por('braseiro', 52, 28); por('braseiro', 59, 32); por('caixote', 60, 27); por('barril', 61, 28);
+      // casa do faroleiro e o depósito
+      { const [a, b, c, e] = casa(68, 36, 12, 8, 'o'); mobilia(a, b, c, e, 7, ['mesa', 'estante', 'bau', 'maca', 'barril', 'vaso', 'saco', 'lanterna'], 'm'); }
+      { const [a, b, c, e] = casa(70, 47, 8, 6, 'n'); mobilia(a, b, c, e, 5, ['caixote', 'barril', 'saco', 'rede'], 'm'); }
+      bolha(64, 46, 4, 2.6, 'l', .4, 'g'); espalha(6, 'arbusto', (c, x, y) => c === 'l');
+      // as estátuas que olham para o mar
+      for (let i = 0; i < 9; i++) { const a = -2.4 + i * .18, x = Math.floor(36 + Math.cos(a) * 9), y = Math.floor(56 + Math.sin(a) * 7); if (get(x, y) === 'g') por('estatua', x, y); }
+      espalha(5, 'ossos', (c, x, y) => c === 'g' && Math.hypot(x - 36, y - 52) < 8);
+      // matas fechadas no leste e no sudoeste, e uma horta cercada perto da casa
+      L.mata(88, 58, 9, 6.5, 'arvore', .2, 'g'); L.mata(34, 70, 7, 4.5, 'arvore', .2, 'g'); L.mata(80, 28, 5, 3.5, 'pinheiro', .25, 'g');
+      ret(83, 41, 88, 45, 'l'); for (let x = 83; x <= 88; x += 2) por('arbusto', x, 43);
+      // caminhos: do alto ao cais, e para as estátuas
+      caminho([[57, 38], [60, 48], [58, 60], [57, 72]], 2, 'r', 'gsc'); caminho([[57, 38], [48, 46], [38, 52]], 1.5, 'r', 'g'); caminho([[63, 34], [68, 40]], 1.5, 'r', 'g');
+      // o cais comprido, com postes e lanternas
+      let y0 = 70; while (y0 < 95 && 'gsr'.includes(get(57, y0))) y0++;
+      ret(56, y0 - 1, 58, Math.min(95, y0 + 14), 'm'); ret(52, y0 + 9, 62, y0 + 11, 'm');
+      for (let y = y0; y < y0 + 15; y += 4) { por('poste', 55, y); por('poste', 59, y); }
+      por('lanterna', 57, y0 + 12); por('barco', 60, y0 + 13); por('barco', 50, y0 + 12); por('caixote', 56, y0); por('barril', 58, y0);
+      // navios encalhados nos recifes em volta
+      for (let i = 0; i < 40; i++) { const x = 4 + Math.floor(r() * 112), y = 4 + Math.floor(r() * 88); if (get(x, y) === 'f' && d(x, y) > 1.15 && d(x, y) < 1.5) { bolha(x, y, 1.6 + r() * 2, 1.2 + r() * 1.5, 'a', .5, 'f'); if (r() < .6) bolha(x, y, .8, .7, 'b', .4, 'a'); } }
+      espalha(7, 'barco', (c, x, y) => c === 'a' && d(x, y) > 1.12); espalha(10, 'entulho', (c, x, y) => c === 'a' || c === 's');
+      espalha(40, 'rocha', (c, x, y) => (c === 'g' || c === 's') && vizinho(x, y, 'ba')); espalha(16, 'arbusto', c => c === 'g'); espalha(10, 'cogumelo', c => c === 'g');
+      espalha(12, 'arvore', (c, x, y) => c === 'g' && Math.hypot(x - 56, y - 30) > 13); espalha(8, 'tronco', c => c === 'g' || c === 's');
+      espalha(14, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'gs')); espalha(5, 'ossos', c => c === 's');
+      rotulo(56, 20, 'o farol', { ir: 'farol-torre' }); rotulo(74, 34, 'casa do faroleiro', { ir: 'farol-casa' });
     } },
   { id: 'farol-torre', grupo: 'O Farol Velho', nome: 'O alto da torre', onde: 'Kósmos · no Mar do Vazio', cols: 18, linhas: 18, bioma: 'farol', luz: 'noite', base: 'p',
     texto: 'A sala da lanterna. Ao acender esta chama, o Lightkeeper viu o Kósmos do outro lado da parede.',
@@ -5744,34 +5863,106 @@ const LUGARES = [
       for (const [t, x, y] of [['maca', 12, 2], ['estante', 10, 1], ['bau', 13, 8], ['mesa', 4, 4], ['fogueira', 2, 8], ['barril', 6, 9], ['caixote', 1, 1], ['estante', 3, 1], ['vaso', 6, 1], ['lanterna', 11, 6], ['saco', 9, 9]]) por(t, x, y);
     } },
   // ================= Terras Giratórias =================
-  { id: 'terras-ilha', grupo: 'Terras Giratórias', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 80, linhas: 60, bioma: 'praia', luz: 'dia', base: 'f',
-    texto: 'A cidade que gira em cima do redemoinho. O Eixo, no meio da praça, é o único ponto que não sai do lugar; o resto muda de posição com a hora, a maré e a Música.',
+  { id: 'terras-mapa', grupo: 'Terras Giratórias', nome: 'A cidade inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 150, linhas: 116, escala: 10, bioma: 'praia', luz: 'dia', base: 'f',
+    texto: 'A ilha-cidade vista de cima, um quilômetro e meio de ponta a ponta. Quatro canais saem da praça do Eixo até o mar; os bairros e as ruas mudam de lugar com a hora, a maré e a Música, e só o Eixo fica parado.',
     fazer: L => {
-      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, livre, r } = L;
-      const d = ilha(40, 30, 35, 26, 'k', { irr: .22, raso: .06, praia: 's', lp: .07 });
-      ret(0, 29, 79, 30, 'a', 'kspm'); ret(39, 0, 40, 59, 'a', 'kspm');
-      for (const [x0, y0, x1, y1] of [[20, 29, 21, 30], [58, 29, 59, 30], [39, 12, 40, 13], [39, 46, 40, 47]]) ret(x0, y0, x1, y1, 'm');
-      ret(31, 22, 48, 37, 'k'); ret(39, 29, 40, 30, 'k');
-      por('runas', 38, 28);
-      for (const [x, y] of [[33, 24], [44, 24], [33, 35], [44, 35], [36, 23], [42, 36]]) por('barraca', x, y);
-      for (const [x, y] of [[32, 27], [47, 27], [32, 32], [47, 32]]) por('estandarte', x, y);
-      // quarteirões: casas de tamanhos diferentes, ruas de dois quadrados entre elas, uma praça verde aqui e ali
-      for (let by = 2; by < 58; by += 7) for (let bx = 2; bx < 78; bx += 8) {
-        const w = 5 + Math.floor(r() * 2), h = 4 + Math.floor(r() * 2), x0 = bx, y0 = by;
-        let ok = true; for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) { if (get(x, y) !== 'k' || d(x, y) > .86 || (x > 29 && x < 50 && y > 20 && y < 39)) ok = false; }
-        if (!ok) continue;
-        if (r() < .14) { bolha(x0 + w / 2, y0 + h / 2, w / 2 + .3, h / 2 + .3, 'g', .3, 'k'); por(r() < .6 ? 'arvore' : 'pinheiro', x0 + Math.floor(w / 2), y0 + Math.floor(h / 2)); continue; }
-        const [ix0, iy0, ix1, iy1] = casa(x0, y0, w, h, ['s', 'n', 'l', 'o'][Math.floor(r() * 4)]);
-        for (let i = 0; i < 3; i++) { const t = ['mesa', 'barril', 'caixote', 'estante', 'bau', 'saco', 'vaso', 'maca'][Math.floor(r() * 8)], x = ix0 + Math.floor(r() * (ix1 - ix0 + 1)), y = iy0 + Math.floor(r() * (iy1 - iy0 + 1)); if (get(x, y) === 'm') por(t, x, y); }
-      }
-      // portos: o cais sai da costa e entra no mar
-      for (const [y, dir] of [[17, 1], [42, 1], [17, -1], [42, -1]]) { let x = dir > 0 ? 78 : 1; while (x > 0 && x < 79 && 'fa'.includes(get(x, y))) x -= dir; for (let k2 = 1; k2 < 9; k2++) for (const yy of [y, y + 1]) if ('fa'.includes(get(x + dir * k2, yy))) set(x + dir * k2, yy, 'm'); por('barco', x + dir * 6, y + 3); por('barco', x + dir * 5, y - 2); }
-      espalha(18, 'poste', (c, x, y) => c === 'a' && vizinho(x, y, 'm'));
-      espalha(16, 'lanterna', (c, x, y) => c === 'k' && vizinho(x, y, 'a'));
-      espalha(14, 'caixote', (c, x, y) => c === 'k' && vizinho(x, y, 'sam')); espalha(10, 'barril', (c, x, y) => c === 'k' && vizinho(x, y, 'sam')); espalha(8, 'saco', c => c === 'k');
-      espalha(10, 'palmeira', c => c === 's'); espalha(6, 'rede', c => c === 's'); espalha(5, 'vaso', c => c === 'k');
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, telhados, mata, r, rotulo } = L;
+      const d = ilha(75, 58, 66, 51, 'k', { irr: .2, raso: .07, praia: 's', lp: .05 });
+      const cx = 75, cy = 58;
+      // avenidas (marcadas com Z enquanto as casas são postas) e os canais
+      for (const a of [.785, 2.356, 3.927, 5.498]) caminho([[cx, cy], [cx + Math.cos(a) * 80, cy + Math.sin(a) * 62]], 2, 'Z', 'k');
+      caminho([[cx - 70, cy], [cx + 70, cy]], 2.2, 'a', 'kZs'); caminho([[cx, cy - 56], [cx, cy + 56]], 2.2, 'a', 'kZs');
+      for (let i = 0; i < 64; i++) { const a = i / 64 * 6.283; caminho([[cx + Math.cos(a) * 30, cy + Math.sin(a) * 24], [cx + Math.cos(a + .1) * 30, cy + Math.sin(a + .1) * 24]], 1.6, 'Z', 'k'); }
+      // a praça do Eixo e o mercado
+      bolha(cx, cy, 11, 9, 'Z', .1, 'ka'); bolha(cx + 18, cy - 15, 9, 7, 'Z', .3, 'k');
+      // as ruas dos bairros ficam entre os telhados
+      telhados(4, 4, 146, 112, (x, y) => get(x, y) === 'k' && d(x, y) < .93 && !vizinho(x, y, 'a'), { verde: .06 });
+      for (let i = 0; i < 9; i++) { const a = r() * 6.283, dd = 32 + r() * 22; mata(cx + Math.cos(a) * dd * 1.2, cy + Math.sin(a) * dd * .9, 2.5 + r() * 2, 2 + r() * 1.5, 'arvore', .3, 'ku'); }
+      for (let y = 0; y < 116; y++) for (let x = 0; x < 150; x++) if (get(x, y) === 'Z') set(x, y, 'k');
+      // pontes nos canais onde as avenidas cruzam
+      for (let y = 0; y < 116; y++) for (let x = 0; x < 150; x++) if (get(x, y) === 'a' && d(x, y) < .9 && ((vizinho(x, y, 'k') && r() < .04) || Math.abs(Math.hypot((x - cx) / 30, (y - cy) / 24) - 1) < .04)) set(x, y, 'm');
+      por('runas', cx - 2, cy - 2); for (const [x, y] of [[cx - 6, cy - 5], [cx + 5, cy - 5], [cx - 6, cy + 4], [cx + 5, cy + 4]]) por('estandarte', x, y);
+      for (let i = 0; i < 16; i++) { const x = cx + 12 + Math.floor(r() * 13), y = cy - 21 + Math.floor(r() * 12); if (get(x, y) === 'k' && get(x + 1, y) === 'k') por('barraca', x, y); }
+      // portos: cais compridos nos quatro pontos, navios atracados
+      const porto = (x0, y0, dx, dy, n) => { for (let i = 0; i < n; i++) { const ox = dy ? (i - (n - 1) / 2) * 5 : 0, oy = dx ? (i - (n - 1) / 2) * 5 : 0; let x = x0 + ox, y = y0 + oy; while (get(x, y) && get(x, y) !== 'f' && get(x, y) !== 'a') { x += dx; y += dy; } x -= dx; y -= dy; for (let k = 0; k < 8; k++) { x += dx; y += dy; if ('fa'.includes(get(x, y))) set(x, y, 'm'); } if (r() < .8) por('barco', x + dy * 2 + dx, y + dx * 2 + dy); } };
+      porto(cx + 40, cy, 1, 0, 5); porto(cx, cy - 30, 0, -1, 3); porto(cx - 40, cy, -1, 0, 4); porto(cx, cy + 30, 0, 1, 3);
+      espalha(30, 'palmeira', (c, x, y) => c === 's'); espalha(14, 'barco', (c, x, y) => c === 'f' && d(x, y) < 1.25 && vizinho(x, y, 'fa'));
+      espalha(10, 'rocha', c => c === 's');
+      rotulo(cx, 6, 'Terras Giratórias', { g: 1 });
+      rotulo(cx, cy - 11, 'Praça do Eixo', { ir: 'terras-praca' });
+      rotulo(cx + 19, cy - 24, 'o mercado', { ir: 'terras-giratorias' });
+      rotulo(cx + 60, cy - 6, 'Porto do Leste', { ir: 'terras-porto' });
+      rotulo(cx + 50, cy + 9, 'taverna do porto', { ir: 'terras-taverna' });
+      rotulo(cx, cy - 47, 'Porto do Norte'); rotulo(cx - 58, cy - 6, 'Porto do Oeste'); rotulo(cx, cy + 49, 'Porto do Sul');
+      rotulo(cx + 3, cy + 6, 'descida para o redemoinho', { ir: 'terras-redemoinho', m: 1 });
+      rotulo(cx - 32, cy - 26, 'bairros que giram'); rotulo(cx + 30, cy + 30, 'bairros que giram');
     } },
-  { id: 'terras-giratorias', grupo: 'Terras Giratórias', nome: 'A praça do mercado', onde: 'Kósmos · Arquipélago Deluge', cols: 28, linhas: 20, bioma: 'cais', luz: 'dia', base: 'k',
+  { id: 'terras-praca', grupo: 'Terras Giratórias', nome: 'A praça do Eixo', onde: 'Kósmos · Arquipélago Deluge', cols: 160, linhas: 120, bioma: 'cais', luz: 'dia', base: 'k',
+    texto: 'O meio da cidade: a praça com o Eixo, o único ponto que não sai do lugar, o canal em anel em volta e os quarteirões de casas que giram com a ilha. Dá para lutar de rua em rua, entrar nas casas e atravessar as pontes.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, quadra, r, rotulo } = L;
+      const cx = 80, cy = 60;
+      // canal em anel e os quatro canais que saem dele; uma rua de pedra dos dois lados (marcada com Z)
+      const anel = (rx, ry, w, c, so) => { for (let i = 0; i < 160; i++) { const a = i / 160 * 6.283, b = (i + 1) / 160 * 6.283; caminho([[cx + Math.cos(a) * rx, cy + Math.sin(a) * ry], [cx + Math.cos(b) * rx, cy + Math.sin(b) * ry]], w, c, so); } };
+      anel(30, 24, 7, 'Z', 'k'); anel(30, 24, 2.6, 'a');
+      for (const [ax, ay] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { caminho([[cx + ax * 30, cy + ay * 24], [cx + ax * 90, cy + ay * 70]], 6.5, 'Z', 'k'); caminho([[cx + ax * 30, cy + ay * 24], [cx + ax * 90, cy + ay * 70]], 2.6, 'a'); }
+      // avenidas em diagonal até os cantos
+      for (const a of [.66, 2.48, 3.8, 5.62]) caminho([[cx, cy], [cx + Math.cos(a) * 110, cy + Math.sin(a) * 85]], 3.2, 'Z', 'k');
+      // a praça: livre dentro do anel, com o círculo de pedra em volta do Eixo
+      bolha(cx, cy, 25, 19, 'Z', .05, 'k');
+      for (let i = 0; i < 90; i++) { const a = i / 90 * 6.283, x = Math.floor(cx + Math.cos(a) * 9.5), y = Math.floor(cy + Math.sin(a) * 8); if (get(x, y) === 'Z' && i % 9 !== 0) set(x, y, 'c'); }
+      // os quarteirões
+      quadra(1, 1, 158, 118, { verde: .08 });
+      for (let y = 0; y < 120; y++) for (let x = 0; x < 160; x++) if (get(x, y) === 'Z') set(x, y, 'k');
+      // pontes onde as ruas cruzam a água
+      for (let i = 0; i < 4; i++) { const ang = [.66, 2.48, 3.8, 5.62][i]; const x = Math.round(cx + Math.cos(ang) * 30), y = Math.round(cy + Math.sin(ang) * 24); ret(x - 2, y - 2, x + 2, y + 2, 'm', 'a'); }
+      for (const [ax, ay] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (const t of [48, 70]) { const x = Math.round(cx + ax * t), y = Math.round(cy + ay * t * .78); if (ax) ret(x - 1, y - 3, x + 1, y + 3, 'm', 'a'); else ret(x - 3, y - 1, x + 3, y + 1, 'm', 'a'); }
+      // o Eixo e o que tem em volta
+      por('runas', cx - 2, cy - 2); por('estandarte', cx - 5, cy - 4); por('estandarte', cx + 4, cy - 4); por('estandarte', cx - 5, cy + 3); por('estandarte', cx + 4, cy + 3);
+      for (let i = 0; i < 26; i++) { const a = i / 26 * 6.283 + r() * .1, rr = 13 + (i % 2) * 5, x = Math.round(cx + Math.cos(a) * rr * 1.25), y = Math.round(cy + Math.sin(a) * rr); if (get(x, y) === 'k' && get(x + 1, y) === 'k') por('barraca', x, y); }
+      espalha(30, 'caixote', (c, x, y) => c === 'k' && Math.hypot((x - cx) / 1.25, y - cy) < 22 && Math.hypot((x - cx) / 1.25, y - cy) > 10);
+      espalha(20, 'barril', (c, x, y) => c === 'k' && Math.hypot((x - cx) / 1.25, y - cy) < 22 && Math.hypot((x - cx) / 1.25, y - cy) > 10);
+      espalha(12, 'saco', (c, x, y) => c === 'k' && Math.hypot((x - cx) / 1.25, y - cy) < 22);
+      espalha(10, 'vaso', (c, x, y) => c === 'k' && Math.hypot((x - cx) / 1.25, y - cy) < 22);
+      espalha(60, 'lanterna', (c, x, y) => c === 'k' && vizinho(x, y, 'a'));
+      espalha(30, 'poste', (c, x, y) => c === 'a' && vizinho(x, y, 'm'));
+      espalha(14, 'barco', c => c === 'a');
+      espalha(40, 'caixote', (c, x, y) => c === 'k' && vizinho(x, y, 'p')); espalha(30, 'barril', (c, x, y) => c === 'k' && vizinho(x, y, 'p'));
+      espalha(16, 'arvore', (c, x, y) => c === 'k' && Math.hypot((x - cx) / 1.25, y - cy) > 34 && !vizinho(x, y, 'pa') && r() < .5);
+      rotulo(cx, cy - 12, 'o Eixo'); rotulo(cx + 22, cy + 20, 'o mercado', { ir: 'terras-giratorias' });
+    } },
+  { id: 'terras-porto', grupo: 'Terras Giratórias', nome: 'O Porto do Leste', onde: 'Kósmos · Arquipélago Deluge', cols: 200, linhas: 140, bioma: 'cais', luz: 'entardecer', base: 'k',
+    texto: 'O porto principal: seis cais compridos, navios de toda bandeira, armazéns, a peixaria ao ar livre, a taverna dos mercadores e as ruas que sobem para a cidade.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, quadra, casa, mobilia, n, r, rotulo } = L;
+      // o mar a leste, com a beira do cais de pedra
+      for (let y = 0; y < 140; y++) { const e = 142 + Math.round((n(2, y * .3) - .5) * 4); for (let x = e; x < 200; x++) set(x, y, 'f'); set(e - 1, y, 'c'); }
+      // o canal que desce da cidade e chega ao mar
+      ret(0, 68, 141, 70, 'a'); ret(0, 66, 141, 67, 'Z'); ret(0, 71, 141, 72, 'Z');
+      for (const x of [20, 56, 92, 126]) ret(x - 1, 68, x + 1, 70, 'm');
+      // a rua da beira e as ruas que sobem, entre os cais
+      ret(120, 0, 140, 139, 'Z', 'k');
+      const cais = [10, 32, 54, 88, 110, 130];
+      for (const y of cais) { ret(0, y - 1, 120, y + 1, 'Z', 'k'); ret(141, y - 1, 192, y + 1, 'm'); for (let x = 144; x < 192; x += 6) { por('poste', x, y - 2); por('poste', x, y + 2); } ret(186, y - 3, 192, y + 3, 'm'); }
+      for (const x of [36, 72, 104]) ret(x - 1, 0, x + 1, 139, 'Z', 'k');
+      // armazéns grandes na beira, a taverna e as casas da cidade atrás
+      for (const y0 of [13, 35, 57, 91, 113]) { const h = y0 === 57 ? 8 : 15; for (const x0 of [106, 114]) { if (x0 === 114 && h < 10) continue; const [a, b, c, e] = casa(x0 - 1, y0, 8, Math.min(h, 16), 'l'); mobilia(a, b, c, e, 10, ['caixote', 'barril', 'saco', 'caixote', 'rede'], 'm'); } }
+      { const [a, b, c, e] = casa(86, 35, 16, 12, 'l'); for (const [x, y] of [[89, 37], [93, 37], [97, 37], [89, 41], [93, 41], [97, 41]]) por('mesa', x, y); mobilia(a, b, c, e, 8, ['barril', 'barril', 'estante', 'caixote', 'lanterna'], 'm'); por('fogueira', 99, 44); }
+      quadra(1, 1, 104, 138, { verde: .07 });
+      for (let y = 0; y < 140; y++) for (let x = 0; x < 200; x++) if (get(x, y) === 'Z') set(x, y, 'k');
+      // navios atracados dos dois lados dos cais
+      for (const y of cais) { for (let x = 146; x < 176; x += 12 + Math.floor(r() * 5)) { if (r() < .8) por('navio', x, y - 5, { r: r() < .5 ? 1 : 0 }); if (r() < .8) por('navio', x + 2, y + 3, { r: r() < .5 ? 1 : 0 }); } }
+      espalha(8, 'barco', (c, x, y) => c === 'f' && x > 150);
+      // a peixaria ao ar livre e a carga na beira
+      for (let i = 0; i < 24; i++) { const x = 122 + Math.floor(r() * 16), y = 2 + Math.floor(r() * 136); if (get(x, y) === 'k' && get(x + 1, y) === 'k') por('barraca', x, y); }
+      espalha(70, 'caixote', (c, x, y) => c === 'k' && x > 120); espalha(50, 'barril', (c, x, y) => c === 'k' && x > 120); espalha(30, 'saco', (c, x, y) => c === 'k' && x > 120);
+      espalha(16, 'rede', (c, x, y) => c === 'k' && x > 130); espalha(10, 'ancora', (c, x, y) => c === 'k' && x > 130);
+      espalha(24, 'caixote', (c, x, y) => c === 'm'); espalha(14, 'barril', (c, x, y) => c === 'm');
+      espalha(40, 'lanterna', (c, x, y) => c === 'k' && (vizinho(x, y, 'a') || x > 136));
+      espalha(16, 'caixote', (c, x, y) => c === 'k' && vizinho(x, y, 'p')); espalha(10, 'arvore', (c, x, y) => c === 'k' && x < 100 && !vizinho(x, y, 'pa') && r() < .4);
+      rotulo(94, 33, 'a taverna', { ir: 'terras-taverna' }); rotulo(170, 70, 'mar aberto');
+    } },
+  { id: 'terras-giratorias', grupo: 'Terras Giratórias', nome: 'Um canto do mercado', onde: 'Kósmos · Arquipélago Deluge', cols: 28, linhas: 20, bioma: 'cais', luz: 'dia', base: 'k',
     texto: 'Um canto do mercado, com o porto. As barracas mudam de lugar com a hora; o porto, não.',
     fazer: L => {
       const { set, ret, por, espalha } = L;
@@ -5813,21 +6004,69 @@ const LUGARES = [
       por('escada', 2, 2, { r: 0 });
     } },
   // ================= Ermos do Trovão =================
-  { id: 'ermos-ilha', grupo: 'Ermos do Trovão', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 72, linhas: 52, bioma: 'ermos', luz: 'entardecer', base: 'f',
-    texto: 'A ilha onde o Stormlord e o Imperador sem Nome lutaram por um mês. As rachaduras saem da cratera do meio; os soldados de pedra estão onde caíram.',
+  { id: 'ermos-mapa', grupo: 'Ermos do Trovão', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 110, linhas: 80, escala: 10, bioma: 'ermos', luz: 'entardecer', base: 'f',
+    texto: 'A ilha vista de cima, um quilômetro de terra queimada. A cratera do duelo fica no meio; as rachaduras saem dela até o mar. Ao norte, o campo onde os soldados viraram pedra; a sudoeste, a serra onde as criaturas transformadas fazem ninho.',
     fazer: L => {
-      const { get, set, bolha, caminho, por, espalha, vizinho, ilha, r } = L;
-      const d = ilha(36, 26, 31, 21, 'h', { irr: .35, raso: .08, praia: 'd', lp: .06 });
-      bolha(36, 26, 9, 7.5, 'b', .3); bolha(36, 26, 7.6, 6.2, 'h', .25); bolha(36, 26, 5, 4, 'r', .4);
-      for (let i = 0; i < 6; i++) { const a = i / 6 * 6.283 + .4, pts = [[36 + Math.cos(a) * 8, 26 + Math.sin(a) * 6.5]]; let x = pts[0][0], y = pts[0][1], b = a; for (let k = 0; k < 6; k++) { b += (r() - .5) * .7; x += Math.cos(b) * 4; y += Math.sin(b) * 3.2; pts.push([x, y]); } caminho(pts, 1.1, 'x', 'hdr'); }
-      for (let i = 0; i < 14; i++) { const x = 6 + Math.floor(r() * 60), y = 5 + Math.floor(r() * 42); if (get(x, y) === 'h' && d(x, y) < .85 && Math.hypot(x - 36, y - 26) > 11) { bolha(x, y, 2.2 + r() * 1.5, 1.6 + r(), 'd', .5, 'h'); bolha(x, y, 1 + r() * 1.2, .8 + r() * .8, 'b', .4); } }
-      for (let i = 0; i < 8; i++) { const x = 6 + Math.floor(r() * 60), y = 5 + Math.floor(r() * 42); if (get(x, y) === 'h') bolha(x, y, 2.5, 1.8, 'r', .5, 'h'); }
-      por('lamina', 36, 24); por('cratera', 33, 27); por('cratera', 38, 23);
-      espalha(14, 'cratera', (c, x, y) => c === 'h' && get(x + 1, y + 1) === 'h' && get(x + 1, y) === 'h' && get(x, y + 1) === 'h');
+      const { get, set, bolha, caminho, por, espalha, vizinho, ilha, r, rotulo } = L;
+      const d = ilha(55, 40, 48, 33, 'h', { irr: .35, raso: .07, praia: 'd', lp: .06 });
+      const cx = 56, cy = 41;
+      // a cratera: borda de rocha, fundo queimado e a lâmina no meio
+      bolha(cx, cy, 15, 12, 'b', .2); bolha(cx, cy, 12, 9.5, 'd', .2); bolha(cx, cy, 9, 7, 'r', .35);
+      for (const a of [.4, 2.2, 4.1]) caminho([[cx + Math.cos(a) * 10, cy + Math.sin(a) * 8], [cx + Math.cos(a) * 16, cy + Math.sin(a) * 13]], 2.2, 'd', 'bh');
+      por('lamina', cx, cy - 1);
+      // rachaduras até o mar
+      for (let i = 0; i < 9; i++) { const a = i / 9 * 6.283 + r() * .3, pts = [[cx + Math.cos(a) * 14, cy + Math.sin(a) * 11]]; let x = pts[0][0], y = pts[0][1], b = a; for (let k = 0; k < 12; k++) { b += (r() - .5) * .6; x += Math.cos(b) * 3.4; y += Math.sin(b) * 2.6; pts.push([x, y]); } caminho(pts, 1, 'x', 'hdr'); }
+      // a serra do sudoeste (ninho) e manchas de pedra
+      bolha(24, 58, 11, 7, 'b', .5, 'hd'); bolha(26, 57, 2.2, 1.6, 'o', .2, 'b'); bolha(80, 18, 6, 4, 'b', .5, 'hd');
+      for (let i = 0; i < 22; i++) { const x = 8 + Math.floor(r() * 94), y = 6 + Math.floor(r() * 68); if (get(x, y) === 'h' && d(x, y) < .85 && Math.hypot(x - cx, y - cy) > 17) { bolha(x, y, 2 + r() * 2.5, 1.5 + r() * 1.5, 'd', .5, 'h'); if (r() < .5) bolha(x, y, .9 + r(), .8 + r() * .6, 'b', .4); } }
+      for (let i = 0; i < 10; i++) { const x = 8 + Math.floor(r() * 94), y = 6 + Math.floor(r() * 68); if (get(x, y) === 'h') bolha(x, y, 3, 2, 'r', .5, 'h'); }
+      // o que sobrou da luta
+      espalha(30, 'cratera', (c, x, y) => c === 'h' && get(x + 1, y) === 'h' && get(x, y + 1) === 'h' && get(x + 1, y + 1) === 'h');
       espalha(40, 'fulgurito', (c, x, y) => c === 'h' && !vizinho(x, y, 'x'));
-      espalha(16, 'estatua', (c, x, y) => (c === 'h' || c === 'r') && Math.hypot(x - 36, y - 26) < 18);
-      espalha(14, 'ossos', c => c === 'h' || c === 'd'); espalha(12, 'toco', c => c === 'h'); espalha(14, 'rocha', c => c === 'h' || c === 'd'); espalha(10, 'entulho', c => c === 'd');
-      espalha(6, 'estandarte', (c, x, y) => c === 'h' && Math.hypot(x - 36, y - 26) < 16);
+      for (let i = 0; i < 40; i++) { const x = 40 + Math.floor(r() * 32), y = 6 + Math.floor(r() * 14); if (get(x, y) === 'h' || get(x, y) === 'd') por('estatua', x, y); }
+      espalha(30, 'toco', (c, x, y) => c === 'h' && x > 70); espalha(18, 'ossos', c => c === 'h' || c === 'd'); espalha(20, 'rocha', (c, x, y) => c === 'd' || (c === 'h' && vizinho(x, y, 'b')));
+      espalha(8, 'estandarte', (c, x, y) => c === 'h' && Math.hypot(x - cx, y - cy) < 22);
+      rotulo(cx, 3, 'Ermos do Trovão', { g: 1 });
+      rotulo(cx, cy - 13, 'a cratera do duelo', { ir: 'ermos-cratera' });
+      rotulo(cx + 20, cy + 6, 'a beira da cratera', { ir: 'ermos-do-trovao' });
+      rotulo(56, 22, 'campo dos soldados de pedra');
+      rotulo(24, 66, 'o ninho', { ir: 'ermos-ninho' });
+      rotulo(86, 22, 'mata queimada'); rotulo(30, 32, 'vidro de raio');
+    } },
+  { id: 'ermos-cratera', grupo: 'Ermos do Trovão', nome: 'A cratera do duelo', onde: 'Kósmos · Arquipélago Deluge', cols: 160, linhas: 120, bioma: 'ermos', luz: 'entardecer', base: 'h',
+    texto: 'Onde o Stormlord e o Imperador sem Nome lutaram por um mês. Uma borda de rocha com rampas, o fundo cheio de crateras menores e vidro de raio, os soldados que viraram pedra no meio do passo, e a lâmina cravada no centro.',
+    fazer: L => {
+      const { get, set, bolha, caminho, por, espalha, vizinho, n, n3, r, rotulo } = L;
+      const cx = 80, cy = 60;
+      // a borda: anel de rocha com quatro rampas de cascalho
+      for (let y = 0; y < 120; y++) for (let x = 0; x < 160; x++) { const dd = Math.hypot((x + .5 - cx) / 56, (y + .5 - cy) / 43) + (n3(x, y) - .5) * .16 + (n(x * 1.4, y * 1.4) - .5) * .05; if (dd > .9 && dd < 1.07) set(x, y, 'b'); else if (dd <= .9 && dd > .14) set(x, y, n(x * .25, y * .25) + (n3(x + 50, y) - .5) * .4 > .52 ? 'r' : 'd'); }
+      for (const a of [.3, 1.9, 3.5, 4.9]) caminho([[cx + Math.cos(a) * 44, cy + Math.sin(a) * 34], [cx + Math.cos(a) * 66, cy + Math.sin(a) * 52]], 5, 'r', 'bh');
+      // crateras menores e rachaduras saindo do centro
+      for (let i = 0; i < 18; i++) { const a = r() * 6.283, dd = 8 + r() * 36, x = cx + Math.cos(a) * dd * 1.25, y = cy + Math.sin(a) * dd; bolha(x, y, 2.5 + r() * 3, 2 + r() * 2.4, 'b', .3, 'hrd'); bolha(x, y, 1.6 + r() * 2, 1.2 + r() * 1.6, 'h', .3, 'b'); }
+      for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283 + r() * .2, pts = [[cx + Math.cos(a) * 4, cy + Math.sin(a) * 3]]; let x = pts[0][0], y = pts[0][1], b = a; for (let k = 0; k < 14; k++) { b += (r() - .5) * .7; x += Math.cos(b) * 3.6; y += Math.sin(b) * 2.8; pts.push([x, y]); } caminho(pts, 1.2, 'x', 'hdr'); }
+      bolha(cx, cy, 3.4, 2.8, 'h', .1);
+      por('lamina', cx, cy - 1); por('cratera', cx - 4, cy + 1); por('cratera', cx + 3, cy - 3);
+      // vidro de raio, soldados de pedra em fileiras quebradas, estandartes rasgados
+      espalha(50, 'fulgurito', (c, x, y) => 'hdr'.includes(c) && vizinho(x, y, 'x')); espalha(20, 'fulgurito', c => c === 'h');
+      for (let f = 0; f < 6; f++) { const a = r() * 6.283, dd = 18 + r() * 20, x0 = cx + Math.cos(a) * dd * 1.25, y0 = cy + Math.sin(a) * dd, b = a + 1.57; for (let i = 0; i < 9; i++) { const x = Math.round(x0 + Math.cos(b) * (i - 4) * 2 + (r() - .5) * 2), y = Math.round(y0 + Math.sin(b) * (i - 4) * 2 + (r() - .5) * 2); if ('hrd'.includes(get(x, y))) por('estatua', x, y); } }
+      espalha(30, 'cratera', (c, x, y) => 'hd'.includes(c) && get(x + 1, y) === c && get(x, y + 1) === c && get(x + 1, y + 1) === c);
+      espalha(14, 'estandarte', (c, x, y) => (c === 'h' || c === 'r') && Math.hypot((x - cx) / 1.25, y - cy) < 34);
+      espalha(50, 'ossos', c => c === 'h' || c === 'd' || c === 'r'); espalha(40, 'entulho', c => c === 'd'); espalha(60, 'rocha', (c, x, y) => (c === 'h' || c === 'd') && vizinho(x, y, 'b'));
+      espalha(40, 'toco', (c, x, y) => c === 'h' && Math.hypot((x - cx) / 1.25, y - cy) > 46);
+      rotulo(cx, cy - 6, 'a lâmina do Imperador sem Nome');
+    } },
+  { id: 'ermos-ninho', grupo: 'Ermos do Trovão', nome: 'O ninho dos transformados', onde: 'Kósmos · Arquipélago Deluge', cols: 60, linhas: 44, bioma: 'caverna', luz: 'escuro', base: 'b',
+    texto: 'As grutas da serra onde dormem as criaturas que a batalha mudou. O vidro de raio cresce nas paredes como cristal; quanto mais fundo, maiores os ossos.',
+    fazer: L => {
+      const { bolha, caminho, espalha, vizinho, por } = L;
+      const salas = [[8, 8, 6, 4.5], [24, 12, 8, 5.5], [44, 9, 7, 5], [14, 28, 7, 5], [33, 30, 10, 7], [52, 32, 6, 5], [6, 39, 4, 3]];
+      for (const [x, y, rx, ry] of salas) bolha(x, y, rx, ry, 'o', .35);
+      for (const [a, b] of [[0, 1], [1, 2], [1, 4], [3, 4], [4, 5], [3, 6], [2, 5]]) caminho([[salas[a][0], salas[a][1]], [(salas[a][0] + salas[b][0]) / 2 + 2, (salas[a][1] + salas[b][1]) / 2 - 2], [salas[b][0], salas[b][1]]], 2.6, 'o');
+      caminho([[0, 6], [5, 7]], 2.6, 'o');
+      bolha(35, 32, 4, 2.8, 'a', .3, 'o'); bolha(24, 12, 2.2, 1.6, 'h', .4, 'o'); bolha(52, 32, 2, 1.6, 'h', .4, 'o');
+      por('cratera', 32, 27); por('cratera', 43, 7);
+      espalha(24, 'fulgurito', (c, x, y) => c === 'o' && vizinho(x, y, 'b')); espalha(34, 'ossos', c => c === 'o' || c === 'h'); espalha(10, 'teia', (c, x, y) => c === 'o' && vizinho(x, y, 'b'));
+      espalha(14, 'estalagmite', (c, x, y) => c === 'o' && vizinho(x, y, 'b')); espalha(10, 'cogumelo', c => c === 'o'); espalha(6, 'cristal', (c, x, y) => c === 'o' && vizinho(x, y, 'b'));
     } },
   { id: 'ermos-do-trovao', grupo: 'Ermos do Trovão', nome: 'A beira da cratera', onde: 'Kósmos · Arquipélago Deluge', cols: 26, linhas: 18, bioma: 'ermos', luz: 'entardecer',
     texto: 'Um pedaço da terra perto da cratera: vidro de raio, rachaduras e a lâmina que ninguém consegue arrancar.',
@@ -5840,78 +6079,155 @@ const LUGARES = [
       espalha(9, 'fulgurito', (c, x, y) => c === 'h' && !vizinho(x, y, 'x'));
       espalha(3, 'estatua', c => c === 'h'); espalha(4, 'ossos', c => c === 'h' || c === 'd'); espalha(4, 'toco', c => c === 'h'); espalha(5, 'rocha', c => c === 'h' || c === 'd'); espalha(3, 'entulho', c => c === 'd');
     } },
-  { id: 'ermos-ninho', grupo: 'Ermos do Trovão', nome: 'O ninho dos transformados', onde: 'Kósmos · Arquipélago Deluge', cols: 30, linhas: 22, bioma: 'caverna', luz: 'escuro', base: 'b',
-    texto: 'Uma gruta onde dormem as criaturas que a batalha mudou. O vidro de raio cresce nas paredes como cristal.',
-    fazer: L => {
-      const { bolha, caminho, espalha, vizinho, por } = L;
-      bolha(9, 7, 6, 4.5, 'o', .35); bolha(21, 14, 7, 5, 'o', .35); bolha(6, 17, 4, 3, 'o', .35);
-      caminho([[0, 4], [5, 6]], 2.2, 'o'); caminho([[13, 9], [17, 12]], 2.4, 'o'); caminho([[9, 15], [15, 15]], 2, 'o');
-      bolha(23, 15, 2.5, 1.8, 'a', .3, 'o'); bolha(8, 6, 1.5, 1.1, 'h', .4, 'o');
-      espalha(10, 'fulgurito', (c, x, y) => c === 'o' && vizinho(x, y, 'b')); espalha(14, 'ossos', c => c === 'o' || c === 'h'); espalha(4, 'teia', (c, x, y) => c === 'o' && vizinho(x, y, 'b'));
-      espalha(5, 'estalagmite', (c, x, y) => c === 'o' && vizinho(x, y, 'b')); espalha(4, 'cogumelo', c => c === 'o'); por('cratera', 20, 12);
-    } },
   // ================= Climática =================
-  { id: 'climatica-ilha', grupo: 'Climática', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 80, linhas: 60, bioma: 'climatica', luz: 'entardecer', base: 'f',
-    texto: 'A ilha gigante onde acontece de tudo ao mesmo tempo: nevasca no norte, vulcão no meio, enchente a leste, terra queimada a oeste. Os Rainbound nasceram aqui.',
+  { id: 'climatica-mapa', grupo: 'Climática', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 200, linhas: 150, escala: 20, bioma: 'climatica', luz: 'entardecer', base: 'f',
+    texto: 'Quatro quilômetros de ilha, ou de ilhas coladas, depende de quem conta. Nevasca no norte, o vulcão no meio, a enchente a leste, terra queimada a oeste e areia no sul, tudo ao mesmo tempo. Os Rainbound nasceram aqui.',
     fazer: L => {
-      const { get, set, bolha, caminho, por, espalha, vizinho, ilha, n, r } = L;
-      const d = ilha(40, 31, 30, 22, 'g', { irr: .3, raso: .08 });
-      for (const [cx, cy, rx, ry] of [[73, 8, 5, 4], [6, 52, 4.5, 3.5], [70, 53, 4, 3]]) ilha(cx, cy, rx, ry, 'r', { irr: .5, raso: .2 });
-      for (let y = 0; y < 60; y++) for (let x = 0; x < 80; x++) { const c = get(x, y); if (c !== 'g' && c !== 'r') continue; const a = Math.atan2(y - 31, x - 40) + (L.n3(x, y) - .5) * 2.4 + (n(x * .5, y * .5) - .5) * .5; let t; if (a < -1.9 || a > 2.6) t = 'h'; else if (a < -.6) t = 'n'; else if (a < .9) t = 'l'; else if (a < 2) t = 'g'; else t = 's'; if (Math.hypot(x - 40, y - 31) > 7) set(x, y, t); }
-      bolha(28, 15, 5, 3.5, 'i', .4, 'n'); bolha(62, 30, 6, 4, 'a', .4, 'l'); bolha(66, 24, 3, 2, 'f', .4, 'a'); bolha(58, 38, 3.5, 2.4, 'a', .4, 'lg');
-      bolha(40, 31, 8, 6.5, 'b', .25); bolha(40, 31, 4.5, 3.6, 'e', .2);
-      caminho([[42, 36], [44, 42], [42, 48], [45, 55]], 1.3, 'e', 'gsbhl'); caminho([[36, 35], [31, 40], [26, 46]], 1.1, 'e', 'hsgb');
-      for (let i = 0; i < 6; i++) { const x = 10 + Math.floor(r() * 60), y = 8 + Math.floor(r() * 44); if (d(x, y) < .85 && get(x, y) !== 'e') bolha(x, y, 1.6, 1.2, 'b', .5); }
-      espalha(30, 'pinheiro', c => c === 'n'); espalha(26, 'arvore', c => c === 'g'); espalha(14, 'tronco', c => c === 'g' || c === 'l'); espalha(10, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'lg'));
-      espalha(12, 'cratera', (c, x, y) => c === 'h' && get(x + 1, y) === 'h' && get(x, y + 1) === 'h' && get(x + 1, y + 1) === 'h'); espalha(24, 'fulgurito', c => c === 'h');
-      espalha(12, 'ossos', c => c === 's' || c === 'h'); espalha(10, 'rocha', c => c === 's' || c === 'n'); espalha(8, 'entulho', (c, x, y) => c === 'b' || vizinho(x, y, 'e')); espalha(6, 'toco', c => c === 'l');
-      por('runas', 63, 44);
+      const { get, set, bolha, caminho, por, espalha, vizinho, ilha, n, n4, r, rotulo } = L;
+      const cx = 100, cy = 76;
+      // várias ilhas coladas: a grande e quatro pedaços separados por canais
+      const d = ilha(cx, cy, 82, 60, 'g', { irr: .32, raso: .06 });
+      for (const [x, y, rx, ry] of [[22, 22, 16, 11], [178, 24, 14, 10], [176, 128, 15, 11], [24, 128, 13, 10]]) ilha(x, y, rx, ry, 'g', { irr: .45, raso: .2 });
+      caminho([[38, 0], [60, 40], [70, 76]], 3, 'a', 'g'); caminho([[150, 150], [140, 110], [128, 90]], 3, 'a', 'g');
+      // cada região pega um desastre, pelo ângulo em volta do vulcão (torto pelo ruído largo)
+      for (let y = 0; y < 150; y++) for (let x = 0; x < 200; x++) {
+        if (get(x, y) !== 'g') continue;
+        const a = Math.atan2(y - cy, x - cx) + (n4(x, y) - .5) * 1.3 + (n(x * .4, y * .4) - .5) * .4;
+        set(x, y, a < -2.2 || a > 2.75 ? 'h' : a < -.7 ? 'n' : a < .75 ? 'l' : a < 1.75 ? 's' : 'g');
+      }
+      // neve: lago de gelo e montanhas; enchente: água por cima da lama
+      
+      for (let i = 0; i < 400; i++) { const x = r() * 200, y = r() * 150; if (get(Math.floor(x), Math.floor(y)) === 'l' && r() < .25) bolha(x, y, 2 + r() * 4, 1.5 + r() * 2.5, 'a', .5, 'l'); }
+      bolha(162, 70, 9, 6, 'f', .4, 'al');
+      // o vulcão e os rios de lava
+      bolha(cx, cy, 15, 12, 'b', .25); bolha(cx, cy, 8, 6.5, 'e', .2);
+      for (const pts of [[[cx + 3, cy + 7], [cx + 8, cy + 20], [cx + 4, cy + 34], [cx + 12, cy + 52]], [[cx - 6, cy + 5], [cx - 18, cy + 15], [cx - 34, cy + 22], [cx - 50, cy + 30]], [[cx - 5, cy - 6], [cx - 12, cy - 18], [cx - 30, cy - 26]]]) caminho(pts, 1.8, 'e', 'gsbhlnd');
+      // deserto: dunas de pedra; oeste: crateras
+      for (let i = 0; i < 18; i++) { const x = 60 + Math.floor(r() * 90), y = 100 + Math.floor(r() * 44); if (get(x, y) === 's') bolha(x, y, 2 + r() * 2, 1.4 + r(), 'd', .5, 's'); }
+      for (let i = 0; i < 12; i++) { const x = 4 + Math.floor(r() * 60), y = 40 + Math.floor(r() * 80); if (get(x, y) === 'h') bolha(x, y, 1.5 + r() * 2, 1.2 + r() * 1.4, 'b', .5, 'h'); }
+      espalha(160, 'pinheiro', (c, x, y) => c === 'n' && n(x * .7, y * .7) > .45); espalha(90, 'arvore', c => c === 'g'); espalha(50, 'arbusto', c => c === 'g');
+      espalha(60, 'tronco', c => c === 'l' || c === 'a'); espalha(50, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'lg'));
+      espalha(40, 'cratera', (c, x, y) => c === 'h' && get(x + 1, y) === 'h' && get(x, y + 1) === 'h' && get(x + 1, y + 1) === 'h'); espalha(60, 'fulgurito', c => c === 'h');
+      espalha(30, 'ossos', c => c === 's' || c === 'h'); espalha(30, 'rocha', c => c === 's' || c === 'n' || c === 'd'); espalha(20, 'toco', c => c === 'l' || c === 'h');
+      por('runas', 150, 104);
+      rotulo(cx, 4, 'Climática', { g: 1 });
+      // o nome de cada região vai no meio dela
+      const meio = c => { let sx = 0, sy = 0, q = 0; for (let y = 0; y < 150; y++) for (let x = 0; x < 200; x++) if (get(x, y) === c && Math.hypot(x - cx, y - cy) < 70) { sx += x; sy += y; q++; } return q ? [Math.round(sx / q), Math.round(sy / q)] : [cx, cy]; };
+      const [nx, ny] = meio('n'), [hx, hy] = meio('h'), [lx, ly] = meio('l'), [sx, sy] = meio('s');
+      bolha(nx - 6, ny + 2, 9, 6, 'i', .4, 'n'); bolha(nx + 12, ny - 6, 7, 4, 'b', .5, 'n');
+      rotulo(nx, ny - 4, 'a nevasca'); rotulo(cx, cy - 16, 'o vulcão'); rotulo(lx, ly, 'a enchente'); rotulo(hx, hy, 'terra queimada'); rotulo(sx, sy, 'o deserto');
+      rotulo(150, 98, 'o berço dos Rainbound', { ir: 'climatica-berco' });
+      rotulo(54, 100, 'a costa partida', { ir: 'climatica' });
     } },
-  { id: 'climatica', grupo: 'Climática', nome: 'A costa partida', onde: 'Kósmos · Arquipélago Deluge', cols: 28, linhas: 20, bioma: 'climatica', luz: 'entardecer',
-    texto: 'Na mesma praia, neve, lava e enchente. É aqui que a natureza e as coisas do fundo brigam.',
+  { id: 'climatica', grupo: 'Climática', nome: 'A costa partida', onde: 'Kósmos · Arquipélago Deluge', cols: 160, linhas: 110, bioma: 'climatica', luz: 'entardecer',
+    texto: 'Uns duzentos metros de costa onde a neve encosta na lava e a lava encosta na enchente. É aqui que a natureza e as coisas do fundo brigam: dá para lutar no gelo, pular rio de lava e atravessar o charco com água pela cintura.',
     fazer: L => {
-      const { set, bolha, caminho, por, espalha, vizinho, n } = L;
-      for (let y = 0; y < 20; y++) for (let x = 0; x < 28; x++) { const q = x + (n(x * .8, y * .8) - .5) * 5; set(x, y, q < 9 ? 'n' : q < 18 ? 'h' : q < 21 ? 'l' : 'a'); }
-      bolha(25, 6, 3.5, 4, 'f', .4); bolha(27, 15, 3, 5, 'f', .4);
-      bolha(4, 13, 3.2, 2.3, 'i', .3, 'n'); bolha(9.5, 4, 2, 1.6, 'g', .4);
-      caminho([[13, 0], [12, 5], [14.5, 9], [13, 14], [15, 20]], 1.5, 'e');
-      bolha(15.5, 10, 1.7, 1.2, 'e', .3);
-      bolha(6, 2, 1.6, 1.2, 'b', .4); bolha(18, 16, 1.4, 1.2, 'b', .4); bolha(21, 3, 1.2, 1, 'b', .4);
-      por('cratera', 10, 15); por('cratera', 17, 5);
-      espalha(7, 'pinheiro', c => c === 'n'); espalha(3, 'rocha', c => c === 'n');
-      espalha(4, 'fulgurito', (c, x, y) => c === 'h' && !vizinho(x, y, 'e')); espalha(3, 'entulho', c => c === 'h');
-      espalha(4, 'tronco', c => c === 'a' || c === 'l'); espalha(5, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'l')); espalha(2, 'toco', c => c === 'l');
-      espalha(2, 'arbusto', c => c === 'g'); espalha(2, 'ossos', c => c === 'h');
+      const { get, set, bolha, caminho, por, espalha, vizinho, n, n3, r, rotulo } = L;
+      // faixas tortas de oeste para leste: neve, terra queimada, lama, enchente; o mar no sudeste
+      for (let y = 0; y < 110; y++) for (let x = 0; x < 160; x++) { const q = x + (n3(x, y) - .5) * 30 + (n(x * .5, y * .5) - .5) * 8 + y * .25; set(x, y, q < 48 ? 'n' : q < 92 ? 'h' : q < 116 ? 'l' : q < 140 ? 'a' : 'f'); }
+      bolha(18, 70, 14, 9, 'i', .4, 'n'); bolha(30, 20, 9, 6, 'i', .4, 'n'); bolha(48, 60, 6, 4, 'g', .5, 'nh');
+      for (let i = 0; i < 16; i++) { const x = 4 + Math.floor(r() * 50), y = 4 + Math.floor(r() * 102); if (get(x, y) === 'n') bolha(x, y, 1.6 + r() * 2.2, 1.3 + r() * 1.6, 'b', .5, 'n'); }
+      // dois rios de lava descendo do norte, com pontes de pedra
+      for (const x0 of [64, 84]) { const pts = []; for (let y = -2; y <= 112; y += 8) pts.push([x0 + (n(x0, y * .2) - .5) * 26, y]); caminho(pts, 2.6, 'e', 'hnl'); }
+      for (let y = 18; y < 110; y += 30) for (let x = 50; x < 100; x++) if (get(x, y) === 'e') { set(x, y, 'b'); set(x, y + 1, 'b'); }
+      for (let i = 0; i < 12; i++) { const x = 56 + Math.floor(r() * 40), y = 4 + Math.floor(r() * 102); if (get(x, y) === 'h') bolha(x, y, 2 + r() * 2, 1.5 + r() * 1.5, 'b', .4, 'h'); }
+      // enchente: ilhotas de lama e troncos boiando
+      for (let i = 0; i < 26; i++) { const x = 116 + Math.floor(r() * 30), y = 2 + Math.floor(r() * 106); if (get(x, y) === 'a') bolha(x, y, 1.4 + r() * 2, 1.2 + r() * 1.4, 'l', .5, 'a'); }
+      espalha(10, 'cratera', (c, x, y) => c === 'h' && get(x + 1, y) === 'h' && get(x, y + 1) === 'h' && get(x + 1, y + 1) === 'h');
+      espalha(70, 'pinheiro', c => c === 'n'); espalha(30, 'rocha', (c, x, y) => c === 'n' || (c === 'h' && vizinho(x, y, 'b')));
+      espalha(60, 'fulgurito', (c, x, y) => c === 'h' && !vizinho(x, y, 'e')); espalha(30, 'entulho', (c, x, y) => c === 'h' && vizinho(x, y, 'eb'));
+      espalha(40, 'tronco', c => c === 'a' || c === 'l'); espalha(50, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'l')); espalha(20, 'toco', c => c === 'l');
+      espalha(14, 'arvore', c => c === 'g'); espalha(16, 'ossos', c => c === 'h' || c === 'n'); espalha(8, 'barco', (c, x, y) => c === 'a' && r() < .3);
     } },
-  { id: 'climatica-berco', grupo: 'Climática', nome: 'O berço dos Rainbound', onde: 'Kósmos · Arquipélago Deluge', cols: 28, linhas: 22, bioma: 'climatica', luz: 'noite',
-    texto: 'Um terreiro de pedra antigo, alagado pela chuva que não para. Os Rainbound contam que nasceram aqui, entre o trovão e o vento.',
+  { id: 'climatica-berco', grupo: 'Climática', nome: 'O berço dos Rainbound', onde: 'Kósmos · Arquipélago Deluge', cols: 60, linhas: 46, bioma: 'climatica', luz: 'noite',
+    texto: 'Um terreiro de pedra antigo, alagado pela chuva que não para. Os Rainbound contam que nasceram aqui, entre o trovão e o vento. Em volta, a mata encharcada e as poças fundas.',
     fazer: L => {
-      const { bolha, ret, por, espalha, vizinho, set } = L;
-      bolha(14, 11, 12, 9, 'k', .3); bolha(14, 11, 13.5, 10.5, 'l', .3, 'g');
-      for (const [x, y] of [[5, 4], [22, 4], [5, 17], [22, 17]]) bolha(x, y, 2.4, 1.8, 'a', .4, 'k');
-      ret(12, 9, 15, 12, 'k'); por('runas', 12, 9);
-      for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283, x = Math.floor(14 + Math.cos(a) * 8), y = Math.floor(11 + Math.sin(a) * 6.4); por(i % 3 === 0 ? 'estatua' : 'pilar', x, y); }
-      por('chama', 9, 11); por('chama', 18, 11);
-      espalha(8, 'fulgurito', (c, x, y) => c === 'k' && !vizinho(x, y, 'a')); espalha(6, 'juncos', c => c === 'a'); espalha(5, 'entulho', c => c === 'k' || c === 'l'); espalha(6, 'arvore', c => c === 'g'); espalha(4, 'tronco', c => c === 'g' || c === 'l');
+      const { bolha, ret, por, espalha, vizinho, caminho, mata, r } = L;
+      bolha(30, 23, 25, 18, 'l', .3, 'g'); bolha(30, 23, 20, 15, 'k', .25);
+      for (const [x, y] of [[13, 10], [47, 10], [13, 36], [47, 36], [30, 8], [30, 39]]) bolha(x, y, 3.4, 2.4, 'a', .4, 'kl');
+      ret(27, 20, 32, 25, 'k'); por('runas', 28, 21);
+      for (let i = 0; i < 18; i++) { const a = i / 18 * 6.283, x = Math.floor(30 + Math.cos(a) * 15), y = Math.floor(23 + Math.sin(a) * 11.5); por(i % 3 === 0 ? 'estatua' : 'pilar', x, y); }
+      for (let i = 0; i < 8; i++) { const a = i / 8 * 6.283 + .2, x = Math.floor(30 + Math.cos(a) * 8), y = Math.floor(23 + Math.sin(a) * 6); por(i % 2 ? 'chama' : 'braseiro', x, y); }
+      caminho([[30, 41], [30, 46]], 2.4, 'k'); caminho([[0, 23], [8, 23]], 2.4, 'k');
+      mata(6, 6, 6, 5, 'arvore', .3, 'g'); mata(55, 40, 6, 5, 'arvore', .3, 'g'); mata(55, 6, 5, 4, 'arvore', .3, 'g');
+      espalha(20, 'fulgurito', (c, x, y) => c === 'k' && !vizinho(x, y, 'a')); espalha(16, 'juncos', c => c === 'a'); espalha(14, 'entulho', c => c === 'k' || c === 'l'); espalha(14, 'arvore', c => c === 'g'); espalha(8, 'tronco', c => c === 'g' || c === 'l');
     } },
   // ================= Ilha Z =================
-  { id: 'ilhaz-ilha', grupo: 'Ilha Z', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 64, linhas: 48, bioma: 'praia', luz: 'dia', base: 'f',
-    texto: 'Uma ilha de descanso: praia, pavilhão, cabanas e uma mata fechada no meio. Uma trilha de serviço atravessa a mata até um galpão que não aparece nos folhetos.',
+  { id: 'ilhaz-mapa', grupo: 'Ilha Z', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 100, linhas: 76, escala: 10, bioma: 'praia', luz: 'dia', base: 'f',
+    texto: 'Um quilômetro de ilha para descansar: praias no sul, o pavilhão, as cabanas e o cais; no meio, a mata fechada. Uma trilha de serviço sobe pela mata até um galpão que não aparece nos folhetos.',
     fazer: L => {
-      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, r } = L;
-      const d = ilha(32, 23, 28, 19, 'g', { irr: .3, raso: .12, praia: 's', lp: .16 });
-      for (let y = 30; y < 48; y++) for (let x = 0; x < 64; x++) if (get(x, y) === 'g' && d(x, y) > .7) set(x, y, 's');
-      bolha(32, 15, 13, 7, 'v', .5, 'g');
-      casa(26, 29, 12, 7, 's'); ret(27, 30, 36, 34, 'm'); por('mesa', 28, 31); por('mesa', 33, 31); por('estante', 27, 34); por('vaso', 36, 30); por('mesa', 30, 33);
-      ret(39, 31, 45, 35, 'c'); ret(40, 32, 44, 34, 'a');
-      for (const x of [12, 18, 46, 52]) { casa(x, 33, 5, 4, 's'); por('maca', x + 1, 34); }
-      caminho([[32, 36], [32, 39]], 1.6, 'k'); caminho([[14, 37], [50, 37]], 1.2, 'k', 's');
-      ret(31, 39, 32, 47, 'm'); for (const [x, y] of [[30, 41], [33, 41], [30, 44], [33, 44]]) por('poste', x, y); por('barco', 35, 43); por('barco', 28, 45); por('lanterna', 32, 47);
-      caminho([[38, 29], [42, 24], [46, 18], [48, 12]], 1.2, 'r', 'gvs');
-      casa(46, 8, 5, 5, 's'); por('escotilha', 48, 9); por('caixote', 47, 9); por('barril', 47, 11);
-      for (let i = 0; i < 6; i++) por('guardasol', 8 + i * 9 + Math.floor(r() * 3), 39 + Math.floor(r() * 3));
-      espalha(30, 'arvore', c => c === 'v'); espalha(18, 'palmeira', (c, x, y) => (c === 's' || c === 'g') && vizinho(x, y, 'sg')); espalha(14, 'arbusto', c => c === 'g');
-      espalha(6, 'rocha', c => c === 's'); espalha(5, 'juncos', c => c === 'a'); espalha(5, 'saco', c => c === 's'); espalha(4, 'cogumelo', c => c === 'v');
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, mata, telhados, r, rotulo } = L;
+      const d = ilha(50, 37, 44, 31, 'g', { irr: .3, raso: .12, praia: 's', lp: .14 });
+      for (let y = 44; y < 76; y++) for (let x = 0; x < 100; x++) if (get(x, y) === 'g' && d(x, y) > .72) set(x, y, 's');
+      // a mata do meio e a serra do norte
+      mata(50, 26, 26, 13, 'arvore', .3, 'g'); bolha(62, 12, 9, 4, 'b', .5, 'gv');
+      // o pavilhão, a piscina e as cabanas na beira da praia
+      ret(44, 50, 53, 54, 'u'); ret(55, 51, 58, 53, 'a'); caminho([[49, 55], [49, 60]], 1.4, 'k', 'gs');
+      telhados(18, 54, 40, 58, (x, y) => get(x, y) === 's' || get(x, y) === 'g', { lw: 3, lh: 3, verde: 0 }); telhados(62, 54, 84, 58, (x, y) => get(x, y) === 's' || get(x, y) === 'g', { lw: 3, lh: 3, verde: 0 });
+      caminho([[16, 60], [86, 60]], 1.2, 'k', 's');
+      let y0 = 61; while (y0 < 75 && 'sgk'.includes(get(49, y0))) y0++; ret(49, y0 - 1, 50, y0 + 6, 'm'); por('barco', 52, y0 + 4); por('barco', 46, y0 + 5);
+      // a trilha de serviço até o galpão
+      caminho([[56, 50], [60, 40], [66, 30], [72, 22]], 1.3, 'r', 'gvs'); ret(71, 19, 73, 21, 'u');
+      for (let i = 0; i < 10; i++) por('guardasol', 14 + i * 7 + Math.floor(r() * 3), 63 + Math.floor(r() * 2));
+      espalha(40, 'palmeira', (c, x, y) => (c === 's' || c === 'g') && vizinho(x, y, 'sg')); espalha(20, 'arbusto', c => c === 'g'); espalha(10, 'rocha', c => c === 's');
+      rotulo(50, 3, 'Ilha Z', { g: 1 });
+      rotulo(49, 48, 'o pavilhão', { ir: 'ilhaz-resort' }); rotulo(28, 52, 'as cabanas'); rotulo(74, 52, 'as cabanas'); rotulo(50, 68, 'cais');
+      rotulo(40, 24, 'a mata'); rotulo(72, 17, 'o galpão', { ir: 'laboratorio-z', m: 1 }); rotulo(20, 66, 'praia');
+    } },
+  { id: 'ilhaz-resort', grupo: 'Ilha Z', nome: 'O pavilhão e as cabanas', onde: 'Kósmos · Arquipélago Deluge', cols: 160, linhas: 110, bioma: 'praia', luz: 'dia', base: 'g',
+    texto: 'A beira-mar da Ilha Z: o pavilhão de descanso com o salão e a cozinha, a piscina, doze cabanas entre as palmeiras, a praia com guarda-sóis e o cais. Nos fundos, a trilha some na mata.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, casa, mobilia, mata, n, r, rotulo } = L;
+      // o mar no sul, com a areia e a água rasa
+      for (let x = 0; x < 160; x++) { const c = 78 + Math.round((n(x * .25, 2) - .5) * 10); for (let y = c; y < 110; y++) set(x, y, y < c + 3 ? 's' : y < c + 8 ? 'a' : 'f'); for (let y = c - 8; y < c; y++) if (get(x, y) === 'g' && y > c - 4 + (n(x, y) - .5) * 4) set(x, y, 's'); }
+      // a mata nos fundos
+      for (let y = 0; y < 20; y++) for (let x = 0; x < 160; x++) if (y < 10 + (n(x * .3, 9) - .5) * 12) set(x, y, 'v');
+      espalha(160, 'arvore', c => c === 'v');
+      // o pavilhão: salão, cozinha, varanda
+      { const [a, b, c, e] = casa(62, 30, 36, 18, 's'); ret(a, b, c, e, 'm'); ret(86, b, 86, e, 'p'); set(86, 38, 'm'); set(86, 39, 'm');
+        for (const [x, y] of [[66, 33], [71, 33], [76, 33], [66, 38], [71, 38], [76, 38], [66, 43], [71, 43], [76, 43]]) por('mesa', x, y);
+        mobilia(87, b, c, e, 12, ['barril', 'caixote', 'estante', 'saco', 'vaso', 'mesa'], 'm'); por('fogueira', 94, 32); por('estante', 63, 31); por('vaso', 81, 31); por('vaso', 81, 46); }
+      ret(60, 48, 99, 52, 'k'); for (let x = 62; x <= 96; x += 6) por('vaso', x, 52);
+      // a piscina
+      ret(104, 34, 124, 48, 'c'); ret(106, 36, 122, 46, 'a'); ret(108, 38, 120, 44, 'f');
+      for (const [x, y] of [[104, 32], [114, 32], [124, 32], [102, 40], [126, 40]]) por('guardasol', x, y);
+      // as cabanas, seis de cada lado, com caminho até o pavilhão
+      const cabanas = [[8, 30], [22, 26], [36, 30], [10, 48], [26, 46], [42, 50], [130, 26], [144, 30], [132, 46], [148, 48], [116, 56], [140, 62]];
+      for (const [x, y] of cabanas) { const [a, b, c, e] = casa(x, y, 8, 7, 's'); por('maca', a, b); mobilia(a, b, c, e, 3, ['bau', 'mesa', 'vaso', 'estante', 'saco'], 'm'); caminho([[x + 4, y + 7], [x + 4, y + 10], [80, 56]], 1.2, 'k', 'gs'); }
+      // o cais, a praia e o caminho para a mata
+      let y0 = 70; while (y0 < 109 && 'gsk'.includes(get(80, y0))) y0++; ret(79, y0 - 2, 81, Math.min(109, y0 + 16), 'm'); ret(75, y0 + 12, 85, y0 + 14, 'm');
+      for (let y = y0; y < y0 + 16; y += 4) { por('poste', 78, y); por('poste', 82, y); } por('barco', 84, y0 + 9); por('barco', 74, y0 + 10); por('lanterna', 80, y0 + 15);
+      for (let i = 0; i < 22; i++) { const x = 4 + Math.floor(r() * 152), y = 70 + Math.floor(r() * 14); if (get(x, y) === 's') por('guardasol', x, y); }
+      caminho([[80, 30], [76, 22], [84, 12], [80, 0]], 1.6, 'r', 'gv');
+      espalha(70, 'palmeira', (c, x, y) => (c === 'g' || c === 's') && !vizinho(x, y, 'pkm')); espalha(40, 'arbusto', (c, x, y) => c === 'g' && !vizinho(x, y, 'pk'));
+      espalha(16, 'rocha', c => c === 's'); espalha(10, 'rede', c => c === 's'); espalha(20, 'lanterna', (c, x, y) => c === 'k'); espalha(10, 'juncos', c => c === 'a');
+      rotulo(80, 28, 'o pavilhão', { ir: 'ilha-z' }); rotulo(80, 3, 'trilha para o galpão', { ir: 'laboratorio-z', m: 1 });
+    } },
+  { id: 'laboratorio-z', grupo: 'Ilha Z', nome: 'O laboratório', onde: 'Kósmos · debaixo da Ilha Z', cols: 80, linhas: 56, bioma: 'laboratorio', luz: 'escuro', base: 'p',
+    texto: 'O que fica embaixo da escotilha: corredores de metal, a sala dos tanques, as máquinas, as celas, o depósito alagado e o arquivo, cheio de registros sobre o passado que ninguém deveria ler.',
+    fazer: L => {
+      const { ret, bolha, por, espalha, mobilia, set } = L;
+      // corredores: um anel e uma cruz
+      ret(4, 26, 75, 29, 'q'); ret(38, 4, 41, 51, 'q'); ret(10, 8, 69, 9, 'q'); ret(10, 46, 69, 47, 'q'); ret(10, 8, 11, 47, 'q'); ret(68, 8, 69, 47, 'q');
+      // a entrada (escada da escotilha)
+      ret(1, 1, 8, 6, 'q'); ret(8, 4, 11, 5, 'q'); ret(10, 4, 11, 9, 'q'); por('escada', 2, 2, { r: 0 }); por('lanterna', 6, 1);
+      const sala = (x0, y0, x1, y1, porta) => { ret(x0, y0, x1, y1, 'q'); for (const [x, y] of porta) set(x, y, 'q'); };
+      // tanques
+      sala(14, 12, 35, 23, [[24, 10], [25, 10], [24, 11], [25, 11]]); for (let i = 0; i < 9; i++) por('tanque', 15 + i * 2 + (i > 4 ? 1 : 0), 13); for (let i = 0; i < 9; i++) por('tanque', 15 + i * 2 + (i > 4 ? 1 : 0), 22); por('maquina', 20, 17); por('maquina', 27, 17); por('mesa', 31, 18);
+      // arquivo
+      sala(44, 12, 65, 23, [[54, 10], [55, 10], [54, 11], [55, 11]]); for (let y = 13; y <= 21; y += 2) for (let x = 45; x <= 61; x += 4) por('estante', x, y); por('mesa', 63, 22); por('bau', 64, 13); por('estatua', 62, 17);
+      // enfermaria
+      sala(14, 32, 25, 43, [[19, 30], [20, 30], [19, 31], [20, 31]]); for (const x of [15, 17, 19, 21, 23]) { por('maca', x, 33); por('maca', x, 40); } por('estante', 15, 37); por('caixote', 24, 38);
+      // celas
+      sala(28, 32, 35, 43, [[31, 30], [32, 30], [31, 31], [32, 31]]); for (const x of [28, 30, 32, 34]) ret(x, 38, x, 43, 'p'); for (const x of [29, 31, 33, 35]) por('ossos', x, 42); por('teia', 28, 32);
+      // máquinas
+      sala(44, 32, 65, 43, [[54, 30], [55, 30], [54, 31], [55, 31]]); for (const [x, y] of [[46, 34], [51, 34], [56, 34], [61, 34], [46, 39], [51, 39], [56, 39], [61, 39]]) por('maquina', x, y); por('barril', 64, 42); por('barril', 63, 42); por('caixote', 64, 33);
+      // depósito alagado e a sala do fundo
+      sala(72, 32, 78, 54, [[70, 40], [71, 40], [70, 41], [71, 41]]); bolha(75, 48, 3.5, 5, 'a', .3, 'q'); bolha(74, 38, 2, 1.5, 'd', .4, 'q'); espalha(6, 'entulho', c => c === 'd'); mobilia(72, 32, 78, 54, 8, ['caixote', 'barril', 'saco'], 'q');
+      sala(72, 2, 78, 22, [[70, 12], [71, 12], [70, 13], [71, 13]]); por('mesa', 74, 4); por('estante', 74, 20); por('bau', 77, 3); por('estatua', 75, 11); por('maquina', 73, 15);
+      sala(1, 32, 7, 54, [[8, 40], [9, 40], [8, 41], [9, 41]]); bolha(4, 46, 2.6, 3, 'd', .4, 'q'); mobilia(1, 32, 7, 54, 6, ['caixote', 'barril', 'entulho'], 'q');
+      for (const [x, y] of [[18, 8], [30, 8], [48, 8], [60, 8], [18, 47], [30, 47], [48, 47], [60, 47], [39, 18], [39, 38], [10, 18], [10, 38], [69, 18], [69, 38]]) por('lanterna', x, y);
+      espalha(10, 'caixote', c => c === 'q'); espalha(6, 'ossos', c => c === 'q');
     } },
   { id: 'ilha-z', grupo: 'Ilha Z', nome: 'O pavilhão e a praia', onde: 'Kósmos · Arquipélago Deluge', cols: 24, linhas: 16, bioma: 'praia', luz: 'dia',
     texto: 'O pavilhão de descanso, a piscina e o galpão dos fundos, onde fica a escotilha.',
@@ -5930,66 +6246,109 @@ const LUGARES = [
       for (const [x, y] of [[1, 3], [5, 1], [16, 1], [22, 5], [0, 7], [22, 1], [15, 5]]) por('palmeira', x, y);
       espalha(5, 'arbusto', c => c === 'g'); espalha(3, 'saco', c => c === 's'); espalha(2, 'rocha', c => c === 's'); espalha(2, 'juncos', c => c === 'a');
     } },
-  { id: 'laboratorio-z', grupo: 'Ilha Z', nome: 'O laboratório', onde: 'Kósmos · debaixo da Ilha Z', cols: 40, linhas: 28, bioma: 'laboratorio', luz: 'escuro', base: 'p',
-    texto: 'O que fica embaixo da escotilha: tanques, máquinas, celas e um arquivo cheio de registros sobre o passado que ninguém deveria ler.',
-    fazer: L => {
-      const { ret, bolha, por, espalha, set } = L;
-      ret(1, 1, 7, 7, 'q'); por('escada', 2, 1, { r: 0 });
-      ret(8, 3, 33, 4, 'q'); ret(18, 5, 19, 22, 'q'); ret(8, 22, 33, 23, 'q');
-      ret(9, 6, 16, 13, 'q'); ret(12, 5, 13, 5, 'q');
-      for (let i = 0; i < 4; i++) por('tanque', 10 + i * 2, 7); for (let i = 0; i < 3; i++) por('tanque', 10 + i * 2, 12); por('maquina', 14, 10); por('maquina', 9, 10);
-      ret(21, 6, 32, 13, 'q'); ret(20, 9, 20, 10, 'q');
-      for (const [x, y] of [[22, 7], [25, 7], [28, 7], [22, 10], [25, 10], [28, 10], [22, 12], [25, 12]]) por('estante', x, y); por('mesa', 31, 12); por('bau', 32, 6); por('mesa', 31, 8);
-      ret(1, 9, 7, 17, 'q'); ret(8, 12, 8, 13, 'q'); ret(3, 8, 4, 8, 'q');
-      for (const [x, y] of [[2, 10], [4, 10], [6, 10], [2, 14], [4, 14]]) por('maca', x, y); por('caixote', 6, 16); por('estante', 5, 13);
-      ret(9, 15, 16, 20, 'q'); ret(12, 14, 13, 14, 'q'); for (const x of [9, 11, 13, 15]) { ret(x, 18, x, 20, 'p'); } for (const x of [10, 12, 14, 16]) por('ossos', x, 20); por('teia', 9, 15);
-      ret(21, 15, 32, 20, 'q'); ret(20, 17, 20, 18, 'q'); por('maquina', 22, 16); por('maquina', 26, 16); por('maquina', 22, 19); por('barril', 30, 16); por('barril', 31, 16); por('caixote', 31, 19);
-      ret(34, 1, 38, 8, 'q'); ret(34, 3, 34, 4, 'q'); por('mesa', 35, 2); por('estante', 36, 7); por('bau', 37, 2); por('estatua', 36, 5);
-      ret(34, 20, 38, 26, 'q'); ret(34, 22, 34, 23, 'q'); bolha(36.5, 24, 2.4, 2, 'a', .3, 'q'); bolha(35.5, 21.5, 1.4, 1, 'd', .4, 'q');
-      ret(1, 20, 7, 26, 'q'); ret(8, 22, 8, 23, 'q'); bolha(4, 23, 2.5, 2, 'd', .4, 'q'); espalha(3, 'entulho', c => c === 'd');
-      for (const [x, y] of [[10, 3], [24, 3], [31, 3], [18, 9], [19, 18], [12, 23], [27, 22], [4, 5], [5, 18]]) por('lanterna', x, y);
-      espalha(4, 'caixote', c => c === 'q'); espalha(2, 'ossos', c => c === 'q');
-    } },
   // ================= Vetrheim =================
-  { id: 'vetrheim-fronteira', grupo: 'Vetrheim', nome: 'A fronteira norte', onde: 'Kósmos Sul · Vetrheim', cols: 80, linhas: 60, bioma: 'vetrheim', luz: 'entardecer',
-    texto: 'O pedaço de Vetrheim que olha para o arquipélago: serra ao norte, rio congelado, um forte de pedra, o acampamento e o campo onde a última batalha ficou.',
+  { id: 'vetrheim-mapa', grupo: 'Vetrheim', nome: 'A fronteira norte', onde: 'Kósmos Sul · Vetrheim', cols: 200, linhas: 150, escala: 50, bioma: 'vetrheim', luz: 'entardecer', base: 'n',
+    texto: 'Dez quilômetros da beira norte de Vetrheim, a parte que olha para o arquipélago: o mar com gelo boiando, a serra, o rio congelado que desce até o lago, o forte de pedra, o acampamento de guerra, as aldeias e o campo da última batalha.',
     fazer: L => {
-      const { get, set, ret, bolha, caminho, por, espalha, vizinho, casa, n, r } = L;
-      for (let x = 0; x < 80; x++) { const cr = 6 + Math.round((n(x * .9, 3) - .5) * 9); for (let y = 0; y < cr; y++) set(x, y, 'b'); }
-      ret(22, 0, 25, 9, 'n', 'b'); ret(58, 0, 60, 9, 'n', 'b');
-      caminho([[24, 0], [28, 12], [24, 24], [32, 36], [46, 44], [60, 50], [80, 54]], 2.6, 'i', 'nb');
-      bolha(66, 46, 7, 5, 'i', .4, 'n'); bolha(68, 47, 1, .8, 'a', .3, 'i');
-      for (let i = 0; i < 9; i++) { const x = 4 + Math.floor(r() * 72), y = 12 + Math.floor(r() * 44); if (get(x, y) === 'n') bolha(x, y, 2 + r() * 2, 1.5 + r(), 'b', .5, 'n'); }
-      // o forte: muralha com torres nos cantos, pátio e salão
-      ret(44, 14, 63, 29, 'p'); ret(45, 15, 62, 28, 'k'); for (const [x, y] of [[43, 13], [61, 13], [43, 27], [61, 27]]) ret(x, y, x + 2, y + 2, 'p');
-      ret(52, 29, 54, 29, 'k'); casa(48, 16, 11, 7, 's', 'k'); por('altar', 52, 17); por('braseiro', 50, 18); por('braseiro', 56, 18); por('mesa', 51, 20); por('mesa', 55, 20);
-      for (const [x, y] of [[46, 25], [60, 25], [47, 16], [60, 16]]) por('estandarte', x, y); por('barril', 46, 27); por('caixote', 60, 27); por('caixote', 59, 27);
-      caminho([[53, 30], [50, 40], [36, 46], [22, 44]], 2, 'r', 'n'); caminho([[53, 13], [59, 6], [59, 0]], 1.8, 'r', 'nb');
-      // acampamento
-      for (let y = 0; y < 60; y++) for (let x = 0; x < 80; x++) { const dd = Math.hypot(x + .5 - 16, (y + .5 - 44) * 1.1); if (dd < 4.6 && n(x * 2, y * 2) > .42 && get(x, y) === 'n') set(x, y, 'r'); if (dd > 5.4 && dd < 6.4 && get(x, y) === 'n' && !(x > 19)) set(x, y, 'c'); }
-      por('fogueira', 16, 44); for (const [x, y] of [[12, 40], [17, 40], [11, 45], [18, 45]]) por('tenda', x, y); por('estandarte', 16, 39); por('barricada', 22, 42); por('barricada', 22, 46);
-      // campo da última batalha
-      for (let i = 0; i < 6; i++) bolha(30 + r() * 14, 48 + r() * 8, 2, 1.4, 'd', .5, 'n');
-      espalha(16, 'ossos', (c, x, y) => (c === 'n' || c === 'd') && x > 26 && x < 48 && y > 44); espalha(6, 'estandarte', (c, x, y) => c === 'n' && x > 26 && x < 48 && y > 44); espalha(6, 'barricada', (c, x, y) => c === 'n' && x > 26 && x < 48 && y > 42 && get(x + 1, y) === 'n'); espalha(6, 'entulho', c => c === 'd');
-      espalha(70, 'pinheiro', (c, x, y) => c === 'n' && (n(x * .5 + 20, y * .5) > .55)); espalha(16, 'rocha', (c, x, y) => c === 'n' && vizinho(x, y, 'b')); espalha(8, 'toco', c => c === 'n');
-      for (const [x, y] of [[64, 43], [70, 50]]) { casa(x, y, 4, 3, 's', 'm'); } espalha(3, 'barril', (c, x, y) => c === 'n' && Math.hypot(x - 66, y - 46) < 9);
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, telhados, n, n4, r, rotulo } = L;
+      // o mar no norte, com gelo boiando, e a serra logo abaixo
+      for (let x = 0; x < 200; x++) { const m = 10 + Math.round((n4(x, 3) - .5) * 14), s = m + 10 + Math.round((n(x * .4, 7) - .5) * 12); for (let y = 0; y < m; y++) set(x, y, 'f'); for (let y = m; y < s; y++) set(x, y, n(x * .8, y * .8) > .35 ? 'b' : 'n'); }
+      for (let i = 0; i < 40; i++) { const x = r() * 200, y = r() * 12; if (get(Math.floor(x), Math.floor(y)) === 'f') bolha(x, y, 1 + r() * 3, .8 + r() * 1.5, 'i', .5, 'f'); }
+      // passagens pela serra
+      for (const x of [46, 120, 168]) caminho([[x, 6], [x + 4, 22], [x, 34]], 3, 'n', 'b');
+      // o rio congelado e o lago
+      caminho([[120, 8], [118, 30], [104, 52], [112, 76], [96, 98], [100, 120], [86, 150]], 3.2, 'i', 'nb'); bolha(132, 104, 16, 10, 'i', .4, 'n'); caminho([[104, 98], [120, 102]], 2.5, 'i', 'n');
+      // matas de pinheiro
+      for (let y = 0; y < 150; y++) for (let x = 0; x < 200; x++) if (get(x, y) === 'n' && n4(x + 40, y) > .6 && r() < .13) por('pinheiro', x, y);
+      // morros de pedra
+      for (let i = 0; i < 30; i++) { const x = 4 + Math.floor(r() * 192), y = 40 + Math.floor(r() * 106); if (get(x, y) === 'n') bolha(x, y, 2 + r() * 4, 1.5 + r() * 3, 'b', .5, 'n'); }
+      // estradas
+      caminho([[46, 30], [60, 56], [84, 66], [110, 64], [140, 60], [168, 34]], 1.6, 'r', 'n'); caminho([[84, 66], [70, 92], [60, 120], [44, 148]], 1.6, 'r', 'n'); caminho([[110, 64], [104, 52]], 1.4, 'r', 'n');
+      // o forte (telhado e muralha), as aldeias, o acampamento
+      ret(80, 58, 89, 66, 'p'); ret(81, 59, 88, 65, 'k'); ret(83, 60, 86, 63, 'u'); ret(81, 64, 82, 65, 'u');
+      for (const [x0, y0] of [[140, 52], [58, 112], [170, 120], [30, 70]]) { bolha(x0 + 4, y0 + 3, 7, 5, 'r', .5, 'n'); telhados(x0, y0, x0 + 9, y0 + 6, (x, y) => get(x, y) === 'r', { lw: 3, lh: 3, verde: 0 }); }
+      bolha(60, 84, 4, 3, 'r', .5, 'n'); for (const [x, y] of [[57, 82], [62, 82], [58, 86]]) por('tenda', x, y); por('fogueira', 60, 84);
+      for (let i = 0; i < 10; i++) bolha(90 + r() * 30, 118 + r() * 20, 2 + r() * 2, 1.5 + r(), 'd', .5, 'n');
+      espalha(14, 'ossos', (c, x, y) => (c === 'n' || c === 'd') && x > 86 && x < 124 && y > 114); espalha(8, 'estandarte', (c, x, y) => c === 'n' && x > 86 && x < 124 && y > 114);
+      espalha(20, 'rocha', (c, x, y) => c === 'n' && vizinho(x, y, 'b'));
+      rotulo(100, 2, 'Vetrheim · a fronteira norte', { g: 1 });
+      rotulo(100, 14, 'para o arquipélago ↑');
+      rotulo(85, 55, 'o forte', { ir: 'vetrheim-forte' });
+      rotulo(60, 80, 'acampamento de guerra', { ir: 'vetrheim-acampamento' });
+      rotulo(105, 132, 'o campo da última batalha', { ir: 'vetrheim-campo' });
+      rotulo(132, 96, 'o lago congelado'); rotulo(114, 40, 'o rio de gelo'); rotulo(100, 26, 'a serra');
+      rotulo(145, 49, 'aldeia'); rotulo(63, 109, 'aldeia'); rotulo(175, 117, 'aldeia'); rotulo(35, 67, 'aldeia');
     } },
-  { id: 'vetrheim-acampamento', grupo: 'Vetrheim', nome: 'O acampamento de guerra', onde: 'Kósmos Sul · Vetrheim', cols: 28, linhas: 20, bioma: 'vetrheim', luz: 'entardecer',
-    texto: 'Um acampamento Frostborn entre a serra e o lago congelado. A muralha baixa e as barricadas viram para o sul, por onde vem o inimigo.',
+  { id: 'vetrheim-forte', grupo: 'Vetrheim', nome: 'O forte de pedra', onde: 'Kósmos Sul · Vetrheim', cols: 160, linhas: 120, bioma: 'vetrheim', luz: 'entardecer',
+    texto: 'O forte que guarda a fronteira: muralha grossa com torres, portão ao sul, pátio, o salão do chefe, alojamentos, forja, estábulo e depósito. Fora dos muros, a estrada, a paliçada e o rio congelado com a ponte.',
     fazer: L => {
-      const { get, set, bolha, caminho, por, espalha, n } = L;
-      for (let x = 0; x < 28; x++) { const cr = 2 + Math.round((n(x * 1.4, 3) - .5) * 3); for (let y = 0; y < cr; y++) set(x, y, 'b'); }
-      bolha(22, 13, 4.6, 3.6, 'i', .3); set(23, 14, 'a');
-      for (let y = 0; y < 20; y++) for (let x = 0; x < 28; x++) { const d = Math.hypot(x + .5 - 12, (y + .5 - 10) * 1.1); if (d < 4.6 && n(x * 2, y * 2) > .42) set(x, y, 'r'); if (d > 5.4 && d < 6.4 && get(x, y) === 'n' && !(y > 13 && x >= 10 && x <= 14)) set(x, y, 'c'); }
-      caminho([[12, 14], [12.5, 17], [12, 20]], 2, 'r', 'nc');
-      por('fogueira', 12, 10);
-      for (const [x, y] of [[8, 6], [14, 6], [7, 11], [15, 11]]) por('tenda', x, y);
-      por('braseiro', 10, 14); por('braseiro', 14, 14);
-      for (const [x, y] of [[12, 5], [9, 9], [16, 9]]) por('estandarte', x, y);
-      por('barricada', 9, 17); por('barricada', 14, 17);
-      for (const [t, x, y] of [['caixote', 10, 6], ['barril', 11, 6], ['caixote', 17, 8], ['bau', 6, 9], ['saco', 9, 13], ['barril', 15, 13], ['mesa', 11, 8]]) por(t, x, y);
-      espalha(9, 'pinheiro', (c, x, y) => c === 'n' && (x < 5 || x > 18 && y < 9));
-      espalha(5, 'rocha', (c, x, y) => c === 'n' && (x < 6 || y > 16)); espalha(2, 'toco', c => c === 'n'); espalha(2, 'ossos', (c, x, y) => c === 'n' && y > 15);
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, casa, mobilia, n, r, rotulo } = L;
+      // o rio congelado no leste com a ponte
+      caminho([[138, 0], [132, 40], [140, 80], [134, 120]], 7, 'i'); caminho([[138, 0], [132, 40], [140, 80], [134, 120]], 2, 'a');
+      for (let i = 0; i < 18; i++) { const x = 4 + Math.floor(r() * 152), y = 4 + Math.floor(r() * 112); if (get(x, y) === 'n' && (x < 36 || x > 120 || y < 18 || y > 100)) bolha(x, y, 1.5 + r() * 2.5, 1.2 + r() * 1.6, 'b', .5, 'n'); }
+      // estrada do portão até a ponte e para o sul
+      caminho([[78, 96], [80, 108], [100, 112], [136, 66], [160, 64]], 3, 'r', 'nai'); ret(126, 63, 146, 67, 'm', 'ia'); caminho([[80, 108], [76, 120]], 3, 'r', 'n');
+      // a muralha: quatro torres nos cantos e duas no portão
+      ret(36, 18, 124, 96, 'p'); ret(39, 21, 121, 93, 'k');
+      for (const [x, y] of [[33, 15], [118, 15], [33, 90], [118, 90]]) { ret(x, y, x + 8, y + 8, 'p'); ret(x + 2, y + 2, x + 6, y + 6, 'k'); por('braseiro', x + 4, y + 4); }
+      ret(74, 94, 85, 99, 'p'); ret(77, 93, 82, 99, 'k');
+      ret(72, 90, 74, 92, 'p'); ret(85, 90, 87, 92, 'p');
+      // o salão do chefe
+      { const [a, b, c, e] = casa(58, 26, 44, 20, 's', 'm'); ret(a, b, c, b + 2, 'k'); por('altar', 79, b); for (const y of [b + 6, b + 11]) for (const x of [a + 4, a + 10, a + 16, a + 24, a + 30, a + 36]) por('mesa', x, y); for (const [x, y] of [[a + 1, b + 4], [c - 1, b + 4], [a + 1, e - 2], [c - 1, e - 2]]) por('braseiro', x, y); for (const [x, y] of [[a + 7, b], [c - 8, b]]) por('estandarte', x, y); for (const x of [a + 8, a + 20, a + 30]) { por('pilar', x, b + 4); por('pilar', x, e - 2); } }
+      // alojamentos, forja, estábulo, depósito
+      for (const [x, y, w, h, porta, coisas] of [[42, 52, 18, 10, 'l', ['maca', 'maca', 'bau', 'barril']], [42, 66, 18, 10, 'l', ['maca', 'maca', 'bau', 'saco']], [100, 52, 18, 10, 'o', ['caixote', 'barril', 'saco', 'caixote']], [100, 66, 18, 10, 'o', ['estante', 'bau', 'caixote']], [42, 80, 14, 10, 'l', ['saco', 'barril', 'toco']]]) { const [a, b, c, e] = casa(x, y, w, h, porta); mobilia(a, b, c, e, Math.floor((c - a) * (e - b) / 9), coisas, 'm'); }
+      ret(102, 80, 116, 88, 'k'); por('fogueira', 106, 83); por('braseiro', 110, 83); por('mesa', 113, 82); por('barril', 104, 86); por('caixote', 114, 86);
+      // o pátio: poço, estandartes, alvos de treino, carroças
+      bolha(68, 75, 7, 5, 'r', .4, 'k'); bolha(92, 66, 5, 3.5, 'r', .4, 'k'); for (const [x, y] of [[88, 64], [91, 63], [94, 64]]) por('tenda', x, y);
+      bolha(80, 68, 3, 2.4, 'c', .1, 'k'); set(80, 68, 'a'); for (const [x, y] of [[66, 56], [94, 56], [66, 84], [94, 84]]) por('estandarte', x, y);
+      for (const [x, y] of [[66, 72], [70, 74], [66, 76]]) por('toco', x, y); for (const [x, y] of [[90, 74], [94, 76]]) por('barricada', x, y);
+      espalha(30, 'caixote', (c, x, y) => c === 'k' && vizinho(x, y, 'p') && y > 48); espalha(24, 'barril', (c, x, y) => c === 'k' && vizinho(x, y, 'p') && y > 48);
+      // fora: paliçada, tendas de quem chega, árvores
+      for (let x = 20; x < 140; x += 3) if (get(x, 104) === 'n' && Math.abs(x - 80) > 6) por('barricada', x, 104);
+      for (const [x, y] of [[20, 108], [26, 112], [96, 110], [104, 114], [16, 114]]) por('tenda', x, y); por('fogueira', 22, 112); por('fogueira', 100, 116);
+      for (let y = 0; y < 120; y++) for (let x = 0; x < 160; x++) if (get(x, y) === 'n' && (x < 28 || x > 128 || y < 10) && n(x * .3, y * .3) > .55 && r() < .2) por('pinheiro', x, y);
+      espalha(30, 'rocha', (c, x, y) => c === 'n' && vizinho(x, y, 'b')); espalha(20, 'toco', c => c === 'n');
+      rotulo(80, 23, 'o salão', { ir: 'vetrheim-salao' });
+    } },
+  { id: 'vetrheim-acampamento', grupo: 'Vetrheim', nome: 'O acampamento de guerra', onde: 'Kósmos Sul · Vetrheim', cols: 100, linhas: 70, bioma: 'vetrheim', luz: 'entardecer',
+    texto: 'Um acampamento Frostborn entre a serra e o lago congelado: dezenas de tendas em volta das fogueiras, a tenda do comando, os cercados, a muralha baixa e as barricadas viradas para o sul, por onde vem o inimigo.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, n, r, rotulo } = L;
+      for (let x = 0; x < 100; x++) { const cr = 5 + Math.round((n(x * .6, 3) - .5) * 8); for (let y = 0; y < cr; y++) set(x, y, 'b'); }
+      bolha(84, 40, 14, 10, 'i', .3); bolha(86, 42, 2, 1.4, 'a', .3, 'i');
+      // o chão batido do acampamento, a muralha baixa em volta e o portão no sul
+      for (let y = 0; y < 70; y++) for (let x = 0; x < 100; x++) { const dd = Math.hypot((x + .5 - 42) / 30, (y + .5 - 34) / 22); if (dd < .95 && get(x, y) === 'n' && n(x * 1.4, y * 1.4) > .3) set(x, y, 'r'); if (dd > 1 && dd < 1.07 && get(x, y) !== 'b' && !(y > 50 && Math.abs(x - 42) < 4)) set(x, y, 'c'); }
+      caminho([[42, 50], [42, 70]], 3, 'r', 'nc');
+      // as fogueiras com tendas em volta
+      for (const [fx, fy] of [[30, 26], [52, 24], [24, 40], [44, 40], [62, 36]]) { por('fogueira', fx, fy); for (let i = 0; i < 5; i++) { const a = i / 5 * 6.283 + r(), x = Math.round(fx + Math.cos(a) * 5), y = Math.round(fy + Math.sin(a) * 4); por('tenda', x, y); } por('estandarte', fx + 1, fy - 2); }
+      // a tenda do comando
+      ret(38, 12, 46, 18, 'k'); por('tenda', 40, 13); por('tenda', 43, 13); por('mesa', 41, 16); por('bau', 44, 16); por('estandarte', 38, 12); por('estandarte', 46, 12); por('braseiro', 39, 17); por('braseiro', 45, 17);
+      // barricadas viradas para o sul e o depósito
+      for (let x = 14; x < 72; x += 4) if (Math.abs(x - 42) > 4) por('barricada', x, 56);
+      for (const [t, x, y] of [['caixote', 66, 20], ['caixote', 67, 20], ['barril', 68, 21], ['saco', 66, 22], ['caixote', 69, 22], ['barril', 70, 20], ['bau', 18, 30], ['saco', 18, 33]]) por(t, x, y);
+      espalha(30, 'pinheiro', (c, x, y) => c === 'n' && (x < 10 || x > 76 || y > 58)); espalha(16, 'rocha', (c, x, y) => c === 'n' && (vizinho(x, y, 'b') || y > 60)); espalha(8, 'toco', c => c === 'n');
+      espalha(10, 'ossos', (c, x, y) => c === 'n' && y > 60); espalha(10, 'caixote', c => c === 'r'); espalha(8, 'barril', c => c === 'r');
+      rotulo(42, 10, 'a tenda do comando');
+    } },
+  { id: 'vetrheim-campo', grupo: 'Vetrheim', nome: 'O campo da última batalha', onde: 'Kósmos Sul · Vetrheim', cols: 160, linhas: 110, bioma: 'vetrheim', luz: 'entardecer',
+    texto: 'Onde a última batalha ficou: valas, barricadas caídas, carroças queimadas, estandartes dos dois lados e o rio congelado que os dois exércitos tentaram atravessar. A neve cobre quase tudo, menos o que ninguém veio buscar.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, n, r, rotulo } = L;
+      caminho([[0, 58], [40, 52], [80, 60], [120, 54], [160, 60]], 6, 'i'); caminho([[0, 58], [40, 52], [80, 60], [120, 54], [160, 60]], 1.6, 'a');
+      for (const x of [30, 96, 140]) { const y = 56 + Math.round((n(x * .1, 3) - .5) * 6); ret(x - 2, y - 6, x + 2, y + 6, 'i', 'a'); }
+      // valas dos dois lados do rio
+      for (const yv of [34, 82]) { const pts = []; for (let x = 6; x <= 154; x += 12) pts.push([x, yv + (n(x * .1, yv) - .5) * 10]); caminho(pts, 2, 'd', 'n'); }
+      for (let i = 0; i < 30; i++) bolha(8 + r() * 144, 8 + r() * 94, 1.5 + r() * 3, 1.2 + r() * 2, 'd', .5, 'n');
+      for (let i = 0; i < 14; i++) bolha(8 + r() * 144, 8 + r() * 94, 2 + r() * 3, 1.5 + r() * 2, 'r', .5, 'nd');
+      for (let i = 0; i < 12; i++) { const x = 4 + Math.floor(r() * 152), y = 4 + Math.floor(r() * 102); if (get(x, y) === 'n') bolha(x, y, 1.5 + r() * 2, 1.2 + r() * 1.5, 'b', .5, 'n'); }
+      // as barricadas em linha, quebradas
+      for (const yb of [30, 86]) for (let x = 6; x < 154; x += 3) if (r() < .6) por('barricada', x, yb + Math.round((n(x * .2, yb) - .5) * 4));
+      
+      espalha(30, 'estandarte', c => c === 'n' || c === 'd'); espalha(140, 'ossos', c => c === 'n' || c === 'd' || c === 'r'); espalha(60, 'entulho', c => c === 'r' || c === 'd');
+      espalha(20, 'toco', c => c === 'n'); espalha(16, 'barril', c => c === 'n' || c === 'r'); espalha(14, 'caixote', c => c === 'r'); espalha(10, 'barco', c => c === 'i');
+      for (let y = 0; y < 110; y++) for (let x = 0; x < 160; x++) if (get(x, y) === 'n' && (y < 10 || y > 100) && n(x * .3, y * .3) > .5 && r() < .35) por('pinheiro', x, y);
+      espalha(20, 'rocha', (c, x, y) => c === 'n' && vizinho(x, y, 'b'));
+      rotulo(80, 26, 'linha do norte'); rotulo(80, 92, 'linha do sul');
     } },
   { id: 'vetrheim-salao', grupo: 'Vetrheim', nome: 'O salão do forte', onde: 'Kósmos Sul · Vetrheim', cols: 26, linhas: 18, bioma: 'vetrheim', luz: 'entardecer', base: 'p',
     texto: 'O salão do forte, com as mesas compridas e os braseiros. O chefe come de frente para a porta, de costas para a parede.',
@@ -6091,7 +6450,7 @@ async function renderTabuleiro(id) {
 
 function tbHtml() {
   const f = (tool, rot) => `<button class="tb-f" type="button" data-tool="${tool}" aria-pressed="${tool === 'mover'}">${rot}</button>`;
-  return `<div class="fx-add tb-topo"><a class="fx-btn" href="#mesa/${esc(TB.id)}">← Mesa</a><span class="fx-hint">1 quadrado = 1,5 m</span></div>
+  return `<div class="fx-add tb-topo"><a class="fx-btn" href="#mesa/${esc(TB.id)}">← Mesa</a><span class="fx-hint" id="tb-escala">1 quadrado = ${fm(metroQ())}</span></div>
   <div class="tb">
     <div class="tb-palco">
       <div class="tb-ferr" role="toolbar" aria-label="Ferramentas do tabuleiro">
@@ -6106,6 +6465,7 @@ function tbHtml() {
         <div class="tb-mundo" id="tb-mundo">
           <img class="tb-fundo" id="tb-fundo" alt="" hidden>
           <div class="tb-terreno" id="tb-terreno"><canvas class="tb-geral" id="tb-geral"></canvas></div>
+          <div class="tb-rotulos" id="tb-rotulos"></div>
           <svg class="tb-areas" id="tb-areas" aria-hidden="true"></svg>
           <div class="tb-pecas" id="tb-pecas"></div>
           <canvas class="tb-nevoa" id="tb-nevoa"></canvas>
@@ -6210,6 +6570,7 @@ async function tbEscreve(fn, ok, chaves = []) {
 function aplicarVista() {
   const v = TB.vista, mu = $('#tb-mundo', root); if (!mu) return;
   mu.style.transform = `translate3d(${v.x.toFixed(1)}px,${v.y.toFixed(1)}px,0) scale(${v.z.toFixed(4)})`;
+  mu.style.setProperty('--iz', (1 / v.z).toFixed(4));
   mu.classList.add('mexendo'); clearTimeout(TB.mexT); TB.mexT = setTimeout(() => mu.classList.remove('mexendo'), 220);
   agendarLadrilhos();
 }
@@ -6237,6 +6598,7 @@ function ligarTabuleiro() {
   const ptrs = new Map();
   vi.addEventListener('pointerdown', e => {
     if (!TB || e.button > 0) return;
+    if (e.target.closest('button.tb-rotulo')) return;   // nome de lugar que abre outro mapa: é clique, não arrasto
     vi.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (ptrs.size === 2) {
       if (TB.gesto && TB.gesto.tipo === 'peca') soltarPeca(false);
@@ -6367,10 +6729,22 @@ function tamanhoMundo() {
 // redesenha só o pedaço mexido pelo pincel (com um quadrado de folga para as bordas e sombras)
 function sujar(x, y) { const d = TB.sujo || (TB.sujo = { x0: x, y0: y, x1: x, y1: y }); d.x0 = Math.min(d.x0, x); d.y0 = Math.min(d.y0, y); d.x1 = Math.max(d.x1, x); d.y1 = Math.max(d.y1, y); }
 function desenharSujo() { const d = TB && TB.sujo; if (!d) return; TB.sujo = null; desenharTerreno({ x0: d.x0 - 2, y0: d.y0 - 2, x1: d.x1 + 2, y1: d.y1 + 2 }); }
-// O terreno é desenhado em ladrilhos de 16 × 16 quadrados, só os que a tela mostra, um de cada vez
-// (o resto da página não trava). De longe, aparece a visão geral: uma cor por quadrado, rápida mesmo em mapas enormes.
-const LADO = 16;
-function nivelK() { const z = TB.vista ? TB.vista.z : 1, q = z * Math.min(2, window.devicePixelRatio || 1); return q > 1.15 ? 2 : q > .55 ? 1 : q > .27 ? .5 : q > .1 ? .25 : 0; }
+// O terreno é desenhado em ladrilhos, só os que a tela mostra, um de cada vez (o resto da página não trava).
+// De muito longe, aparece a visão geral: uma cor por quadrado, rápida mesmo em mapas enormes.
+// de longe, ladrilhos maiores com menos detalhe; de perto, menores e nítidos
+const ladoDe = k => k >= 1 ? 16 : k >= .5 ? 24 : k >= .25 ? 32 : 64;
+function nivelK() { const z = TB.vista ? TB.vista.z : 1, q = z * Math.min(2, window.devicePixelRatio || 1); return q > 1.15 ? 2 : q > .55 ? 1 : q > .27 ? .5 : q > .13 ? .25 : q > .035 ? .125 : 0; }
+// nomes escritos no mapa (mapas de viagem). Ficam do mesmo tamanho na tela com qualquer zoom.
+// Os que levam a outro mapa viram botão para o Mestre; os secretos ("m") só ele vê.
+function desenharRotulos() {
+  const box = $('#tb-rotulos', root); if (!box || !TB) return;
+  const rs = (TB.t.cena && TB.t.cena.rotulos) || [];
+  box.innerHTML = rs.filter(r => TB.mestre || !r.m).map(r => {
+    const pos = `left:${((r.x + .5) * TQ).toFixed(0)}px;top:${((r.y + .5) * TQ).toFixed(0)}px`, cls = 'tb-rotulo' + (r.g ? ' grande' : '') + (r.m ? ' secreto' : '');
+    const lg = r.ir && TB.mestre && LUGARES.find(l => l.id === r.ir);
+    return lg ? `<button class="${cls}" type="button" style="${pos}" data-tb="ir-lugar" data-v="${esc(r.ir)}" title="Abrir: ${esc(lg.nome)}">${esc(r.t)} ▸</button>` : `<span class="${cls}" style="${pos}">${esc(r.t)}</span>`;
+  }).join('');
+}
 const COR_T = { g: '#4a6e2c', v: '#33521f', r: '#6a4e32', s: '#c9b183', k: '#76726c', m: '#7a5434', o: '#36313c', a: '#2f8a98', f: '#123f58', l: '#4a3a28', d: '#6a6258', c: '#8a857a', b: '#4b4852', p: '#3a3734', x: '#07080e', n: '#e2e9f1', i: '#9ac8dc', e: '#ff7a1e', h: '#2c2630', q: '#5a6068', u: '#a4532f' };
 function desenharGeral(W, H, reg) {
   const cv = $('#tb-geral', root); if (!cv) return;
@@ -6388,15 +6762,20 @@ function desenharTerreno(parte) {
   const L = TB.lad || (TB.lad = { tiles: new Map() });
   if (!parte || TB.temFundo) desenharGeral(W, H);
   // mapa novo inteiro: os ladrilhos antigos somem (a visão geral fica por baixo) até serem refeitos
-  if (!parte) { for (const t of L.tiles.values()) { t.velho = true; t.cv.style.display = 'none'; } }
-  else {
-    for (const t of L.tiles.values()) {
-      const x0 = t.tx * LADO, y0 = t.ty * LADO, x1 = x0 + LADO, y1 = y0 + LADO;   // cada ladrilho cobre um quadrado do vizinho (sem fresta entre eles)
-      if (parte.x1 < x0 || parte.x0 > x1 || parte.y1 < y0 || parte.y0 > y1) continue;
-      if (t.velho) continue;
+  if (!parte) {
+    for (const t of L.tiles.values()) t.cv.remove(); L.tiles.clear(); L.fazendo = null;
+    const es = $('#tb-escala', root); if (es) es.textContent = '1 quadrado = ' + fm(metroQ());
+    desenharRotulos();
+  } else {
+    const k = nivelK();
+    for (const [chave, t] of [...L.tiles]) {
+      const x1 = Math.min(TB.t.cols - 1, t.x1), y1 = Math.min(TB.t.linhas - 1, t.y1);
+      if (parte.x1 < t.x0 || parte.x0 > x1 || parte.y1 < t.y0 || parte.y0 > y1) continue;
+      // ladrilho de outro nível de zoom: sai (é refeito se a tela voltar para ele)
+      if (t.k !== k) { t.cv.remove(); L.tiles.delete(chave); continue; }
       // pedaço pintado: redesenha só a parte mexida dentro do ladrilho
-      const reg = { x0: Math.max(x0, parte.x0), y0: Math.max(y0, parte.y0), x1: Math.min(x1, parte.x1, TB.t.cols - 1), y1: Math.min(y1, parte.y1, TB.t.linhas - 1) };
-      pintarRegiao(t.cv.getContext('2d'), t.k, x0, y0, reg, W, H);
+      const reg = { x0: Math.max(t.x0, parte.x0), y0: Math.max(t.y0, parte.y0), x1: Math.min(x1, parte.x1), y1: Math.min(y1, parte.y1) };
+      pintarRegiao(t.cv.getContext('2d'), t.k, t.x0, t.y0, reg, W, H);
     }
     desenharGeral(W, H, parte);
   }
@@ -6432,39 +6811,41 @@ function fazerLadrilho() {
   // enquanto pinta, arrasta peça ou mede, os ladrilhos esperam (a mão vem primeiro)
   if (TB.gesto && TB.gesto.tipo !== 'pan' && TB.gesto.tipo !== 'pinca') return agendarLadrilhos(250);
   const L = TB.lad || (TB.lad = { tiles: new Map() }), k = nivelK(), { cols, linhas } = TB.t, v = TB.vista || { x: 0, y: 0, z: 1 };
-  const [W, H] = [cols * TQ, linhas * TQ];
+  const [W, H] = [cols * TQ, linhas * TQ], LD = ladoDe(k);
   // quais ladrilhos a tela mostra (com um de folga em volta)
   const wx0 = -v.x / v.z / TQ, wy0 = -v.y / v.z / TQ, wx1 = wx0 + vi.clientWidth / v.z / TQ, wy1 = wy0 + vi.clientHeight / v.z / TQ;
-  const tx0 = Math.max(0, Math.floor(wx0 / LADO) - 1), ty0 = Math.max(0, Math.floor(wy0 / LADO) - 1), tx1 = Math.min(Math.ceil(cols / LADO) - 1, Math.floor(wx1 / LADO) + 1), ty1 = Math.min(Math.ceil(linhas / LADO) - 1, Math.floor(wy1 / LADO) + 1);
-  const cxv = (wx0 + wx1) / 2 / LADO, cyv = (wy0 + wy1) / 2 / LADO;
-  // tira da memória os ladrilhos que ficaram longe
-  // memória: no máximo uns 50 milhões de pixels de ladrilho; os mais longe da tela saem primeiro
+  const tx0 = Math.max(0, Math.floor(wx0 / LD) - 1), ty0 = Math.max(0, Math.floor(wy0 / LD) - 1), tx1 = Math.min(Math.ceil(cols / LD) - 1, Math.floor(wx1 / LD) + 1), ty1 = Math.min(Math.ceil(linhas / LD) - 1, Math.floor(wy1 / LD) + 1);
+  const cx = (wx0 + wx1) / 2, cy = (wy0 + wy1) / 2, longe = t => Math.hypot((t.x0 + t.x1) / 2 - cx, (t.y0 + t.y1) / 2 - cy) + (t.k === k ? 0 : 1e4);
+  // memória: no máximo uns 50 milhões de pixels de ladrilho; saem primeiro os de outro zoom e os mais longe da tela
   let soma = 0; for (const t of L.tiles.values()) soma += t.cv.width * t.cv.height;
-  if (soma > 5e7) { const longe = [...L.tiles.values()].sort((a, b) => Math.hypot(b.tx - cxv, b.ty - cyv) - Math.hypot(a.tx - cxv, a.ty - cyv)); for (const t of longe) { if (soma <= 3.5e7) break; soma -= t.cv.width * t.cv.height; t.cv.remove(); L.tiles.delete(t.tx + ',' + t.ty); } }
+  if (soma > 5e7) { for (const [ch, t] of [...L.tiles].sort((a, b) => longe(b[1]) - longe(a[1]))) { if (soma <= 3.5e7) break; soma -= t.cv.width * t.cv.height; t.cv.remove(); L.tiles.delete(ch); } }
   if (!k) return;   // de longe, só a visão geral
   // um ladrilho é pintado em quatro pedaços, um por vez (cada pedaço cabe num quadro sem travar a tela)
   const fz = L.fazendo;
-  if (fz && L.tiles.get(fz.tx + ',' + fz.ty) === fz.t && fz.k === k && fz.terreno === TB.t.terreno && fz.cena === TB.t.cena && fz.fundo === TB.temFundo) {
+  if (fz && fz.k === k && fz.terreno === TB.t.terreno && fz.cena === TB.t.cena && fz.fundo === TB.temFundo) {
     pintarRegiao(fz.cv.getContext('2d'), k, fz.x0, fz.y0, fz.partes.shift(), W, H);
-    if (!fz.partes.length) { fz.t.cv.replaceWith(fz.cv); fz.t.cv = fz.cv; fz.t.k = k; fz.t.velho = false; L.fazendo = null; }
+    if (!fz.partes.length) {
+      // o novo entra por cima dos de zoom menor; os de zoom maior que ele cobria saem
+      fz.cv.style.zIndex = String(Math.round(k * 8)); box.appendChild(fz.cv);
+      L.tiles.set(fz.chave, { k, x0: fz.x0, y0: fz.y0, x1: fz.x1, y1: fz.y1, cv: fz.cv }); L.fazendo = null;
+    }
     return agendarLadrilhos(TB.gesto ? 120 : 0);
   }
   L.fazendo = null;
   let melhor = null, dm = 1e9;
   for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) {
-    const t = L.tiles.get(tx + ',' + ty); if (t && !t.velho && t.k >= k) continue;
-    const d = Math.hypot(tx + .5 - cxv, ty + .5 - cyv); if (d < dm) { dm = d; melhor = [tx, ty]; }
+    if (L.tiles.has(k + ':' + tx + ',' + ty)) continue;
+    const d = Math.hypot((tx + .5) * LD - cx, (ty + .5) * LD - cy); if (d < dm) { dm = d; melhor = [tx, ty]; }
   }
   if (!melhor) return;
-  const [tx, ty] = melhor, x0 = tx * LADO, y0 = ty * LADO, x1 = Math.min(cols - 1, x0 + LADO), y1 = Math.min(linhas - 1, y0 + LADO);
-  let t = L.tiles.get(tx + ',' + ty);
-  if (!t) { const cv = document.createElement('canvas'); cv.className = 'tb-lad'; cv.style.display = 'none'; box.appendChild(cv); t = { tx, ty, cv, velho: true }; L.tiles.set(tx + ',' + ty, t); }
+  // cada ladrilho cobre um quadrado do vizinho (sem fresta entre eles)
+  const [tx, ty] = melhor, x0 = tx * LD, y0 = ty * LD, x1 = Math.min(cols - 1, x0 + LD), y1 = Math.min(linhas - 1, y0 + LD);
   const cv = document.createElement('canvas'); cv.className = 'tb-lad';
   cv.width = Math.round((x1 - x0 + 1) * TQ * k); cv.height = Math.round((y1 - y0 + 1) * TQ * k);
   Object.assign(cv.style, { left: x0 * TQ + 'px', top: y0 * TQ + 'px', width: (x1 - x0 + 1) * TQ + 'px', height: (y1 - y0 + 1) * TQ + 'px' });
-  const mx = Math.min(x1, x0 + LADO / 2 - 1), my = Math.min(y1, y0 + LADO / 2 - 1), partes = [];
+  const mx = Math.min(x1, x0 + LD / 2 - 1), my = Math.min(y1, y0 + LD / 2 - 1), partes = [];
   for (const [a, b] of [[y0, my], [my + 1, y1]]) for (const [c, d] of [[x0, mx], [mx + 1, x1]]) if (a <= b && c <= d) partes.push({ x0: c, y0: a, x1: d, y1: b });
-  L.fazendo = { tx, ty, t, cv, k, x0, y0, partes, terreno: TB.t.terreno, cena: TB.t.cena, fundo: TB.temFundo };
+  L.fazendo = { chave: k + ':' + tx + ',' + ty, cv, k, x0, y0, x1, y1, partes, terreno: TB.t.terreno, cena: TB.t.cena, fundo: TB.temFundo };
   fazerLadrilho();
 }
 function infoQuadrado(c) {
@@ -6497,7 +6878,7 @@ function gerarCena() {
 function abrirLugar(id) {
   const l = mapaDoLugar(id); if (!l) return;
   TB.antes = { cols: TB.t.cols, linhas: TB.t.linhas, terreno: TB.t.terreno, nevoa: TB.t.nevoa, cena: TB.t.cena };
-  aplicarCena({ cols: l.cols, linhas: l.linhas, terreno: l.terreno, nevoa: '0'.repeat(l.cols * l.linhas), cena: { bioma: l.bioma, luz: l.luz, lugar: l.id, props: l.props.map(p => ({ ...p })) } }, l.grupo + ': ' + l.nome.toLowerCase());
+  aplicarCena({ cols: l.cols, linhas: l.linhas, terreno: l.terreno, nevoa: '0'.repeat(l.cols * l.linhas), cena: { bioma: l.bioma, luz: l.luz, lugar: l.id, ...(l.escala ? { escala: l.escala } : {}), ...(l.rotulos.length ? { rotulos: l.rotulos } : {}), props: l.props.map(p => ({ ...p })) } }, l.grupo + ': ' + l.nome.toLowerCase());
 }
 async function aplicarCena(n, ok) {
   TB.t = { ...TB.t, ...n };
@@ -6792,8 +7173,9 @@ function desenharCena() {
   const lg = LUGARES.find(l => l.id === TB.lugar), grupos = [...new Set(LUGARES.map(l => l.grupo))];
   box.innerHTML = `<h3>Cenário</h3>
     <p class="fx-lbl">Lugares do mundo</p>
-    ${grupos.map(gr => `<p class="fx-hint"><b>${esc(gr)}</b> · ${esc(LUGARES.find(l => l.grupo === gr).onde)}</p><div class="chips">${LUGARES.filter(l => l.grupo === gr).map(l => `<button class="chip" type="button" data-tb="lugar" data-v="${l.id}" aria-pressed="${TB.lugar === l.id}">${esc(l.nome)}</button>`).join('')}</div>`).join('')}
-    ${lg ? `<div class="tb-lugar"><p><b>${esc(lg.grupo)}: ${esc(lg.nome.toLowerCase())}</b> · ${lg.cols} × ${lg.linhas} quadrados</p><p class="fx-hint">${esc(lg.texto)}</p><div class="fx-add"><button class="fx-btn" type="button" data-tb="abrir-lugar">Abrir este lugar</button>${TB.antes ? '<button class="fx-btn small" type="button" data-tb="desfazer-mapa">Desfazer</button>' : ''}</div></div>` : '<p class="fx-hint">Escolha um lugar para ver o que tem nele.</p>'}
+    ${grupos.map(gr => `<p class="fx-hint"><b>${esc(gr)}</b> · ${esc(LUGARES.find(l => l.grupo === gr).onde)}</p><div class="chips">${LUGARES.filter(l => l.grupo === gr).map(l => `<button class="chip${l.escala ? ' tb-chip-mapa' : ''}" type="button" data-tb="lugar" data-v="${l.id}" aria-pressed="${TB.lugar === l.id}">${esc(l.nome)}</button>`).join('')}</div>`).join('')}
+    ${lg ? `<div class="tb-lugar"><p><b>${esc(lg.grupo)}: ${esc(lg.nome.toLowerCase())}</b> · ${lg.cols} × ${lg.linhas} quadrados de ${fm(lg.escala || 1.5)}${lg.escala ? ` (uns ${fm(Math.round(lg.cols * lg.escala / 10) * 10)} de largura)` : ''}</p><p class="fx-hint">${esc(lg.texto)}</p>${lg.escala ? '<p class="fx-hint">Mapa para viajar, não para lutar. Os nomes com ▸ no mapa abrem o lugar de combate (só você vê esse botão).</p>' : ''}<div class="fx-add"><button class="fx-btn" type="button" data-tb="abrir-lugar">Abrir este lugar</button>${TB.antes ? '<button class="fx-btn small" type="button" data-tb="desfazer-mapa">Desfazer</button>' : ''}</div></div>` : '<p class="fx-hint">Escolha um lugar para ver o que tem nele. Os de borda dourada são o mapa da ilha inteira.</p>'}
+    ${(() => { const at = LUGARES.find(l => l.id === (TB.t.cena && TB.t.cena.lugar)), pai = at && !at.escala && LUGARES.find(l => l.grupo === at.grupo && l.escala); return pai ? `<div class="fx-add"><button class="fx-btn small" type="button" data-tb="ir-lugar" data-v="${pai.id}">← Voltar para ${esc(pai.nome.toLowerCase())}</button></div>` : ''; })()}
     <p class="fx-lbl">Ou gere um mapa</p>
     <div class="chips">${Object.entries(MAPA_BIOMAS).filter(([, b]) => !b[3]).map(([v, [n]]) => `<button class="chip" type="button" data-tb="bioma" data-v="${v}" aria-pressed="${TB.bioma === v}">${n}</button>`).join('')}</div>
     <div class="fx-add tb-gerar"><label class="fx-f"><span>Tamanho</span><select id="tb-tam-gerar">${[['16x12', 'pequeno, 16 × 12'], ['24x16', 'médio, 24 × 16'], ['32x22', 'grande, 32 × 22'], ['40x28', 'enorme, 40 × 28'], ['20x28', 'em pé, 20 × 28']].map(([v, n]) => `<option value="${v}"${TB.tamGerar === v ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
@@ -6826,7 +7208,7 @@ function desenharOpcoes() {
   const ch = (grupo, v, rot, on) => `<button class="chip" type="button" data-tb="${grupo}" data-v="${v}" aria-pressed="${on}">${rot}</button>`;
   const o = {
     mover: '<span class="fx-hint">Arraste a sua peça para andar. Arraste o chão para olhar o mapa; roda do mouse ou dois dedos aproximam.</span>',
-    regua: '<span class="fx-hint">Arraste de um quadrado a outro. Cada quadrado vale 1,5 m, inclusive na diagonal.</span>',
+    regua: '<span class="fx-hint">Arraste de um quadrado a outro. Cada quadrado vale ${fm(metroQ())}, inclusive na diagonal.</span>',
     area: `<span class="chips">${FORMAS.map(([v, r]) => ch('forma', v, r, TB.area.forma === v)).join('')}</span><span class="chips">${TAMANHOS_AREA.map(m => ch('metros', m, fm(m), TB.area.m === m)).join('')}</span>
       <span class="fx-hint">${TB.area.forma === 'circulo' ? 'Toque no centro do raio.' : 'Arraste de onde sai até para onde aponta.'}</span>`,
     terreno: `<span class="chips">${TERRENOS.map(([v, r]) => ch('pincel', v, r, TB.pincel === v)).join('')}</span><span class="chips">${[1, 2, 3].map(n => ch('pincel-n', n, n + '×' + n, TB.pincelN === n)).join('')}</span><span class="fx-hint">Pinte arrastando. ${MAPA_T[TB.pincel] && MAPA_T[TB.pincel][1] ? MAPA_T[TB.pincel][0] + ': ' + MAPA_T[TB.pincel][1] + '.' : ''}</span>`,
@@ -6917,6 +7299,7 @@ function tbClique(e) {
   if (a === 'gerar') return gerarCena();
   if (a === 'lugar') { TB.lugar = b.dataset.v; return desenharCena(); }
   if (a === 'abrir-lugar' && TB.lugar) return abrirLugar(TB.lugar);
+  if (a === 'ir-lugar' && TB.mestre) { TB.lugar = b.dataset.v; return abrirLugar(b.dataset.v); }
   if (a === 'luz') { TB.t.cena = { ...TB.t.cena, luz: b.dataset.v }; desenharTerreno(); desenharCena(); return tbEscreve(() => api('PATCH', 'tabuleiros?mesa_id=eq.' + TB.id, { cena: TB.t.cena }), 'luz: ' + MAPA_LUZ[b.dataset.v][0].toLowerCase(), ['cena']); }
   if (a === 'desfazer-mapa' && TB.antes) { const v = TB.antes; TB.antes = null; return aplicarCena(v, 'mapa anterior de volta'); }
   if (a === 'nevoa-modo') { TB.nevoaModo = b.dataset.v; return desenharOpcoes(); }

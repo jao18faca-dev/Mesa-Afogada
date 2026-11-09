@@ -23,4 +23,14 @@ Site da mesa de **Deep Tales**: o Livro Profano (versão dos jogadores), fichas 
 
 ### Lugares do mundo
 
-No painel Cenário, o Mestre escolhe um lugar pronto do Kósmos e abre no tabuleiro. Cada ilha tem um mapa enorme (ela inteira) e mapas das partes de dentro: Farol Velho (ilha, alto da torre, casa do faroleiro), Terras Giratórias (ilha, praça do mercado, taverna, debaixo da ilha), Ermos do Trovão (ilha, beira da cratera, ninho dos transformados), Climática (ilha, costa partida, berço dos Rainbound), Ilha Z (ilha, pavilhão e praia, laboratório) e Vetrheim (fronteira norte, acampamento, salão do forte). Os lugares ficam em `lugares.js` no código do site; o gerador aleatório continua como opção extra.
+No painel Cenário, o Mestre escolhe um lugar pronto do Kósmos e abre no tabuleiro. Cada ilha tem três tipos de mapa:
+
+- **Mapa de viagem** (borda dourada no painel): a ilha inteira, com 10 a 50 m por quadrado. Os nomes escritos no mapa ficam do mesmo tamanho com qualquer zoom; os que têm ▸ abrem o lugar de combate (só o Mestre vê esse botão, e os nomes secretos só ele vê).
+- **Lugares de combate** (1,5 m por quadrado), grandes, de 60 a 200 quadrados de lado: a ilhota do farol, a praça do Eixo e o Porto do Leste, a cratera do duelo, a costa partida, o pavilhão e as cabanas, o laboratório, o forte de pedra, o acampamento e o campo da última batalha.
+- **Partes de dentro**: o alto da torre, a casa do faroleiro, a taverna, o canto do mercado, o redemoinho, a beira da cratera, o ninho, o berço dos Rainbound, o salão do forte.
+
+Num lugar de combate aberto a partir do mapa de viagem, o painel mostra "← Voltar para o mapa da ilha". A régua, as áreas e a distância andada usam a escala do mapa aberto.
+
+O tabuleiro aguenta até 400 × 400 quadrados: o terreno é pintado em ladrilhos, só onde a tela mostra, com menos detalhe de longe. Quem já tinha o banco criado precisa rodar de novo `supabase/tabuleiro.sql` (troca o limite de 80 para 400 quadrados).
+
+Os lugares vêm escritos dentro de `public/index.html` (parte "lugares prontos do mundo"); o gerador aleatório continua como opção extra.
