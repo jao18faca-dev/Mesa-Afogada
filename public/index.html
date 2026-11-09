@@ -900,6 +900,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .tb-lugar{margin:.4rem 0 .8rem;padding:.6rem .7rem;border:1px solid var(--line,rgba(255,255,255,.12));border-radius:8px;background:rgba(255,255,255,.03)}
 .tb-lugar p{margin:.15rem 0}
 
+.fx .tb-terreno canvas{position:absolute;left:0;top:0}
+.fx .tb-geral{image-rendering:auto}
+
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
 </style>
@@ -4081,13 +4084,13 @@ const MAPA_T = {
   '.': ['Chão', ''], g: ['Grama', ''], r: ['Terra', ''], s: ['Areia', ''], k: ['Pedra', ''], m: ['Tábuas', ''], o: ['Chão de caverna', ''],
   a: ['Água rasa', 'terreno difícil'], f: ['Água funda', 'só nadando'], l: ['Lama', 'terreno difícil'], v: ['Mato alto', 'terreno difícil'], d: ['Entulho', 'terreno difícil'],
   c: ['Mureta', 'meia cobertura'], b: ['Rocha', 'bloqueia'], p: ['Parede', 'bloqueia'], x: ['Abismo', 'quem entra cai'],
-  n: ['Neve', 'terreno difícil'], i: ['Gelo', 'terreno difícil'], e: ['Lava', 'quem entra se queima'], h: ['Terra queimada', ''], q: ['Metal', ''],
+  n: ['Neve', 'terreno difícil'], i: ['Gelo', 'terreno difícil'], e: ['Lava', 'quem entra se queima'], h: ['Terra queimada', ''], q: ['Metal', ''], u: ['Telhado', 'bloqueia'],
 };
-const MAPA_ORDEM = 'xfaeslrohgvnidkqmcbp';            // quem vem depois se espalha por cima de quem vem antes
+const MAPA_ORDEM = 'xfaeslrohgvnidkqmcbpu';            // quem vem depois se espalha por cima de quem vem antes
 const MAPA_ORGANICO = new Set('faeslrohgvnid');      // bordas irregulares (rocha e abismo têm desenho próprio); o resto tem borda reta
-const MAPA_BLOQ = new Set('pb');
+const MAPA_BLOQ = new Set('pbu');
 const VARIANTES = { g: 'G', s: 'S', o: 'O', r: 'R', k: 'K' };   // terreno → mancha que aparece por cima dele em alguns lugares                 // seguram a luz
-const MAPA_ALTO = new Set('pbc');
+const MAPA_ALTO = new Set('pbcu');
 const MAPA_DENTRO = new Set(['caverna', 'gruta', 'santuario', 'laboratorio']);   // lugares fechados: sem sol, sem mato nas frestas                // fazem sombra no chão
 const MAPA_AGUA = new Set('af');
 const MAPA_PROPS = {
@@ -4406,6 +4409,14 @@ function gerarTextura(tipo) {
         emVolta(g, x, y, 90, h => { h.lineCap = 'round'; h.lineJoin = 'round'; for (const [pts, w] of ramos) for (const [cor, lw] of [['rgba(150,120,255,.35)', w * 3], ['rgba(225,215,255,.75)', w]]) { h.strokeStyle = cor; h.lineWidth = lw; h.beginPath(); pts.forEach(([a, b], k2) => k2 ? h.lineTo(a, b) : h.moveTo(a, b)); h.stroke(); } }); }
       break;
     }
+    case 'u': {
+      // telhas de barro em fileiras, com a cumeeira no meio de cada água
+      g.fillStyle = '#4a2418'; g.fillRect(0, 0, S, S);
+      for (let row = 0; row < 32; row++) { const y = row * 16, off = (row % 2) * 8, ton = r(); for (let x = -16; x < S + 16; x += 16) { const c = mistura('#9a4a2c', '#c8703e', (r() * .6 + ton * .4)); g.fillStyle = 'rgba(30,10,4,.55)'; g.beginPath(); g.arc(x + off + 8, y + 15, 8.5, 0, Math.PI); g.fill(); g.fillStyle = c; g.beginPath(); g.arc(x + off + 8, y + 13, 8, 0, Math.PI); g.lineTo(x + off, y); g.lineTo(x + off + 16, y); g.closePath(); g.fill(); g.fillStyle = 'rgba(255,220,180,.18)'; g.fillRect(x + off + 3, y + 1, 3, 10); } }
+      for (let i = 0; i < 4; i++) { g.fillStyle = 'rgba(0,0,0,.28)'; g.fillRect(0, i * 128 + 62, S, 5); g.fillStyle = 'rgba(255,230,200,.25)'; g.fillRect(0, i * 128 + 60, S, 2); }
+      sujeira(g, r, .3); manchas(16, 6, 18, 'rgba(70,90,40,.25)');
+      break;
+    }
     case 'q': {
       g.fillStyle = '#121518'; g.fillRect(0, 0, S, S);
       for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
@@ -4504,8 +4515,10 @@ function pixels(reg, R, fn) {
   return canvasDe(w, h, d => { const o = [0, 0, 0, 0]; for (let py = 0; py < h; py++) { const v = reg.y0 + (py + .5) / R; for (let px = 0; px < w; px++) { o[3] = 0; fn(reg.x0 + (px + .5) / R, v, o); if (o[3] <= 0) continue; const i = (py * w + px) * 4; d[i] = o[0]; d[i + 1] = o[1]; d[i + 2] = o[2]; d[i + 3] = Math.min(1, o[3]) * 255; } } });
 }
 function sobre(o, c, a) { if (a <= 0) return; const na = a + o[3] * (1 - a); for (let i = 0; i < 3; i++) o[i] = (c[i] * a + o[i] * o[3] * (1 - a)) / na; o[3] = na; }
+// tira a escala mas mantém o deslocamento: o desenho pode estar num ladrilho que não começa no canto do mundo
+function semEscala(g) { const m = g.getTransform(); g.setTransform(1, 0, 0, 1, m.e, m.f); }
 function porCima(g, k, reg, cv, modo) {
-  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); if (modo) g.globalCompositeOperation = modo; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  g.save(); semEscala(g); if (modo) g.globalCompositeOperation = modo; g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   g.drawImage(cv, Math.round(reg.x0 * TQ * k), Math.round(reg.y0 * TQ * k), Math.round((reg.x1 - reg.x0 + 1) * TQ * k), Math.round((reg.y1 - reg.y0 + 1) * TQ * k)); g.restore();
 }
 // uma camada de terreno: a textura recortada pela máscara. O mapa é dividido em ladrilhos de 4 quadrados:
@@ -4515,7 +4528,7 @@ function camada(g, k, reg, mascara, tipo, sombra) {
   const Q = TQ, mw = mascara.width, mh = mascara.height, R = mw / (reg.x1 - reg.x0 + 1), al = mascara.px || mascara.getContext('2d').getImageData(0, 0, mw, mh).data;
   const RX = Math.round(reg.x0 * Q * k), RY = Math.round(reg.y0 * Q * k), RW = Math.round((reg.x1 - reg.x0 + 1) * Q * k), RH = Math.round((reg.y1 - reg.y0 + 1) * Q * k);
   if (!TEX[tipo]) TEX[tipo] = gerarTextura(tipo);
-  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  g.save(); semEscala(g); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   if (sombra) {
     // a sombra sai da própria máscara, pequena e desfocada, e é esticada: bem mais leve que o shadowBlur na tela inteira
     const [sr, sg, sb, sa] = /\(([^)]+)\)/.exec(sombra[0])[1].split(',').map(Number), A = new Float32Array(mw * mh);
@@ -4550,14 +4563,17 @@ function chanfro(D, cols, linhas) {
   for (let y = linhas - 1; y >= 0; y--) for (let x = cols - 1; x >= 0; x--) { const i = y * cols + x; let v = D[i];
     if (x < cols - 1) v = Math.min(v, D[i + 1] + 1); if (y < linhas - 1) { v = Math.min(v, D[i + cols] + 1); if (x < cols - 1) v = Math.min(v, D[i + cols + 1] + r2); if (x > 0) v = Math.min(v, D[i + cols - 1] + r2); } D[i] = v; }
 }
+// JAN: quando só um pedaço do mapa é desenhado, as contas de distância ficam numa janela em volta dele
+let JAN = null;
 function campoSinal(dentro, cols, linhas) {
-  const n = cols * linhas, A = new Float32Array(n), B = new Float32Array(n);
-  for (let i = 0; i < n; i++) { A[i] = dentro[i] ? 1e6 : 0; B[i] = dentro[i] ? 0 : 1e6; }
-  chanfro(A, cols, linhas); chanfro(B, cols, linhas);
-  const s = new Float32Array(n); for (let i = 0; i < n; i++) s[i] = dentro[i] ? Math.min(A[i], 40) - .5 : -(Math.min(B[i], 40) - .5);
+  const J = JAN || { x0: 0, y0: 0, x1: cols - 1, y1: linhas - 1 }, ox = J.x0, oy = J.y0, w = J.x1 - J.x0 + 1, h = J.y1 - J.y0 + 1;
+  const n = w * h, A = new Float32Array(n), B = new Float32Array(n), dn = new Uint8Array(n);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x, d = dentro[(y + oy) * cols + x + ox] ? 1 : 0; dn[i] = d; A[i] = d ? 1e6 : 0; B[i] = d ? 0 : 1e6; }
+  chanfro(A, w, h); chanfro(B, w, h);
+  const s = new Float32Array(n); for (let i = 0; i < n; i++) s[i] = dn[i] ? Math.min(A[i], 40) - .5 : -(Math.min(B[i], 40) - .5);
   return (u, v) => {
     const x = u - .5, y = v - .5, x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
-    const G = (i, j) => s[Math.max(0, Math.min(linhas - 1, j)) * cols + Math.max(0, Math.min(cols - 1, i))];
+    const G = (i, j) => s[(Math.max(0, Math.min(h - 1, j - oy))) * w + Math.max(0, Math.min(w - 1, i - ox))];
     const a = G(x0, y0) + (G(x0 + 1, y0) - G(x0, y0)) * fx, b = G(x0, y0 + 1) + (G(x0 + 1, y0 + 1) - G(x0, y0 + 1)) * fx; return a + (b - a) * fy;
   };
 }
@@ -4574,6 +4590,13 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
   const { cols, linhas, terreno } = t, Q = TQ, bioma = cena.bioma && MAPA_BIOMAS[cena.bioma] ? cena.bioma : '';
   const chao = bioma ? MAPA_BIOMAS[bioma][1] : '', pal = PALETA[bioma] || PALETA.padrao;
   const reg = parte ? { x0: Math.max(0, parte.x0), y0: Math.max(0, parte.y0), x1: Math.min(cols - 1, parte.x1), y1: Math.min(linhas - 1, parte.y1) } : { x0: 0, y0: 0, x1: cols - 1, y1: linhas - 1 };
+  const M = 12, jan = { x0: Math.max(0, reg.x0 - M), y0: Math.max(0, reg.y0 - M), x1: Math.min(cols - 1, reg.x1 + M), y1: Math.min(linhas - 1, reg.y1 + M) };
+  JAN = parte ? jan : null;
+  try { desenharMapa0(g, t, cena, W, H, k, rapido, parte, reg, jan); } finally { JAN = null; }
+}
+function desenharMapa0(g, t, cena, W, H, k, rapido, parte, reg, jan) {
+  const { cols, linhas, terreno } = t, Q = TQ, bioma = cena.bioma && MAPA_BIOMAS[cena.bioma] ? cena.bioma : '';
+  const chao = bioma ? MAPA_BIOMAS[bioma][1] : '', pal = PALETA[bioma] || PALETA.padrao;
   const tipos = new Array(cols * linhas); for (let i = 0; i < tipos.length; i++) { const c = terreno[i]; tipos[i] = c === '.' ? (chao || '.') : c; }
   const organico = new Set(MAPA_ORGANICO); if (bioma !== 'cais') organico.add('k');
   const nz = ruidoDaRegiao(reg), tw = torce(nz), em = (F, u, v) => { const [a, b] = tw(u, v); return F(a, b); };
@@ -4597,9 +4620,10 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
     if (organico.has(T)) {
       // como num quadro pintado em camadas: cada terreno também passa por baixo dos que vêm depois
       // passa por baixo dos terrenos de cima só até 2 quadrados de onde ele está (mais longe, eles já se cobrem sozinhos)
-      const oT = MAPA_ORDEM.indexOf(T), perto = new Uint8Array(cols * linhas);
-      for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) if (tipos[y * cols + x] === T) for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const yy = y + dy, xx = x + dx; if (yy >= 0 && xx >= 0 && yy < linhas && xx < cols) perto[yy * cols + xx] = 1; }
-      const grade = tipos.map((c, i) => c === T || (perto[i] && MAPA_ORDEM.indexOf(c) > oT) ? 1 : 0), cob = cobertura(grade, cols, linhas, reg, nz);
+      const oT = MAPA_ORDEM.indexOf(T), perto = new Uint8Array(cols * linhas), grade = new Uint8Array(cols * linhas);
+      for (let y = jan.y0; y <= jan.y1; y++) for (let x = jan.x0; x <= jan.x1; x++) if (tipos[y * cols + x] === T) for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const yy = y + dy, xx = x + dx; if (yy >= 0 && xx >= 0 && yy < linhas && xx < cols) perto[yy * cols + xx] = 1; }
+      for (let y = jan.y0; y <= jan.y1; y++) for (let x = jan.x0; x <= jan.x1; x++) { const i = y * cols + x, c = tipos[i]; if (c === T || (perto[i] && MAPA_ORDEM.indexOf(c) > oT)) grade[i] = 1; }
+      const cob = cobertura(grade, cols, linhas, reg, nz);
       const [m0, m1] = T === 'a' ? [.2, .8] : [.45, .55];   // a água rasa vira funda aos poucos (a terra por cima esconde a borda do lado de fora)
       const masc = canvasDe(cob.w, cob.h, d => { for (let i = 0; i < cob.out.length; i++) d[i * 4 + 3] = 255 * lisa(m0, m1, cob.out[i]); });
       camada(g, k, reg, masc, T, sombraDe(T));
@@ -4614,7 +4638,7 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
       g.save(); const sb = sombraDe(T); if (sb) { g.shadowColor = sb[0]; g.shadowBlur = sb[1] * k; g.shadowOffsetX = sb[2] * k; g.shadowOffsetY = sb[3] * k; }
       g.fillStyle = textura(T, g); g.fill(path); g.restore();
       if (VARIANTES[T]) variacao(g, k, reg, tipos, cols, linhas, T, tw, bioma);
-      if (T === 'p' || T === 'c') {
+      if (T === 'p' || T === 'c' || T === 'u') {
         g.save();
         for (const [x, y, dx, dy] of bordas) {
           const linha = (off, cor, lw) => { g.strokeStyle = cor; g.lineWidth = lw; g.beginPath();
@@ -4639,7 +4663,7 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
       // espuma só onde a margem é natural; tábuas e cais de pedra entram na água sem espuma
       const grade = tipos.map(c => !MAPA_AGUA.has(c) && c !== 'x' && (organico.has(c) || c === 'b') ? 1 : 0), cob = cobertura(grade, cols, linhas, reg, nz, Math.min(32, Math.max(16, Math.round(16 * k))));
       const esp = canvasDe(cob.w, cob.h, d => { for (let i = 0; i < cob.out.length; i++) { const v = cob.out[i], a = lisa(.3, .36, v) * (1 - lisa(.4, .44, v)) * .66 + lisa(.16, .19, v) * (1 - lisa(.22, .26, v)) * .28, t = lisa(.41, .46, v) * (1 - lisa(.5, .54, v)) * .62; if (t > a) { d[i * 4] = 10; d[i * 4 + 1] = 26; d[i * 4 + 2] = 28; d[i * 4 + 3] = 255 * t; } else { d[i * 4] = 236; d[i * 4 + 1] = 250; d[i * 4 + 2] = 246; d[i * 4 + 3] = 255 * a; } } });
-      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = true; g.drawImage(esp, Math.round(reg.x0 * Q * k), Math.round(reg.y0 * Q * k), Math.round((reg.x1 - reg.x0 + 1) * Q * k), Math.round((reg.y1 - reg.y0 + 1) * Q * k)); g.restore();
+      g.save(); semEscala(g); g.imageSmoothingEnabled = true; g.drawImage(esp, Math.round(reg.x0 * Q * k), Math.round(reg.y0 * Q * k), Math.round((reg.x1 - reg.x0 + 1) * Q * k), Math.round((reg.y1 - reg.y0 + 1) * Q * k)); g.restore();
     }
   }
   if (rapido) return;
@@ -4653,9 +4677,10 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
   const emissivos = [], veios = [];
   desenharDetalhes(g, tipos, cols, linhas, folga, bioma, dBloq, emissivos);
   desenharBordas(g, tipos, cols, linhas, folga, bioma, tw, emissivos, veios, (cena.props || []));
-  const props = (cena.props || []).slice().sort((a, b) => (a.t === 'runas' || a.t === 'teia' ? -1 : 0) - (b.t === 'runas' || b.t === 'teia' ? -1 : 0) || a.y - b.y);
+  const perto = p => { const [w, h] = propTam(p.t), m = p.t === 'farol' ? 8 : 3; return p.x + w + m >= reg.x0 && p.x - m <= reg.x1 && p.y + h + m >= reg.y0 && p.y - m <= reg.y1; };
+  const props = (cena.props || []).filter(p => !parte || perto(p)).sort((a, b) => (a.t === 'runas' || a.t === 'teia' ? -1 : 0) - (b.t === 'runas' || b.t === 'teia' ? -1 : 0) || a.y - b.y);
   // luz da floresta: manchas de sol entre as copas
-  if (bioma === 'floresta') { g.save(); g.globalCompositeOperation = 'soft-light'; const r = mapaRng(cols * 31 + linhas); for (let i = 0; i < cols * linhas / 10; i++) { const x = r() * W, y = r() * H, rr = Q * (.6 + r() * 1.4), gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, 'rgba(255,240,170,.5)'); gr.addColorStop(1, 'rgba(255,240,170,0)'); g.fillStyle = gr; g.fillRect(x - rr, y - rr, rr * 2, rr * 2); } g.restore(); }
+  if (bioma === 'floresta') { g.save(); g.globalCompositeOperation = 'soft-light'; const r = mapaRng(cols * 31 + linhas); for (let i = 0; i < cols * linhas / 10; i++) { const x = r() * W, y = r() * H, rr = Q * (.6 + r() * 1.4); if (x + rr < reg.x0 * Q || x - rr > (reg.x1 + 1) * Q || y + rr < reg.y0 * Q || y - rr > (reg.y1 + 1) * Q) continue; const gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, 'rgba(255,240,170,.5)'); gr.addColorStop(1, 'rgba(255,240,170,0)'); g.fillStyle = gr; g.fillRect(x - rr, y - rr, rr * 2, rr * 2); } g.restore(); }
   for (const p of props) desenharObjeto(g, p, k, bioma);
   desenharLuz(g, cena, tipos, cols, linhas, W, H, bioma, emissivos, dBloq);
   // veios que brilham dentro da rocha (gruta)
@@ -4878,6 +4903,30 @@ function desenharLuz(g, cena, tipos, cols, linhas, W, H, bioma, emissivos, dBloq
   for (const p of cena.props || []) { const L = LUZES[p.t]; if (!L || (!escuro && (p.t === 'cogumelo' || p.t === 'cristal' || p.t === 'fungo'))) continue; const [w, h] = propTam(p.t); fontes.push({ x: p.x + w / 2, y: p.y + h / 2, r: L[0], c: L[1], f: L[2], sombra: p.t !== 'farol', nucleo: p.t !== 'runas' && p.t !== 'farol' }); }
   if (bioma === 'gruta') for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) if (MAPA_AGUA.has(tipos[y * cols + x]) && (x + y) % 2 === 0) fontes.push({ x: x + .5, y: y + .5, r: 2.2, c: [60, 210, 240], f: .34, sombra: false });
   for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) if (tipos[y * cols + x] === 'e' && (x + y) % 2 === 0) fontes.push({ x: x + .5, y: y + .5, r: 2.8, c: [255, 120, 40], f: .55, sombra: false });
+  // a luz só muda quando muda o que bloqueia (pintar grama não refaz a luz do mapa todo)
+  let hs = 0; if (fontes.length) for (let i = 0; i < tipos.length; i++) hs = (hs * 31 + (MAPA_BLOQ.has(tipos[i]) ? 7 : 1)) | 0;
+  const chaveLuz = [cols, linhas, chave, bioma, hs, fontes.map(f => f.x + ',' + f.y + ',' + f.r).join(';')].join('|');
+  if (!LUZ_CACHE || LUZ_CACHE.chave !== chaveLuz) {
+    // a luz vale para o mapa todo: a distância das paredes é refeita sem a janela
+    const j = JAN; JAN = null; const dB = j ? campoSinal(tipos.map(c => MAPA_BLOQ.has(c) ? 1 : 0), cols, linhas) : dBloq; JAN = j;
+    LUZ_CACHE = { chave: chaveLuz, ...calcularLuz(fontes, tipos, cols, linhas, escuro, amb, dB) };
+  }
+  const { escCv, corCv } = LUZ_CACHE;
+  g.save(); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  if (escCv) g.drawImage(escCv, 0, 0, W, H);
+  if (corCv) {
+    g.globalCompositeOperation = 'screen'; g.drawImage(corCv, 0, 0, W, H);
+    g.globalCompositeOperation = 'lighter';
+    for (const f of fontes) { if (!f.nucleo) continue; const cx = f.x * TQ, cy = f.y * TQ, R = TQ * 1.1, gr = g.createRadialGradient(cx, cy, 0, cx, cy, R); gr.addColorStop(0, `rgba(${f.c.join(',')},.55)`); gr.addColorStop(1, `rgba(${f.c.join(',')},0)`); g.fillStyle = gr; g.fillRect(cx - R, cy - R, R * 2, R * 2); }
+  }
+  g.globalCompositeOperation = 'lighter';
+  for (const [x, y, rr, cor] of emissivos) { const gr = g.createRadialGradient(x, y, 0, x, y, rr * 3.2); gr.addColorStop(0, `rgba(${cor},.9)`); gr.addColorStop(.3, `rgba(${cor},.35)`); gr.addColorStop(1, `rgba(${cor},0)`); g.fillStyle = gr; g.fillRect(x - rr * 3.2, y - rr * 3.2, rr * 6.4, rr * 6.4); }
+  g.restore();
+}
+let LUZ_CACHE = null;
+function calcularLuz(fontes, tipos, cols, linhas, escuro, amb, dBloq) {
+  // sem fonte de luz: só o escuro por igual (um pixel esticado basta)
+  if (!fontes.length) return { escCv: escuro ? canvasDe(1, 1, d => { d[0] = amb[0]; d[1] = amb[1]; d[2] = amb[2]; d[3] = 255 * escuro; }) : null, corCv: null };
   const LR = 4, w = cols * LR, h = linhas * LR, I = new Float32Array(w * h), CR = new Float32Array(w * h), CG = new Float32Array(w * h), CB = new Float32Array(w * h);
   const bloq = (x, y) => MAPA_BLOQ.has(tipos[y * cols + x]);
   // raio de luz andando de quarto em quarto de quadrado; o quadrado de saída e o de chegada não contam (a parede iluminada é a própria chegada)
@@ -4896,18 +4945,10 @@ function desenharLuz(g, cena, tipos, cols, linhas, W, H, bioma, emissivos, dBloq
       I[i] += val; CR[i] += f.c[0] * val; CG[i] += f.c[1] * val; CB[i] += f.c[2] * val;
     }
   }
-  for (const A of [I, CR, CG, CB]) { borra(A, 2); borra(A, 2); }
-  g.save(); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
-  if (escuro) g.drawImage(canvasDe(w, h, d => { for (let i = 0; i < I.length; i++) { const l = Math.min(1, I[i] * 1.3); d[i * 4] = amb[0]; d[i * 4 + 1] = amb[1]; d[i * 4 + 2] = amb[2]; d[i * 4 + 3] = 255 * escuro * (1 - l); } }), 0, 0, W, H);
-  if (fontes.length) {
-    g.globalCompositeOperation = 'screen';
-    g.drawImage(canvasDe(w, h, d => { for (let i = 0; i < I.length; i++) { if (I[i] < .003) continue; const l = Math.min(1, I[i]); d[i * 4] = CR[i] / I[i]; d[i * 4 + 1] = CG[i] / I[i]; d[i * 4 + 2] = CB[i] / I[i]; d[i * 4 + 3] = 255 * l * (escuro ? .55 : .3); } }), 0, 0, W, H);
-    g.globalCompositeOperation = 'lighter';
-    for (const f of fontes) { if (!f.nucleo) continue; const cx = f.x * TQ, cy = f.y * TQ, R = TQ * 1.1, gr = g.createRadialGradient(cx, cy, 0, cx, cy, R); gr.addColorStop(0, `rgba(${f.c.join(',')},.55)`); gr.addColorStop(1, `rgba(${f.c.join(',')},0)`); g.fillStyle = gr; g.fillRect(cx - R, cy - R, R * 2, R * 2); }
-  }
-  g.globalCompositeOperation = 'lighter';
-  for (const [x, y, rr, cor] of emissivos) { const gr = g.createRadialGradient(x, y, 0, x, y, rr * 3.2); gr.addColorStop(0, `rgba(${cor},.9)`); gr.addColorStop(.3, `rgba(${cor},.35)`); gr.addColorStop(1, `rgba(${cor},0)`); g.fillStyle = gr; g.fillRect(x - rr * 3.2, y - rr * 3.2, rr * 6.4, rr * 6.4); }
-  g.restore();
+  if (fontes.length) for (const A of [I, CR, CG, CB]) { borra(A, 2); borra(A, 2); }
+  return {
+    escCv: escuro ? canvasDe(w, h, d => { for (let i = 0; i < I.length; i++) { const l = Math.min(1, I[i] * 1.3); d[i * 4] = amb[0]; d[i * 4 + 1] = amb[1]; d[i * 4 + 2] = amb[2]; d[i * 4 + 3] = 255 * escuro * (1 - l); } }) : null,
+    corCv: fontes.length ? canvasDe(w, h, d => { for (let i = 0; i < I.length; i++) { if (I[i] < .003) continue; const l = Math.min(1, I[i]); d[i * 4] = CR[i] / I[i]; d[i * 4 + 1] = CG[i] / I[i]; d[i * 4 + 2] = CB[i] / I[i]; d[i * 4 + 3] = 255 * l * (escuro ? .55 : .3); } }) : null };
 }
 
 /* ---------- objetos ---------- */
@@ -5973,7 +6014,8 @@ function mapaDoLugar(id) {
 /* ---------- tabuleiro de combate ---------- */
 // Um quadrado = 1,5 m. Peças, névoa, terreno e turno ficam no Supabase; a tela pergunta a cada 1,2 s
 // só a versão do tabuleiro e baixa o resto quando ela muda.
-const TQ = 48, METRO = 1.5;
+const TQ = 48;
+const metroQ = () => (TB && TB.t && TB.t.cena && TB.t.cena.escala) || 1.5;
 const TERRENOS = [['g', 'Grama'], ['r', 'Terra'], ['s', 'Areia'], ['k', 'Pedra'], ['m', 'Tábuas'], ['o', 'Caverna'], ['a', 'Água rasa'], ['f', 'Água funda'], ['l', 'Lama'], ['v', 'Mato alto'], ['d', 'Entulho'], ['c', 'Mureta'], ['b', 'Rocha'], ['p', 'Parede'], ['x', 'Abismo'], ['n', 'Neve'], ['i', 'Gelo'], ['e', 'Lava'], ['h', 'Terra queimada'], ['q', 'Metal'], ['.', 'Chão do ambiente']];
 const FORMAS = [['circulo', 'Raio'], ['cone', 'Cone'], ['linha', 'Linha']];
 const TAMANHOS_AREA = [3, 4.5, 6, 9, 12, 18];
@@ -6063,7 +6105,7 @@ function tbHtml() {
       <div class="tb-vista" id="tb-vista" tabindex="0" aria-label="Tabuleiro. Arraste para olhar o mapa ou mover a sua peça; setas movem a peça escolhida.">
         <div class="tb-mundo" id="tb-mundo">
           <img class="tb-fundo" id="tb-fundo" alt="" hidden>
-          <canvas class="tb-terreno" id="tb-terreno"></canvas>
+          <div class="tb-terreno" id="tb-terreno"><canvas class="tb-geral" id="tb-geral"></canvas></div>
           <svg class="tb-areas" id="tb-areas" aria-hidden="true"></svg>
           <div class="tb-pecas" id="tb-pecas"></div>
           <canvas class="tb-nevoa" id="tb-nevoa"></canvas>
@@ -6169,6 +6211,7 @@ function aplicarVista() {
   const v = TB.vista, mu = $('#tb-mundo', root); if (!mu) return;
   mu.style.transform = `translate3d(${v.x.toFixed(1)}px,${v.y.toFixed(1)}px,0) scale(${v.z.toFixed(4)})`;
   mu.classList.add('mexendo'); clearTimeout(TB.mexT); TB.mexT = setTimeout(() => mu.classList.remove('mexendo'), 220);
+  agendarLadrilhos();
 }
 function tbCentralizar() {
   const vi = $('#tb-vista', root); if (!vi || !TB) return;
@@ -6176,11 +6219,11 @@ function tbCentralizar() {
   // no celular, a janela do mapa fica do tamanho do mapa: sem faixa vazia em cima e embaixo
   vi.style.height = vw < 700 ? Math.round(Math.max(300, Math.min(innerHeight * .62, vw * H / W + 24))) + 'px' : '';
   const vh = vi.clientHeight;
-  const z = clamp(Math.min(vw / W, vh / H) * .96, .15, 1.6);
+  const z = clamp(Math.min(vw / W, vh / H) * .96, .03, 1.6);
   TB.vista = { z, x: (vw - W * z) / 2, y: (vh - H * z) / 2 }; aplicarVista();
 }
 function zoomEm(cx, cy, f) {
-  const v = TB.vista, z = clamp(v.z * f, .15, 4), r = $('#tb-vista', root).getBoundingClientRect();
+  const v = TB.vista, z = clamp(v.z * f, .03, 4), r = $('#tb-vista', root).getBoundingClientRect();
   const px = cx - r.left, py = cy - r.top;
   v.x = px - (px - v.x) * z / v.z; v.y = py - (py - v.y) * z / v.z; v.z = z; aplicarVista();
 }
@@ -6242,7 +6285,7 @@ function ligarTabuleiro() {
       if (nx === TB.arrasto.x && ny === TB.arrasto.y) return;
       TB.arrasto.x = nx; TB.arrasto.y = ny;
       const el = TB.els.get(p.id); if (el) el.style.transform = `translate3d(${nx * TQ}px,${ny * TQ}px,0)`;
-      const d = passos({ x: g.x0, y: g.y0 }, { x: nx, y: ny }) * METRO, s = p.ficha_id && TB.sum[p.ficha_id];
+      const d = passos({ x: g.x0, y: g.y0 }, { x: nx, y: ny }) * metroQ(), s = p.ficha_id && TB.sum[p.ficha_id];
       tbDica(`${nomeDe(p)}: ${fm(d)}${s && s.mov ? ' de ' + fm(s.mov) : ''}`, s && s.mov && d > s.mov ? 'longe' : '');
     } else if (g.tipo === 'regua') {
       if (TB.regua.b.x !== c.x || TB.regua.b.y !== c.y) { TB.regua.b = c; agendar(desenharRegua); }
@@ -6324,33 +6367,105 @@ function tamanhoMundo() {
 // redesenha só o pedaço mexido pelo pincel (com um quadrado de folga para as bordas e sombras)
 function sujar(x, y) { const d = TB.sujo || (TB.sujo = { x0: x, y0: y, x1: x, y1: y }); d.x0 = Math.min(d.x0, x); d.y0 = Math.min(d.y0, y); d.x1 = Math.max(d.x1, x); d.y1 = Math.max(d.y1, y); }
 function desenharSujo() { const d = TB && TB.sujo; if (!d) return; TB.sujo = null; desenharTerreno({ x0: d.x0 - 2, y0: d.y0 - 2, x1: d.x1 + 2, y1: d.y1 + 2 }); }
-function desenharTerreno(parte) {
-  const cv = $('#tb-terreno', root); if (!cv || !TB) return;
-  const [W, H] = tamanhoMundo(), { cols, linhas, terreno } = TB.t;
-  const k = Math.min(2, window.devicePixelRatio || 1, Math.sqrt(9e6 / (W * H)));
-  if (cv.width !== Math.round(W * k) || cv.height !== Math.round(H * k)) { cv.width = Math.round(W * k); cv.height = Math.round(H * k); parte = null; }
+// O terreno é desenhado em ladrilhos de 16 × 16 quadrados, só os que a tela mostra, um de cada vez
+// (o resto da página não trava). De longe, aparece a visão geral: uma cor por quadrado, rápida mesmo em mapas enormes.
+const LADO = 16;
+function nivelK() { const z = TB.vista ? TB.vista.z : 1, q = z * Math.min(2, window.devicePixelRatio || 1); return q > 1.15 ? 2 : q > .55 ? 1 : q > .27 ? .5 : q > .1 ? .25 : 0; }
+const COR_T = { g: '#4a6e2c', v: '#33521f', r: '#6a4e32', s: '#c9b183', k: '#76726c', m: '#7a5434', o: '#36313c', a: '#2f8a98', f: '#123f58', l: '#4a3a28', d: '#6a6258', c: '#8a857a', b: '#4b4852', p: '#3a3734', x: '#07080e', n: '#e2e9f1', i: '#9ac8dc', e: '#ff7a1e', h: '#2c2630', q: '#5a6068', u: '#a4532f' };
+function desenharGeral(W, H, reg) {
+  const cv = $('#tb-geral', root); if (!cv) return;
+  const { cols, linhas, terreno } = TB.t, R = 4, bi = TB.t.cena && MAPA_BIOMAS[TB.t.cena.bioma], chao = bi ? bi[1] : 'g';
+  if (!reg || cv.width !== cols * R || cv.height !== linhas * R) { cv.width = cols * R; cv.height = linhas * R; reg = null; }
   cv.style.width = W + 'px'; cv.style.height = H + 'px';
-  const g = cv.getContext('2d'); g.setTransform(k, 0, 0, k, 0, 0);
-  g.save();
-  if (parte) { g.beginPath(); g.rect(parte.x0 * TQ, parte.y0 * TQ, (parte.x1 - parte.x0 + 1) * TQ, (parte.y1 - parte.y0 + 1) * TQ); g.clip(); }
-  g.clearRect(0, 0, W, H);
-  if (!TB.temFundo) desenharMapa(g, TB.t, TB.t.cena, W, H, k, false, parte);
+  const g = cv.getContext('2d');
+  const x0 = reg ? Math.max(0, reg.x0) : 0, y0 = reg ? Math.max(0, reg.y0) : 0, x1 = reg ? Math.min(cols - 1, reg.x1) : cols - 1, y1 = reg ? Math.min(linhas - 1, reg.y1) : linhas - 1;
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { let t = terreno[y * cols + x]; if (t === '.') t = chao; g.fillStyle = COR_T[t] || '#1b2629'; g.fillRect(x * R, y * R, R, R); }
+  g.fillStyle = 'rgba(20,40,14,.75)'; for (const p of (TB.t.cena && TB.t.cena.props) || []) { if (!/arvore|pinheiro|palmeira|arbusto/.test(p.t) || p.x < x0 || p.x > x1 || p.y < y0 || p.y > y1) continue; g.beginPath(); g.arc((p.x + .5) * R, (p.y + .5) * R, R * .45, 0, 7); g.fill(); }
+}
+function desenharTerreno(parte) {
+  const box = $('#tb-terreno', root); if (!box || !TB) return;
+  const [W, H] = tamanhoMundo(); box.style.width = W + 'px'; box.style.height = H + 'px';
+  const L = TB.lad || (TB.lad = { tiles: new Map() });
+  if (!parte || TB.temFundo) desenharGeral(W, H);
+  // mapa novo inteiro: os ladrilhos antigos somem (a visão geral fica por baixo) até serem refeitos
+  if (!parte) { for (const t of L.tiles.values()) { t.velho = true; t.cv.style.display = 'none'; } }
+  else {
+    for (const t of L.tiles.values()) {
+      const x0 = t.tx * LADO, y0 = t.ty * LADO, x1 = x0 + LADO, y1 = y0 + LADO;   // cada ladrilho cobre um quadrado do vizinho (sem fresta entre eles)
+      if (parte.x1 < x0 || parte.x0 > x1 || parte.y1 < y0 || parte.y0 > y1) continue;
+      if (t.velho) continue;
+      // pedaço pintado: redesenha só a parte mexida dentro do ladrilho
+      const reg = { x0: Math.max(x0, parte.x0), y0: Math.max(y0, parte.y0), x1: Math.min(x1, parte.x1, TB.t.cols - 1), y1: Math.min(y1, parte.y1, TB.t.linhas - 1) };
+      pintarRegiao(t.cv.getContext('2d'), t.k, x0, y0, reg, W, H);
+    }
+    desenharGeral(W, H, parte);
+  }
+  agendarLadrilhos(parte ? 150 : 0);
+}
+function pintarRegiao(g, k, ox, oy, reg, W, H) {
+  const { cols, linhas, terreno } = TB.t;
+  g.setTransform(k, 0, 0, k, -ox * TQ * k, -oy * TQ * k);
+  g.save(); g.beginPath(); g.rect(reg.x0 * TQ, reg.y0 * TQ, (reg.x1 - reg.x0 + 1) * TQ, (reg.y1 - reg.y0 + 1) * TQ); g.clip();
+  g.clearRect(reg.x0 * TQ, reg.y0 * TQ, (reg.x1 - reg.x0 + 1) * TQ, (reg.y1 - reg.y0 + 1) * TQ);
+  if (!TB.temFundo) desenharMapa(g, TB.t, TB.t.cena, W, H, k, false, reg);
   else {
     // com imagem de fundo, o terreno vira só uma marca por cima da imagem
-    for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) {
-      const t = terreno[y * cols + x], px = x * TQ, py = y * TQ, rg = (MAPA_T[t] || [])[1];
-      if (!rg) continue;
+    for (let y = reg.y0; y <= reg.y1; y++) for (let x = reg.x0; x <= reg.x1; x++) {
+      const t = terreno[y * cols + x], rg = (MAPA_T[t] || [])[1]; if (!rg) continue;
       g.fillStyle = MAPA_AGUA.has(t) ? 'rgba(46,124,164,.42)' : t === 'x' ? 'rgba(2,3,8,.86)' : rg === 'bloqueia' ? 'rgba(9,11,13,.82)' : rg === 'meia cobertura' ? 'rgba(190,180,146,.28)' : 'rgba(128,94,54,.36)';
-      g.fillRect(px, py, TQ, TQ);
+      g.fillRect(x * TQ, y * TQ, TQ, TQ);
     }
-    for (const p of TB.t.cena.props || []) desenharObjeto(g, p, k);
+    for (const p of TB.t.cena.props || []) if (p.x >= reg.x0 - 3 && p.x <= reg.x1 + 3 && p.y >= reg.y0 - 3 && p.y <= reg.y1 + 3) desenharObjeto(g, p, k);
   }
-  g.strokeStyle = TB.temFundo ? 'rgba(10,14,16,.35)' : 'rgba(10,12,12,.22)'; g.lineWidth = 1; g.beginPath();
-  for (let x = 0; x <= cols; x++) { g.moveTo(x * TQ + .5, 0); g.lineTo(x * TQ + .5, H); }
-  for (let y = 0; y <= linhas; y++) { g.moveTo(0, y * TQ + .5); g.lineTo(W, y * TQ + .5); }
-  g.stroke();
-  g.strokeStyle = TB.temFundo ? 'rgba(233,224,203,.14)' : 'rgba(240,232,210,.08)'; g.beginPath(); for (let x = 0; x <= cols; x++) { g.moveTo(x * TQ + 1.5, 0); g.lineTo(x * TQ + 1.5, H); } for (let y = 0; y <= linhas; y++) { g.moveTo(0, y * TQ + 1.5); g.lineTo(W, y * TQ + 1.5); } g.stroke();
+  const gx0 = reg.x0 * TQ, gy0 = reg.y0 * TQ, gx1 = (reg.x1 + 1) * TQ, gy1 = (reg.y1 + 1) * TQ;
+  for (const [cor, off] of [[TB.temFundo ? 'rgba(10,14,16,.35)' : 'rgba(10,12,12,.22)', .5], [TB.temFundo ? 'rgba(233,224,203,.14)' : 'rgba(240,232,210,.08)', 1.5]]) {
+    g.strokeStyle = cor; g.lineWidth = 1; g.beginPath();
+    for (let x = reg.x0; x <= reg.x1 + 1; x++) { g.moveTo(x * TQ + off, gy0); g.lineTo(x * TQ + off, gy1); }
+    for (let y = reg.y0; y <= reg.y1 + 1; y++) { g.moveTo(gx0, y * TQ + off); g.lineTo(gx1, y * TQ + off); }
+    g.stroke();
+  }
   g.restore();
+}
+function agendarLadrilhos(atraso) { if (!TB) return; clearTimeout(TB.ladT); TB.ladT = setTimeout(fazerLadrilho, atraso == null ? 90 : atraso); }
+function fazerLadrilho() {
+  if (!TB) return; const box = $('#tb-terreno', root), vi = $('#tb-vista', root); if (!box || !vi) return;
+  // enquanto pinta, arrasta peça ou mede, os ladrilhos esperam (a mão vem primeiro)
+  if (TB.gesto && TB.gesto.tipo !== 'pan' && TB.gesto.tipo !== 'pinca') return agendarLadrilhos(250);
+  const L = TB.lad || (TB.lad = { tiles: new Map() }), k = nivelK(), { cols, linhas } = TB.t, v = TB.vista || { x: 0, y: 0, z: 1 };
+  const [W, H] = [cols * TQ, linhas * TQ];
+  // quais ladrilhos a tela mostra (com um de folga em volta)
+  const wx0 = -v.x / v.z / TQ, wy0 = -v.y / v.z / TQ, wx1 = wx0 + vi.clientWidth / v.z / TQ, wy1 = wy0 + vi.clientHeight / v.z / TQ;
+  const tx0 = Math.max(0, Math.floor(wx0 / LADO) - 1), ty0 = Math.max(0, Math.floor(wy0 / LADO) - 1), tx1 = Math.min(Math.ceil(cols / LADO) - 1, Math.floor(wx1 / LADO) + 1), ty1 = Math.min(Math.ceil(linhas / LADO) - 1, Math.floor(wy1 / LADO) + 1);
+  const cxv = (wx0 + wx1) / 2 / LADO, cyv = (wy0 + wy1) / 2 / LADO;
+  // tira da memória os ladrilhos que ficaram longe
+  // memória: no máximo uns 50 milhões de pixels de ladrilho; os mais longe da tela saem primeiro
+  let soma = 0; for (const t of L.tiles.values()) soma += t.cv.width * t.cv.height;
+  if (soma > 5e7) { const longe = [...L.tiles.values()].sort((a, b) => Math.hypot(b.tx - cxv, b.ty - cyv) - Math.hypot(a.tx - cxv, a.ty - cyv)); for (const t of longe) { if (soma <= 3.5e7) break; soma -= t.cv.width * t.cv.height; t.cv.remove(); L.tiles.delete(t.tx + ',' + t.ty); } }
+  if (!k) return;   // de longe, só a visão geral
+  // um ladrilho é pintado em quatro pedaços, um por vez (cada pedaço cabe num quadro sem travar a tela)
+  const fz = L.fazendo;
+  if (fz && L.tiles.get(fz.tx + ',' + fz.ty) === fz.t && fz.k === k && fz.terreno === TB.t.terreno && fz.cena === TB.t.cena && fz.fundo === TB.temFundo) {
+    pintarRegiao(fz.cv.getContext('2d'), k, fz.x0, fz.y0, fz.partes.shift(), W, H);
+    if (!fz.partes.length) { fz.t.cv.replaceWith(fz.cv); fz.t.cv = fz.cv; fz.t.k = k; fz.t.velho = false; L.fazendo = null; }
+    return agendarLadrilhos(TB.gesto ? 120 : 0);
+  }
+  L.fazendo = null;
+  let melhor = null, dm = 1e9;
+  for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) {
+    const t = L.tiles.get(tx + ',' + ty); if (t && !t.velho && t.k >= k) continue;
+    const d = Math.hypot(tx + .5 - cxv, ty + .5 - cyv); if (d < dm) { dm = d; melhor = [tx, ty]; }
+  }
+  if (!melhor) return;
+  const [tx, ty] = melhor, x0 = tx * LADO, y0 = ty * LADO, x1 = Math.min(cols - 1, x0 + LADO), y1 = Math.min(linhas - 1, y0 + LADO);
+  let t = L.tiles.get(tx + ',' + ty);
+  if (!t) { const cv = document.createElement('canvas'); cv.className = 'tb-lad'; cv.style.display = 'none'; box.appendChild(cv); t = { tx, ty, cv, velho: true }; L.tiles.set(tx + ',' + ty, t); }
+  const cv = document.createElement('canvas'); cv.className = 'tb-lad';
+  cv.width = Math.round((x1 - x0 + 1) * TQ * k); cv.height = Math.round((y1 - y0 + 1) * TQ * k);
+  Object.assign(cv.style, { left: x0 * TQ + 'px', top: y0 * TQ + 'px', width: (x1 - x0 + 1) * TQ + 'px', height: (y1 - y0 + 1) * TQ + 'px' });
+  const mx = Math.min(x1, x0 + LADO / 2 - 1), my = Math.min(y1, y0 + LADO / 2 - 1), partes = [];
+  for (const [a, b] of [[y0, my], [my + 1, y1]]) for (const [c, d] of [[x0, mx], [mx + 1, x1]]) if (a <= b && c <= d) partes.push({ x0: c, y0: a, x1: d, y1: b });
+  L.fazendo = { tx, ty, t, cv, k, x0, y0, partes, terreno: TB.t.terreno, cena: TB.t.cena, fundo: TB.temFundo };
+  fazerLadrilho();
 }
 function infoQuadrado(c) {
   if (!dentroDaGrade(c)) { if (TB.dicaQuadrado) tbDica(''); return; }
@@ -6441,15 +6556,15 @@ function desenharPecas() {
 /* ---------- áreas ---------- */
 // um quadrado está na área se o centro dele estiver dentro. Cone: na ponta, tão largo quanto comprido. Linha: 1,5 m de largura.
 function naArea(mk, cx, cy) {
-  const dx = (cx - mk.x) * METRO, dy = (cy - mk.y) * METRO, L = mk.metros + 1e-6;
+  const dx = (cx - mk.x) * metroQ(), dy = (cy - mk.y) * metroQ(), L = mk.metros + 1e-6;
   if (mk.forma === 'circulo') return Math.hypot(dx, dy) <= L;
   const ax = mk.ax - mk.x, ay = mk.ay - mk.y, al = Math.hypot(ax, ay) || 1, ux = ax / al, uy = ay / al;
   const t = dx * ux + dy * uy, perp = Math.abs(-dx * uy + dy * ux);
   if (t <= 0 || t > L) return false;
-  return mk.forma === 'linha' ? perp <= METRO / 2 + 1e-6 : perp <= t / 2 + 1e-6;
+  return mk.forma === 'linha' ? perp <= metroQ() / 2 + 1e-6 : perp <= t / 2 + 1e-6;
 }
 function celulasDa(mk) {
-  const r = mk.metros / METRO + 1, out = [];
+  const r = mk.metros / metroQ() + 1, out = [];
   for (let y = Math.max(0, Math.floor(mk.y - r)); y <= Math.min(TB.t.linhas - 1, Math.ceil(mk.y + r)); y++)
     for (let x = Math.max(0, Math.floor(mk.x - r)); x <= Math.min(TB.t.cols - 1, Math.ceil(mk.x + r)); x++)
       if (naArea(mk, x + .5, y + .5)) out.push([x, y]);
@@ -6460,7 +6575,7 @@ function atingidos(mk, cel) {
   return TB.pecas.filter(p => { for (let y = p.y; y < p.y + p.tam; y++) for (let x = p.x; x < p.x + p.tam; x++) if (s.has(x + ',' + y)) return true; return false; });
 }
 function formaSvg(mk, cor, previa) {
-  const P = v => (v * TQ).toFixed(1), L = mk.metros / METRO;
+  const P = v => (v * TQ).toFixed(1), L = mk.metros / metroQ();
   const fill = `fill="${cor}" fill-opacity="${previa ? .12 : .1}" stroke="${cor}" stroke-opacity=".85" stroke-width="2"${previa ? ' stroke-dasharray="6 5"' : ''}`;
   if (mk.forma === 'circulo') return `<circle cx="${P(mk.x)}" cy="${P(mk.y)}" r="${P(L)}" ${fill}/>`;
   const ax = mk.ax - mk.x, ay = mk.ay - mk.y, al = Math.hypot(ax, ay) || 1, ux = ax / al, uy = ay / al, nx = -uy, ny = ux;
@@ -6502,7 +6617,7 @@ function desenharRegua() {
   const [W, H] = tamanhoMundo();
   sv.setAttribute('width', W); sv.setAttribute('height', H); sv.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const r = TB.regua; if (!r) { sv.innerHTML = ''; return; }
-  const ax = (r.a.x + .5) * TQ, ay = (r.a.y + .5) * TQ, bx = (r.b.x + .5) * TQ, by = (r.b.y + .5) * TQ, d = passos(r.a, r.b) * METRO;
+  const ax = (r.a.x + .5) * TQ, ay = (r.a.y + .5) * TQ, bx = (r.b.x + .5) * TQ, by = (r.b.y + .5) * TQ, d = passos(r.a, r.b) * metroQ();
   const z = TB.vista.z, fs = clamp(16 / z, 12, 44);
   sv.innerHTML = `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#0b0f11" stroke-width="${7 / z}" stroke-linecap="round" opacity=".6"/>
     <line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#e6c77a" stroke-width="${3 / z}" stroke-linecap="round" stroke-dasharray="${10 / z} ${6 / z}"/>
@@ -6691,8 +6806,8 @@ function desenharCena() {
     <p class="fx-hint">A imagem é reduzida para 2000 px e esticada sobre a grade; as linhas se ajustam ao formato dela.</p>
     ${TB.temFundo ? '<div class="fx-add"><button class="fx-btn small" type="button" data-tb="sem-img">Tirar a imagem</button></div>' : ''}
     <div class="fx-fields tb-campos">
-      <label class="fx-f"><span>Colunas</span><input class="fx-in" id="tb-cols" type="number" min="4" max="80" value="${TB.t.cols}"></label>
-      <label class="fx-f"><span>Linhas</span><input class="fx-in" id="tb-lin" type="number" min="4" max="80" value="${TB.t.linhas}"></label>
+      <label class="fx-f"><span>Colunas</span><input class="fx-in" id="tb-cols" type="number" min="4" max="400" value="${TB.t.cols}"></label>
+      <label class="fx-f"><span>Linhas</span><input class="fx-in" id="tb-lin" type="number" min="4" max="400" value="${TB.t.linhas}"></label>
     </div>
     <div class="fx-add"><button class="fx-btn small" type="button" data-tb="grade">Mudar a grade</button></div>
     <p class="fx-hint">Se o mapa já tem quadrados desenhados, conte quantos ele tem de largura e use esse número de colunas.</p>`;
@@ -6757,7 +6872,7 @@ function mudarPeca(p, campos) {
   tbEscreve(() => api('PATCH', 'pecas?id=eq.' + p.id, campos));
 }
 async function redimensionar(cols, linhas) {
-  cols = clamp(Math.round(cols) || 24, 4, 80); linhas = clamp(Math.round(linhas) || 16, 4, 80);
+  cols = clamp(Math.round(cols) || 24, 4, 400); linhas = clamp(Math.round(linhas) || 16, 4, 400);
   const o = TB.t, novo = (s, ch) => { let out = ''; for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) out += x < o.cols && y < o.linhas ? s[y * o.cols + x] : ch; return out; };
   const terreno = novo(o.terreno, '.'), nevoa = novo(o.nevoa, '0');
   TB.t = { ...o, cols, linhas, terreno, nevoa };
@@ -6776,7 +6891,7 @@ async function tbImagem(file) {
     cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
     let q = .82, data = cv.toDataURL('image/jpeg', q);
     while (data.length > 3.5e6 && q > .4) { q -= .12; data = cv.toDataURL('image/jpeg', q); }
-    const linhas = clamp(Math.round(TB.t.cols * cv.height / cv.width), 4, 80);
+    const linhas = clamp(Math.round(TB.t.cols * cv.height / cv.width), 4, 400);
     await tbEscreve(() => api('POST', 'tabuleiro_fundo', { mesa_id: TB.id, imagem: data, atualizado: new Date().toISOString() }, 'resolution=merge-duplicates'), 'imagem no tabuleiro');
     if (!TB) return;
     const el = $('#tb-fundo', root); el.src = data; el.hidden = false; TB.temFundo = true;

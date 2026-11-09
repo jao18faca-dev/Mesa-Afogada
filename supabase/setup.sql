@@ -201,8 +201,8 @@ grant execute on function public.mestre_da_ficha(uuid), public.ve_ficha(uuid) to
 --   névoa:   0 aberto · 1 coberto
 create table if not exists public.tabuleiros (
   mesa_id uuid primary key references public.mesas on delete cascade,
-  cols int not null default 24 check (cols between 4 and 80),
-  linhas int not null default 16 check (linhas between 4 and 80),
+  cols int not null default 24 check (cols between 4 and 400),
+  linhas int not null default 16 check (linhas between 4 and 400),
   terreno text not null default '',
   nevoa text not null default '',
   turno jsonb not null default '{}'::jsonb,
@@ -374,3 +374,9 @@ revoke execute on function public.dono_da_ficha(uuid), public.na_nevoa(uuid, int
   public.turno_peca(uuid, text, int, boolean), public.turno_mudar(uuid, jsonb) from public, anon;
 grant execute on function public.dono_da_ficha(uuid), public.na_nevoa(uuid, int, int), public.mover_peca(uuid, int, int),
   public.turno_peca(uuid, text, int, boolean), public.turno_mudar(uuid, jsonb) to authenticated;
+
+-- mapas enormes (até 400 × 400 quadrados): troca o limite de quem já tinha a tabela
+alter table public.tabuleiros drop constraint if exists tabuleiros_cols_check;
+alter table public.tabuleiros drop constraint if exists tabuleiros_linhas_check;
+alter table public.tabuleiros add constraint tabuleiros_cols_check check (cols between 4 and 400);
+alter table public.tabuleiros add constraint tabuleiros_linhas_check check (linhas between 4 and 400);
