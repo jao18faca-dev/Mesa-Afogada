@@ -911,6 +911,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx button.tb-rotulo{pointer-events:auto;cursor:pointer;border-radius:4px}
 .fx button.tb-rotulo:hover,.fx button.tb-rotulo:focus-visible{background:rgba(243,230,200,.55);outline:1px solid #8a6a2a}
 .fx .tb-chip-mapa{border-color:#b8933c}
+.fx .tb-aviso{border:1px solid #b8933c;background:rgba(184,147,60,.1);padding:10px 12px;margin:0 0 12px;border-radius:4px}
+.fx .tb-aviso pre{white-space:pre-wrap;word-break:break-word;font-size:11px;background:rgba(0,0,0,.35);padding:8px;margin:8px 0;user-select:all}
 
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
@@ -6562,7 +6564,12 @@ async function tbEscreve(fn, ok, chaves = []) {
   const tb = TB; if (!tb) return;
   tb.ocupado++; chaves.forEach(k => { tb.pend[k] = (tb.pend[k] || 0) + 1; });
   try { await fn(); if (ok) tbDica(ok); }
-  catch (e) { tbDica('não deu: ' + e.message); tb.versao = -1; }
+  catch (e) {
+    // banco criado antes dos mapas enormes: o limite antigo (80 quadrados) recusa o mapa e o tabuleiro volta para o anterior
+    if (/tabuleiros_(cols|linhas)_check/.test(e.message)) { tb.avisoLimite = true; tbDica('O banco ainda não aceita mapas maiores que 80 × 80. Veja o aviso no painel Cenário.'); desenharCena(); }
+    else tbDica('não deu: ' + e.message);
+    tb.versao = -1;
+  }
   finally { tb.ocupado--; chaves.forEach(k => { tb.pend[k]--; tb.fim[k] = Date.now(); }); }
 }
 
@@ -7172,6 +7179,10 @@ function desenharCena() {
   const box = $('#tb-cena', root); if (!box || box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
   const lg = LUGARES.find(l => l.id === TB.lugar), grupos = [...new Set(LUGARES.map(l => l.grupo))];
   box.innerHTML = `<h3>Cenário</h3>
+    ${TB.avisoLimite ? `<div class="tb-aviso"><p><b>Este mapa não coube no banco.</b> O banco foi criado quando o limite era 80 × 80 quadrados, e por isso o tabuleiro voltou para o mapa anterior. Para liberar até 400 × 400, abra o Supabase, vá em SQL Editor e rode:</p><pre>alter table public.tabuleiros drop constraint if exists tabuleiros_cols_check;
+alter table public.tabuleiros drop constraint if exists tabuleiros_linhas_check;
+alter table public.tabuleiros add constraint tabuleiros_cols_check check (cols between 4 and 400);
+alter table public.tabuleiros add constraint tabuleiros_linhas_check check (linhas between 4 and 400);</pre><p class="fx-hint">Depois é só abrir o lugar de novo. Mapas de até 80 × 80 já funcionam agora.</p></div>` : ''}
     <p class="fx-lbl">Lugares do mundo</p>
     ${grupos.map(gr => `<p class="fx-hint"><b>${esc(gr)}</b> · ${esc(LUGARES.find(l => l.grupo === gr).onde)}</p><div class="chips">${LUGARES.filter(l => l.grupo === gr).map(l => `<button class="chip${l.escala ? ' tb-chip-mapa' : ''}" type="button" data-tb="lugar" data-v="${l.id}" aria-pressed="${TB.lugar === l.id}">${esc(l.nome)}</button>`).join('')}</div>`).join('')}
     ${lg ? `<div class="tb-lugar"><p><b>${esc(lg.grupo)}: ${esc(lg.nome.toLowerCase())}</b> · ${lg.cols} × ${lg.linhas} quadrados de ${fm(lg.escala || 1.5)}${lg.escala ? ` (uns ${fm(Math.round(lg.cols * lg.escala / 10) * 10)} de largura)` : ''}</p><p class="fx-hint">${esc(lg.texto)}</p>${lg.escala ? '<p class="fx-hint">Mapa para viajar, não para lutar. Os nomes com ▸ no mapa abrem o lugar de combate (só você vê esse botão).</p>' : ''}<div class="fx-add"><button class="fx-btn" type="button" data-tb="abrir-lugar">Abrir este lugar</button>${TB.antes ? '<button class="fx-btn small" type="button" data-tb="desfazer-mapa">Desfazer</button>' : ''}</div></div>` : '<p class="fx-hint">Escolha um lugar para ver o que tem nele. Os de borda dourada são o mapa da ilha inteira.</p>'}
