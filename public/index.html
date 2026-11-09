@@ -1033,7 +1033,12 @@ a.fx-btn{text-decoration:none;display:inline-block}
     if (toques.length >= 3) { carta.querySelector('svg').classList.add('aceso'); folha('confissao', carta); }
   });
   // 4. às três da manhã, na origem dos Descendentes Celestes
-  function hora() { var lb = art('lightborn'); if (lb && new Date().getHours() === 3) folha('madrugada', lb.querySelector('.spread > :last-child') || lb.lastElementChild); }
+  // só existe das 3h às 3h59: fora dessa hora some de novo (mas conta como achada para a folha final)
+  function hora() {
+    var lb = art('lightborn'); if (!lb) return;
+    if (new Date().getHours() === 3) folha('madrugada', lb.querySelector('.spread > :last-child') || lb.lastElementChild);
+    else { var f = document.querySelector('.sg-folha[data-sg="madrugada"]'); if (f) f.remove(); }
+  }
   hora(); setInterval(hora, 60000);
   // 5. quem já esteve no Farol Velho no tabuleiro
   try { if ((localStorage.getItem('mb-lugares') || '').indexOf('farol') >= 0) folha('inscricao', carta || prosa); } catch (e) {}
@@ -1041,7 +1046,6 @@ a.fx-btn{text-decoration:none;display:inline-block}
   var l = lidos();
   if (l.indexOf('santos') >= 0) folha('santos', prosa);
   if (l.indexOf('confissao') >= 0 && carta) { carta.querySelector('svg').classList.add('aceso'); folha('confissao', carta); }
-  if (l.indexOf('madrugada') >= 0) { var lb = art('lightborn'); if (lb) folha('madrugada', lb.querySelector('.spread > :last-child') || lb.lastElementChild); }
   final();
 }; if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', vai); else vai(); })();
 </script>
