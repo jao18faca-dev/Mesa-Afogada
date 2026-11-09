@@ -6788,10 +6788,10 @@ function desenharSujo() { const d = TB && TB.sujo; if (!d) return; TB.sujo = nul
 const ladoDe = k => k >= 1 ? 16 : k >= .5 ? 24 : k >= .25 ? 32 : 64;
 function nivelK() { const z = TB.vista ? TB.vista.z : 1, q = z * Math.min(2, window.devicePixelRatio || 1); return q > 1.15 ? 2 : q > .55 ? 1 : q > .27 ? .5 : q > .13 ? .25 : q > .035 ? .125 : 0; }
 // nomes escritos no mapa (mapas de viagem). Ficam do mesmo tamanho na tela com qualquer zoom.
-// Os que levam a outro mapa viram botão para o Mestre; os secretos ("m") só ele vê.
+// Só o Mestre vê os nomes (para os jogadores seriam spoiler); os que levam a outro mapa viram botão.
 function desenharRotulos() {
   const box = $('#tb-rotulos', root); if (!box || !TB) return;
-  const rs = (TB.t.cena && TB.t.cena.rotulos) || [];
+  const rs = TB.mestre ? (TB.t.cena && TB.t.cena.rotulos) || [] : [];
   box.innerHTML = rs.filter(r => TB.mestre || !r.m).map(r => {
     const pos = `left:${((r.x + .5) * TQ).toFixed(0)}px;top:${((r.y + .5) * TQ).toFixed(0)}px`, cls = 'tb-rotulo' + (r.g ? ' grande' : '') + (r.m ? ' secreto' : '');
     const lg = r.ir && TB.mestre && LUGARES.find(l => l.id === r.ir);
@@ -6901,13 +6901,15 @@ function fazerLadrilho() {
   L.fazendo = { chave: k + ':' + tx + ',' + ty, cv, k, x0, y0, x1, y1, partes, terreno: TB.t.terreno, cena: TB.t.cena, fundo: TB.temFundo };
   fazerLadrilho();
 }
+// objetos cujo nome entregaria a história: o jogador vê só o que a coisa parece
+const NOME_JOGADOR = { tridente: 'Arma cravada', lamina: 'Arma cravada' };
 function infoQuadrado(c) {
   if (!dentroDaGrade(c)) { if (TB.dicaQuadrado) tbDica(''); return; }
   const t = TB.t.terreno[c.y * TB.t.cols + c.x], bi = TB.t.cena.bioma && MAPA_BIOMAS[TB.t.cena.bioma], tt = t === '.' && bi ? bi[1] : t;
   const partes = [];
   const [nome, regra] = MAPA_T[tt] || ['', ''];
   if (regra) partes.push(`${nome}: ${regra}`);
-  for (const p of TB.t.cena.props || []) { const [w, h] = propTam(p.t); if (c.x >= p.x && c.x < p.x + w && c.y >= p.y && c.y < p.y + h && MAPA_PROPS[p.t]) partes.push(MAPA_PROPS[p.t][0] + (MAPA_PROPS[p.t][1] ? ': ' + MAPA_PROPS[p.t][1] : '')); }
+  for (const p of TB.t.cena.props || []) { const [w, h] = propTam(p.t); if (c.x >= p.x && c.x < p.x + w && c.y >= p.y && c.y < p.y + h && MAPA_PROPS[p.t]) partes.push((!TB.mestre && NOME_JOGADOR[p.t] || MAPA_PROPS[p.t][0]) + (MAPA_PROPS[p.t][1] ? ': ' + MAPA_PROPS[p.t][1] : '')); }
   if (partes.length) { TB.dicaQuadrado = true; tbDica(partes.join(' · ')); } else if (TB.dicaQuadrado) { TB.dicaQuadrado = false; tbDica(''); }
 }
 function mexerObjeto(c) {
