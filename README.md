@@ -25,7 +25,7 @@ Site da mesa de **Deep Tales**: o Livro Profano (versão dos jogadores), fichas 
 
 No painel Cenário, o Mestre escolhe um lugar pronto do Kósmos e abre no tabuleiro. Cada ilha tem três tipos de mapa:
 
-- **Mapa de viagem** (borda dourada no painel): a ilha inteira, com 10 a 50 m por quadrado. Os nomes escritos no mapa ficam do mesmo tamanho com qualquer zoom e só o Mestre vê (para os jogadores seriam spoiler); os que têm ▸ abrem o lugar de combate. Objetos que entregariam a história aparecem para o jogador com um nome neutro (o tridente do Imperador vira "Arma cravada").
+- **Mapa de viagem** (borda dourada no painel): a ilha inteira, com 10 a 50 m por quadrado. Os nomes dos lugares ficam escondidos; o Mestre liga e desliga no botão "Nomes" em cima do mapa (só ele vê, nunca os jogadores). Os que têm ▸ abrem o lugar de combate. Objetos que entregariam a história aparecem para o jogador com um nome neutro (o tridente do Imperador vira "Arma cravada").
 - **Lugares de combate** (1,5 m por quadrado), grandes, de 60 a 200 quadrados de lado: a ilhota do farol, a praça do Eixo e o Porto do Leste, a cratera do duelo, a costa partida, o pavilhão e as cabanas, o laboratório, o forte de pedra, o acampamento e o campo da última batalha.
 - **Partes de dentro**: o alto da torre, a casa do faroleiro, a taverna, o canto do mercado, o redemoinho, a beira da cratera, o ninho, o berço dos Rainbound, o salão do forte.
 

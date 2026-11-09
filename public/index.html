@@ -6544,6 +6544,7 @@ function tbHtml() {
         <span class="tb-sep"></span>
         <button class="tb-f" type="button" data-tb="zoom" data-d="-1" aria-label="Afastar">−</button><button class="tb-f" type="button" data-tb="zoom" data-d="1" aria-label="Aproximar">+</button>
         <button class="tb-f" type="button" data-tb="centro">Centralizar</button>
+        ${TB.mestre ? `<button class="tb-f" type="button" data-tb="nomes" aria-pressed="${verNomes()}" title="Mostrar os nomes dos lugares no mapa (só você vê)">Nomes</button>` : ''}
       </div>
       <div class="tb-opc" id="tb-opc"></div>
       <div class="tb-vez" id="tb-vez" hidden></div>
@@ -6827,9 +6828,13 @@ const ladoDe = k => k >= 1 ? 16 : k >= .5 ? 24 : k >= .25 ? 32 : 64;
 function nivelK() { const z = TB.vista ? TB.vista.z : 1, q = z * Math.min(2, window.devicePixelRatio || 1); return q > 1.15 ? 2 : q > .55 ? 1 : q > .27 ? .5 : q > .13 ? .25 : q > .035 ? .125 : 0; }
 // nomes escritos no mapa (mapas de viagem). Ficam do mesmo tamanho na tela com qualquer zoom.
 // Só o Mestre vê os nomes (para os jogadores seriam spoiler); os que levam a outro mapa viram botão.
+// Começam escondidos; o Mestre liga no botão "Nomes" (lembrado neste navegador).
+function verNomes() { try { return localStorage.getItem('mb-nomes') === '1'; } catch (e) { return false; } }
 function desenharRotulos() {
   const box = $('#tb-rotulos', root); if (!box || !TB) return;
-  const rs = TB.mestre ? (TB.t.cena && TB.t.cena.rotulos) || [] : [];
+  // os nomes vêm sempre do lugar pronto (mapas salvos antes ficam com os nomes de agora)
+  const cena = TB.t.cena || {}, lg = cena.lugar && LUGARES.find(l => l.id === cena.lugar);
+  const rs = TB.mestre && verNomes() ? (lg ? mapaDoLugar(lg.id).rotulos : cena.rotulos) || [] : [];
   box.innerHTML = rs.filter(r => TB.mestre || !r.m).map(r => {
     const pos = `left:${((r.x + .5) * TQ).toFixed(0)}px;top:${((r.y + .5) * TQ).toFixed(0)}px`, cls = 'tb-rotulo' + (r.g ? ' grande' : '') + (r.m ? ' secreto' : '');
     const lg = r.ir && TB.mestre && LUGARES.find(l => l.id === r.ir);
@@ -7271,7 +7276,7 @@ alter table public.tabuleiros add constraint tabuleiros_cols_check check (cols b
 alter table public.tabuleiros add constraint tabuleiros_linhas_check check (linhas between 4 and 400);</pre><p class="fx-hint">Depois é só abrir o lugar de novo. Mapas de até 80 × 80 já funcionam agora.</p></div>` : ''}
     <p class="fx-lbl">Lugares do mundo</p>
     ${grupos.map(gr => `<p class="fx-hint"><b>${esc(gr)}</b> · ${esc(LUGARES.find(l => l.grupo === gr).onde)}</p><div class="chips">${LUGARES.filter(l => l.grupo === gr).map(l => `<button class="chip${l.escala ? ' tb-chip-mapa' : ''}" type="button" data-tb="lugar" data-v="${l.id}" aria-pressed="${TB.lugar === l.id}">${esc(l.nome)}</button>`).join('')}</div>`).join('')}
-    ${lg ? `<div class="tb-lugar"><p><b>${esc(lg.grupo)}: ${esc(lg.nome.toLowerCase())}</b> · ${lg.cols} × ${lg.linhas} quadrados de ${fm(lg.escala || 1.5)}${lg.escala ? ` (uns ${fm(Math.round(lg.cols * lg.escala / 10) * 10)} de largura)` : ''}</p><p class="fx-hint">${esc(lg.texto)}</p>${lg.escala ? '<p class="fx-hint">Mapa para viajar, não para lutar. Os nomes com ▸ no mapa abrem o lugar de combate (só você vê esse botão).</p>' : ''}<div class="fx-add"><button class="fx-btn" type="button" data-tb="abrir-lugar">Abrir este lugar</button>${TB.antes ? '<button class="fx-btn small" type="button" data-tb="desfazer-mapa">Desfazer</button>' : ''}</div></div>` : '<p class="fx-hint">Escolha um lugar para ver o que tem nele. Os de borda dourada são o mapa da ilha inteira.</p>'}
+    ${lg ? `<div class="tb-lugar"><p><b>${esc(lg.grupo)}: ${esc(lg.nome.toLowerCase())}</b> · ${lg.cols} × ${lg.linhas} quadrados de ${fm(lg.escala || 1.5)}${lg.escala ? ` (uns ${fm(Math.round(lg.cols * lg.escala / 10) * 10)} de largura)` : ''}</p><p class="fx-hint">${esc(lg.texto)}</p>${lg.escala ? '<p class="fx-hint">Mapa para viajar, não para lutar. Ligue o botão Nomes (em cima do mapa) para ver os nomes dos lugares; os com ▸ abrem o lugar de combate. Só você vê os nomes.</p>' : ''}<div class="fx-add"><button class="fx-btn" type="button" data-tb="abrir-lugar">Abrir este lugar</button>${TB.antes ? '<button class="fx-btn small" type="button" data-tb="desfazer-mapa">Desfazer</button>' : ''}</div></div>` : '<p class="fx-hint">Escolha um lugar para ver o que tem nele. Os de borda dourada são o mapa da ilha inteira.</p>'}
     ${(() => { const at = LUGARES.find(l => l.id === (TB.t.cena && TB.t.cena.lugar)), pai = at && !at.escala && LUGARES.find(l => l.grupo === at.grupo && l.escala); return pai ? `<div class="fx-add"><button class="fx-btn small" type="button" data-tb="ir-lugar" data-v="${pai.id}">← Voltar para ${esc(pai.nome.toLowerCase())}</button></div>` : ''; })()}
     <p class="fx-lbl">Ou gere um mapa</p>
     <div class="chips">${Object.entries(MAPA_BIOMAS).filter(([, b]) => !b[3]).map(([v, [n]]) => `<button class="chip" type="button" data-tb="bioma" data-v="${v}" aria-pressed="${TB.bioma === v}">${n}</button>`).join('')}</div>
@@ -7387,6 +7392,7 @@ function tbClique(e) {
   const vi = $('#tb-vista', root), r = vi.getBoundingClientRect();
   if (a === 'zoom') return zoomEm(r.left + r.width / 2, r.top + r.height / 2, +b.dataset.d > 0 ? 1.25 : .8);
   if (a === 'centro') return tbCentralizar();
+  if (a === 'nomes') { const v = !verNomes(); try { localStorage.setItem('mb-nomes', v ? '1' : '0'); } catch (e) { } b.setAttribute('aria-pressed', v); return desenharRotulos(); }
   if (a === 'forma') { TB.area.forma = b.dataset.v; return desenharOpcoes(); }
   if (a === 'metros') { TB.area.m = +b.dataset.v; return desenharOpcoes(); }
   if (a === 'pincel') { TB.pincel = b.dataset.v; return desenharOpcoes(); }
