@@ -238,6 +238,7 @@ a{color:var(--rubric)}
 .fonte-boato{border-style:dashed;color:var(--rubric)}
 .fonte-nota{display:block;font-family:var(--f-hand);font-weight:300;color:var(--note);font-size:.98rem;line-height:1.25;margin:2px 0 4px}
 .fk-boato .flavor,.tcard.fk-boato p{opacity:.88}
+.carta{margin:16px 0;padding:0;border:0}
 .atlas-stats{grid-template-columns:1fr}
 .atlas-stats dd{font-weight:400;text-align:left}
 .atlas-stats div{justify-content:flex-start;gap:14px}
@@ -896,6 +897,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx #tb-img{color:var(--dw-dim);font-family:var(--f-body);max-width:100%}
 .fx #tb-img::file-selector-button{font-family:var(--f-body);font-size:.95rem;padding:5px 12px;margin-right:10px;border:1px solid var(--dw-line);background:linear-gradient(#253034,#1a2326);color:var(--dw-bone);cursor:pointer;border-radius:2px}
 
+.tb-lugar{margin:.4rem 0 .8rem;padding:.6rem .7rem;border:1px solid var(--line,rgba(255,255,255,.12));border-radius:8px;background:rgba(255,255,255,.03)}
+.tb-lugar p{margin:.15rem 0}
+
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
 </style>
@@ -965,7 +969,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <hr>
     <p class="sub">O diário do Catalogador</p>
     <p class="relic">Ninguém sabe o nome de quem escreveu isto. Quem achou as primeiras folhas passou a chamá-lo de Catalogador, pela mania de anotar, medir e numerar tudo o que via, e o apelido ficou. O que ele deixou é chamado de Livro Profano, e não se sabe se existem cópias. As folhas se soltaram e se espalharam pelo mundo; quem carrega o livro vai encontrando as que faltam pelo caminho.</p>
-    <p class="found">folhas encontradas: 85 de ?</p>
+    <p class="found">folhas encontradas: 87 de ?</p>
   </section>
 
   <!-- ÍNDICE -->
@@ -991,7 +995,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="index-group">MURMÚRIOS E RESSONÂNCIAS</div>
     <ul class="index-list"><li><span class="no">nº 701</span><a href="#murmurios">Murmúrios</a></li><li><span class="no">nº 711</span><a href="#ressonancias">Ressonâncias</a></li></ul>
     <div class="index-group">ATLAS</div>
-    <ul class="index-list"><li><span class="no">nº 501</span><a href="#voidsea">O Mar do Vazio e os Faróis</a></li><li><span class="no">nº 502</span><a href="#luminants">Os Cinco Luminants</a></li><li><span class="no">nº 503</span><a href="#vigilias">Ilha das Vigílias</a></li><li><span class="no">nº 504</span><a href="#erisia">Erisia</a></li><li><span class="no">nº 514</span><a href="#etris">Etris e o Lorde Regente</a></li><li><span class="no">nº 505</span><a href="#minityrsa">Minityrsa</a></li><li><span class="no">nº 506</span><a href="#aratel">Aratel e o Vale Varrido</a></li><li><span class="no">nº 507</span><a href="#verao">Ilha do Verão</a></li><li><span class="no">nº 508</span><a href="#cancao-ninar">Ilhas da Canção de Ninar</a></li><li><span class="no">nº 509</span><a href="#markor">Markor e a Cidadela</a></li><li><span class="no">nº 510</span><a href="#scyphozia">Scyphozia e a Cidade Afogada</a></li><li><span class="no">nº 511</span><a href="#fundo">Abaixo de Scyphozia</a></li><li><span class="no">nº 512</span><a href="#deuses-afogados">Os Deuses Afogados</a></li><li><span class="no">nº 513</span><a href="#poderes">Quem Manda no Mar</a></li></ul>
+    <ul class="index-list"><li><span class="no">nº 501</span><a href="#voidsea">O Mar do Vazio e os Faróis</a></li><li><span class="no">nº 502</span><a href="#luminants">As Cinco Regiões do Luminant</a></li><li><span class="no">nº 515</span><a href="#kosmos">O Kósmos</a></li><li><span class="no">nº 516</span><a href="#deluge">O Arquipélago Deluge</a></li><li><span class="no">nº 503</span><a href="#vigilias">Ilha das Vigílias</a></li><li><span class="no">nº 504</span><a href="#erisia">Erisia</a></li><li><span class="no">nº 514</span><a href="#etris">Etris e o Lorde Regente</a></li><li><span class="no">nº 505</span><a href="#minityrsa">Minityrsa</a></li><li><span class="no">nº 506</span><a href="#aratel">Aratel e o Vale Varrido</a></li><li><span class="no">nº 507</span><a href="#verao">Ilha do Verão</a></li><li><span class="no">nº 508</span><a href="#cancao-ninar">Ilhas da Canção de Ninar</a></li><li><span class="no">nº 509</span><a href="#markor">Markor e a Cidadela</a></li><li><span class="no">nº 510</span><a href="#scyphozia">Scyphozia e a Cidade Afogada</a></li><li><span class="no">nº 511</span><a href="#fundo">Abaixo de Scyphozia</a></li><li><span class="no">nº 512</span><a href="#deuses-afogados">Os Deuses Afogados</a></li><li><span class="no">nº 513</span><a href="#poderes">Quem Manda no Mar</a></li></ul>
   </nav>
 
   <!-- ENTRADA I -->
@@ -1108,7 +1112,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
 <p><b>Quem começa.</b> Ninguém rola iniciativa. Na primeira rodada, compare a sua Iniciativa com a do inimigo mais rápido: se for igual ou maior, você age antes dos inimigos, com os 3 PA; se for menor, age depois deles. Numa emboscada, quem embosca rola Furtividade contra a Atenção de cada alvo, e quem não percebeu nada não age na primeira rodada.</p>
 <p><b>Rápido ou lento.</b> Da segunda rodada em diante, cada jogador escolhe, toda rodada, se vai agir rápido ou devagar. A rodada tem três fases, nesta ordem: primeiro agem os rápidos, com só 2 PA; depois agem os inimigos; por último agem os lentos, com os 3 PA. Dentro de cada fase, o grupo combina a ordem: quem termina descreve o que fez e passa a vez.</p>
 <p><b>No tabuleiro.</b> Num mapa em quadrados, cada quadrado tem 1,5 m, e andar na diagonal também custa 1,5 m. Nas áreas, o <i>raio</i> conta do centro do ponto escolhido; o <i>cone</i> sai de quem lança e, na ponta, é tão largo quanto é comprido; a <i>linha</i> tem 1,5 m de largura. Um quadrado está dentro da área quando o centro dele está.</p>
-<p><b>Terreno.</b> Água rasa, lama, mato alto, entulho, arbustos, juncos, teias e redes são <i>terreno difícil</i>: cada quadrado custa o dobro do movimento. Em água funda, só nadando. Paredes e rochas bloqueiam a passagem, e quem entra num abismo cai. Fogo queima quem pisa nele. Mureta, árvore, toco, pedra, caixote, barril, saco, vaso, mesa e coluna caída dão meia cobertura; pilar, estátua e fungo gigante dão cobertura total.</p>
+<p><b>Terreno.</b> Água rasa, lama, neve, gelo, mato alto, entulho, arbustos, juncos, teias e redes são <i>terreno difícil</i>: cada quadrado custa o dobro do movimento. Em água funda, só nadando. Paredes e rochas bloqueiam a passagem, e quem entra num abismo cai. Fogo e lava queimam quem pisa neles. Mureta, árvore, toco, pedra, caixote, barril, saco, vaso, mesa e coluna caída dão meia cobertura; pilar, estátua e fungo gigante dão cobertura total.</p>
 <div class="twrap"><table class="wtable"><thead><tr><th>Ação</th><th>PA</th><th>Detalhe</th></tr></thead><tbody>
 <tr><td>Mover</td><td>1</td><td>até o seu movimento</td></tr>
 <tr><td>Atacar</td><td>1</td><td>o segundo ataque no turno sofre −3 no acerto, e o terceiro, −6</td></tr>
@@ -2526,6 +2530,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-voidsea"><span class="kicker">O mar que não é mar</span>O Mar do Vazio e os Faróis</h2>
       <div class="prose"><p>Existe o mar, e existe o Mar do Vazio. O primeiro te afoga. O segundo te perde. No Mar do Vazio o tempo escorrega e o espaço dobra: navios dão meia-volta sem ninguém mexer no leme, e ilhas somem para voltar anos depois, com os moradores jurando que passou uma semana.</p><p>A única coisa que corta o Mar do Vazio são os faróis. Cada um guarda um Guardião da Luz, alguém que nasceu com o Dom de empurrar o vazio para trás com luz. Onde a luz bate, abre-se uma faixa de mar navegável. Quem tem Guardiões da Luz controla as rotas, e quem controla as rotas cobra o pedágio. Por isso os Guardiões da Luz vivem presos nas próprias torres, cercados de guardas, ricos de tudo menos de saída.</p><p>As ilhas que voltam do vazio se chamam Terras à Deriva. Chegam paradas no tempo, cheias de coisas que ninguém tocou desde antes das Marés. É nelas que os Pathfinders mais ganham dinheiro, e é nelas que mais morrem.</p><p>Nem todo Guardião da Luz obedece. Viqh, a Guardiã do Farol Interstício do Leste, foi tirada da família ainda criança porque tinha o Dom. Hoje se recusa a abrir o caminho para os reforços da Autoridade, e a guerra no Leste depende dessa recusa mais do que qualquer general admite.</p><p>E no Mar do Vazio mora o Barqueiro. Quem acende as fogueiras certas na ilha dele o chama, e dizem que ele dá um tesouro a quem o vence numa dança de lâminas. Ele não é gente: é um Krulian, servo do fundo, e fica mais fraco aqui em cima. Mesmo assim, não conheço ninguém que tenha vencido a dança.</p></div>
+      
       <p class="note r">uma Terra à Deriva voltou do Mar do Vazio com as casas inteiras e um pão ainda quente no forno. não havia ninguém nela.</p>
       <section class="ficha alt" aria-label="O Mar do Vazio e os Faróis">
         <h3>O Mar do Vazio e os Faróis <small>registro nº 501</small></h3>
@@ -2538,12 +2543,43 @@ a.fx-btn{text-decoration:none;display:inline-block}
   <article class="page" id="luminants" aria-labelledby="h-luminants">
     <div class="folio"><b>Registro nº 502</b><span>Atlas</span></div>
     <div class="spread">
-      <h2 id="h-luminants"><span class="kicker">O que sobrou da terra</span>Os Cinco Luminants</h2>
-      <div class="prose"><p>O mundo de antes tinha continentes. O de agora tem Luminants: arquipélagos inteiros, cada um com seu próprio mar, cercados pelo Mar do Vazio por todos os lados. Já foram mais e maiores. Hoje se contam cinco.</p><p>O <span class="term">Central</span> é o maior e pertence à Autoridade, que governa com mão de ferro e chama isso de ordem. Ali ficam Markor, as savanas de onde vieram os Felinor, e as Ilhas da Canção de Ninar. O <span class="term">Leste</span> está em guerra desde que me lembro: o reino de Etrea de um lado dos grandes portões, a Autoridade do outro, e no meio um monte de ilhas que mudam de dono a cada estação.</p><p>O <span class="term">Oeste</span> é selva úmida e montanhas em forma de pilar, terra das Cem Legiões e da Fé Estelar, que reza para os Celestiais. O <span class="term">Norte</span> é frio, vazio e cheio de histórias sobre serpentes velhas que respondem perguntas. O <span class="term">Sul</span> era a terra dos Celtor. Perdeu as três maiores ilhas para o vazio, e o resto está indo junto.</p><p>Os Gremor contam que a estrela que eles seguem é uma Celestial, Navae, que caiu do céu ferida e foi cuidada por um nômade. Ela fez um Voto com ele, e o Voto passou para os filhos dele. Navae ainda vive, numa ilha que anda sozinha e não se importa com o Mar do Vazio.</p></div>
+      <h2 id="h-luminants"><span class="kicker">O que sobrou da terra</span>As Cinco Regiões do Luminant</h2>
+      <div class="prose"><p>O mundo de antes tinha continentes. O de agora tem o Luminant: arquipélagos inteiros, cada um com seu próprio mar, cercados pelo Mar do Vazio por todos os lados. Os marinheiros dividem o Luminant em cinco regiões e chamam cada uma de luminant também, por costume. Já foram mais e maiores. Hoje se contam cinco.</p><p>O <span class="term">Central</span> é o maior e pertence à Autoridade, que governa com mão de ferro e chama isso de ordem. Ali ficam Markor, as savanas de onde vieram os Felinor, e as Ilhas da Canção de Ninar. O <span class="term">Leste</span> está em guerra desde que me lembro: o reino de Etrea de um lado dos grandes portões, a Autoridade do outro, e no meio um monte de ilhas que mudam de dono a cada estação.</p><p>O <span class="term">Oeste</span> é selva úmida e montanhas em forma de pilar, terra das Cem Legiões e da Fé Estelar, que reza para os Celestiais. O <span class="term">Norte</span> é frio, vazio e cheio de histórias sobre serpentes velhas que respondem perguntas. O <span class="term">Sul</span> era a terra dos Celtor. Perdeu as três maiores ilhas para o vazio, e o resto está indo junto.</p><p>Os Gremor contam que a estrela que eles seguem é uma Celestial, Navae, que caiu do céu ferida e foi cuidada por um nômade. Ela fez um Voto com ele, e o Voto passou para os filhos dele. Navae ainda vive, numa ilha que anda sozinha e não se importa com o Mar do Vazio.</p></div>
+      
       <p class="note">um Gremor me contou que viu a ilha de Navae passar no horizonte uma vez, quando era criança. falava disso como quem fala de um parente.</p>
-      <section class="ficha" aria-label="Os Cinco Luminants">
-        <h3>Os Cinco Luminants <small>registro nº 502</small></h3>
+      <section class="ficha" aria-label="As Cinco Regiões do Luminant">
+        <h3>As Cinco Regiões do Luminant <small>registro nº 502</small></h3>
         <dl class="stats atlas-stats long"><div><dt>Central</dt><dd>a Autoridade, Markor, as Ilhas da Canção de Ninar.</dd></div><div><dt>Leste e Etrea</dt><dd>Etrea contra a Autoridade; ilhas que vêm e vão do Mar do Vazio.</dd></div><div><dt>Oeste</dt><dd>as Cem Legiões e a Fé Estelar.</dd></div><div><dt>Norte</dt><dd>gelo, poucos moradores, as Edenkite.</dd></div><div><dt>Sul</dt><dd>ruínas Celtor, quase todo engolido.</dd></div></dl>
+        
+      </section>
+    </div>
+  </article>
+
+  <article class="page" id="kosmos" aria-labelledby="h-kosmos">
+    <div class="folio"><b>Registro nº 515</b><span>Atlas</span></div>
+    <div class="spread">
+      <h2 id="h-kosmos"><span class="kicker">O segundo Luminant</span>O Kósmos</h2>
+      <div class="prose"><p>Em 1700, um Lightkeeper ainda jovem descobriu que tinha o Dom e fugiu para dentro do Mar do Vazio antes que o prendessem num farol. Encontrou outro farol, velho e coberto de musgo, que ninguém sabia que existia. Quando o acendeu, a luz atravessou o vazio e mostrou o que estava do outro lado: outro mundo. Os exploradores que vieram depois o chamaram de Kósmos. Antes disso, ele se chamava Oriente Luminoso.</p><p>O Kósmos fica ao lado do nosso, e não em cima. Divide o mesmo céu, o mesmo Suncross e o mesmo Moonseye, mas com as horas trocadas: quando é dia de um lado, é noite do outro. O Grande Afogamento também chegou lá, de outro jeito. O Kósmos ficou inteiro debaixo d'água por uns cem anos, e morreu todo mundo que lembrava que existia um Luminant do lado de cá.</p><p>Depois disso, cinco heróis dos elementos fizeram um vácuo à força e levantaram uma parede de Música entre o Mar do Vazio e o Kósmos. O farol foi apagado. Ninguém me soube dizer quem teve medo o bastante para pedir isso, nem de quê. Quem morre no Kósmos afunda para as mesmas Profundezas que nós.</p><p>A carta abaixo é só o pedaço que me descreveram. Tem muito mais ilha do que isso.</p></div>
+      <figure class="carta"><svg class="carta-svg" viewBox="0 0 900 640" role="img" aria-label="Carta do Kósmos: o Farol Velho no Mar do Vazio, a parede de Música, o Arquipélago Deluge e Vetrheim ao sul"><defs><pattern id="hach" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line x1="0" y1="0" x2="0" y2="7" stroke="var(--ink)" stroke-opacity=".22" stroke-width="1"/></pattern><pattern id="neve" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M3 4h3M4.5 2.5v3M10 10h3M11.5 8.5v3" stroke="var(--ink)" stroke-opacity=".3" stroke-width=".9"/></pattern></defs><style>.carta-svg{width:100%;height:auto;display:block}.carta-svg .terra{fill:var(--paper,#efe6d2);stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round}.carta-svg .nome{font-family:var(--f-display);font-size:17px;letter-spacing:.14em;fill:var(--ink)}.carta-svg .menor{font-family:var(--f-display);font-size:12px;letter-spacing:.12em;fill:var(--ink)}.carta-svg .mao{font-family:var(--f-hand);font-size:15px;fill:var(--note)}.carta-svg .rubro{font-family:var(--f-display);font-size:12px;letter-spacing:.14em;fill:var(--rubric)}.carta-svg .traco{fill:none;stroke:var(--ink);stroke-width:1.3}.carta-svg .fino{fill:none;stroke:var(--ink);stroke-width:.9;stroke-opacity:.7}</style><rect x="6" y="6" width="888" height="628" fill="none" stroke="var(--ink)" stroke-width="1.6"/><rect x="12" y="12" width="876" height="616" fill="none" stroke="var(--ink)" stroke-width=".7"/><rect x="12" y="12" width="118" height="616" fill="url(#hach)"/><text x="60" y="450" class="menor" text-anchor="middle" transform="rotate(-90 60 450)">MAR DO VAZIO</text><text x="70" y="600" class="mao" text-anchor="middle">← o Luminant</text><path d="M134.3,14 L135.1,20 L135.6,26 L135.9,32 L136.0,38 L135.8,44 L135.3,50 L134.6,56 L133.7,62 L132.7,68 L131.7,74 L130.7,80 L129.7,86 L129.0,92 L128.4,98 L128.1,104 L128.0,110 L128.2,116 L128.7,122 L129.4,128 L130.2,134 L131.2,140 L132.3,146 L133.3,152 L134.2,158 L135.0,164 L135.6,170 L135.9,176 L136.0,182 L135.8,188 L135.3,194 L134.7,200 L133.8,206 L132.8,212 L131.8,218 L130.8,224 L129.8,230 L129.0,236 L128.4,242 L128.1,248 L128.0,254 L128.2,260 L128.6,266 L129.3,272 L130.2,278 L131.1,284 L132.2,290 L133.2,296 L134.1,302 L134.9,308 L135.5,314 L135.9,320 L136.0,326 L135.8,332 L135.4,338 L134.7,344 L133.9,350 L132.9,356 L131.9,362 L130.8,368 L129.9,374 L129.1,380 L128.5,386 L128.1,392 L128.0,398 L128.2,404 L128.6,410 L129.2,416 L130.1,422 L131.0,428 L132.1,434 L133.1,440 L134.1,446 L134.9,452 L135.5,458 L135.9,464 L136.0,470 L135.8,476 L135.4,482 L134.8,488 L134.0,494 L133.0,500 L132.0,506 L130.9,512 L130.0,518 L129.2,524 L128.5,530 L128.1,536 L128.0,542 L128.1,548 L128.5,554 L129.2,560 L130.0,566 L131.0,572 L132.0,578 L133.0,584 L134.0,590 L134.8,596 L135.5,602 L135.9,608 L136.0,614 L135.9,620 L135.5,626" class="fino" stroke-dasharray=""/><path d="M141.0,14 L140.8,20 L140.4,26 L139.7,32 L138.9,38 L137.9,44 L136.9,50 L135.8,56 L134.9,62 L134.1,68 L133.5,74 L133.1,80 L133.0,86 L133.2,92 L133.6,98 L134.2,104 L135.1,110 L136.1,116 L137.1,122 L138.1,128 L139.1,134 L139.9,140 L140.5,146 L140.9,152 L141.0,158 L140.8,164 L140.4,170 L139.8,176 L139.0,182 L138.0,188 L137.0,194 L135.9,200 L135.0,206 L134.2,212 L133.5,218 L133.1,224 L133.0,230 L133.1,236 L133.5,242 L134.2,248 L135.0,254 L136.0,260 L137.0,266 L138.0,272 L139.0,278 L139.8,284 L140.5,290 L140.9,296 L141.0,302 L140.9,308 L140.5,314 L139.9,320 L139.0,326 L138.1,332 L137.0,338 L136.0,344 L135.0,350 L134.2,356 L133.6,362 L133.2,368 L133.0,374 L133.1,380 L133.5,386 L134.1,392 L134.9,398 L135.9,404 L136.9,410 L137.9,416 L138.9,422 L139.8,428 L140.4,434 L140.8,440 L141.0,446 L140.9,452 L140.5,458 L139.9,464 L139.1,470 L138.2,476 L137.1,482 L136.1,488 L135.1,494 L134.3,500 L133.6,506 L133.2,512 L133.0,518 L133.1,524 L133.5,530 L134.1,536 L134.8,542 L135.8,548 L136.8,554 L137.9,560 L138.8,566 L139.7,572 L140.4,578 L140.8,584 L141.0,590 L140.9,596 L140.6,602 L140.0,608 L139.2,614 L138.2,620 L137.2,626" class="fino" stroke-dasharray="4 3"/><path d="M144.0,14 L143.1,20 L142.0,26 L141.0,32 L140.0,38 L139.2,44 L138.6,50 L138.2,56 L138.0,62 L138.1,68 L138.5,74 L139.1,80 L139.9,86 L140.9,92 L141.9,98 L142.9,104 L143.9,110 L144.8,116 L145.4,122 L145.8,128 L146.0,134 L145.9,140 L145.5,146 L144.9,152 L144.1,158 L143.2,164 L142.1,170 L141.1,176 L140.1,182 L139.3,188 L138.6,194 L138.2,200 L138.0,206 L138.1,212 L138.5,218 L139.1,224 L139.9,230 L140.8,236 L141.8,242 L142.9,248 L143.8,254 L144.7,260 L145.4,266 L145.8,272 L146.0,278 L145.9,284 L145.6,290 L145.0,296 L144.2,302 L143.2,308 L142.2,314 L141.2,320 L140.2,326 L139.3,332 L138.7,338 L138.2,344 L138.0,350 L138.1,356 L138.4,362 L139.0,368 L139.8,374 L140.7,380 L141.7,386 L142.8,392 L143.8,398 L144.6,404 L145.3,410 L145.8,416 L146.0,422 L145.9,428 L145.6,434 L145.0,440 L144.3,446 L143.3,452 L142.3,458 L141.3,464 L140.3,470 L139.4,476 L138.7,482 L138.2,488 L138.0,494 L138.1,500 L138.4,506 L138.9,512 L139.7,518 L140.6,524 L141.6,530 L142.7,536 L143.7,542 L144.6,548 L145.3,554 L145.7,560 L146.0,566 L145.9,572 L145.6,578 L145.1,584 L144.3,590 L143.4,596 L142.4,602 L141.4,608 L140.4,614 L139.5,620 L138.8,626" class="fino" stroke-dasharray=""/><path d="M145.2,14 L144.3,20 L143.7,26 L143.2,32 L143.0,38 L143.1,44 L143.4,50 L144.0,56 L144.8,62 L145.7,68 L146.7,74 L147.8,80 L148.8,86 L149.6,92 L150.3,98 L150.8,104 L151.0,110 L150.9,116 L150.6,122 L150.0,128 L149.3,134 L148.3,140 L147.3,146 L146.3,152 L145.3,158 L144.4,164 L143.7,170 L143.2,176 L143.0,182 L143.1,188 L143.4,194 L143.9,200 L144.7,206 L145.6,212 L146.6,218 L147.7,224 L148.7,230 L149.6,236 L150.3,242 L150.8,248 L151.0,254 L150.9,260 L150.6,266 L150.1,272 L149.3,278 L148.4,284 L147.4,290 L146.4,296 L145.4,302 L144.5,308 L143.8,314 L143.3,320 L143.0,326 L143.0,332 L143.3,338 L143.9,344 L144.6,350 L145.5,356 L146.6,362 L147.6,368 L148.6,374 L149.5,380 L150.2,386 L150.7,392 L151.0,398 L151.0,404 L150.7,410 L150.1,416 L149.4,422 L148.5,428 L147.5,434 L146.4,440 L145.4,446 L144.5,452 L143.8,458 L143.3,464 L143.0,470 L143.0,476 L143.3,482 L143.8,488 L144.6,494 L145.5,500 L146.5,506 L147.5,512 L148.5,518 L149.4,524 L150.2,530 L150.7,536 L151.0,542 L151.0,548 L150.7,554 L150.2,560 L149.5,566 L148.6,572 L147.6,578 L146.5,584 L145.5,590 L144.6,596 L143.9,602 L143.3,608 L143.0,614 L143.0,620 L143.3,626" class="fino" stroke-dasharray="4 3"/><text x="156" y="130" class="mao" text-anchor="middle" transform="rotate(-90 156 130)">parede de Música</text><path d="M103.5,251.1 Q103.1,252.1 102.0,253.0 Q100.8,253.8 100.1,254.7 Q99.5,255.5 98.9,256.3 Q98.2,257.2 98.1,258.3 Q98.0,259.5 97.2,260.3 Q96.3,261.1 95.6,262.2 Q94.9,263.3 93.4,263.6 Q91.8,263.8 90.6,264.5 Q89.4,265.2 88.0,265.5 Q86.5,265.8 85.0,265.9 Q83.5,266.0 81.9,267.2 Q80.3,268.5 78.6,268.3 Q76.8,268.1 75.4,267.3 Q73.9,266.5 72.5,266.0 Q71.0,265.4 69.9,264.5 Q68.8,263.6 68.0,262.6 Q67.2,261.5 66.6,260.5 Q66.1,259.4 66.8,257.9 Q67.6,256.4 67.2,255.6 Q66.8,254.8 65.7,254.2 Q64.5,253.6 63.4,252.8 Q62.4,252.0 61.1,251.0 Q59.8,250.0 59.7,248.9 Q59.5,247.7 58.9,246.5 Q58.3,245.2 58.7,244.0 Q59.1,242.8 59.6,241.5 Q60.1,240.3 61.7,239.6 Q63.3,239.0 65.0,238.5 Q66.7,238.1 68.3,237.8 Q69.9,237.5 71.1,236.9 Q72.3,236.3 73.1,235.0 Q74.0,233.7 75.6,233.4 Q77.2,233.2 78.9,233.7 Q80.5,234.2 81.9,234.8 Q83.4,235.3 84.7,235.8 Q85.9,236.3 87.3,236.4 Q88.6,236.5 89.9,236.9 Q91.1,237.2 92.1,237.9 Q93.1,238.6 95.0,238.5 Q96.9,238.4 98.5,238.9 Q100.1,239.3 102.5,239.6 Q105.0,239.8 105.6,241.1 Q106.2,242.3 106.8,243.6 Q107.3,244.8 106.5,246.2 Q105.7,247.6 104.7,248.8 Q103.8,250.0 103.5,251.1Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M103.5,251.1 Q103.1,252.1 102.0,253.0 Q100.8,253.8 100.1,254.7 Q99.5,255.5 98.9,256.3 Q98.2,257.2 98.1,258.3 Q98.0,259.5 97.2,260.3 Q96.3,261.1 95.6,262.2 Q94.9,263.3 93.4,263.6 Q91.8,263.8 90.6,264.5 Q89.4,265.2 88.0,265.5 Q86.5,265.8 85.0,265.9 Q83.5,266.0 81.9,267.2 Q80.3,268.5 78.6,268.3 Q76.8,268.1 75.4,267.3 Q73.9,266.5 72.5,266.0 Q71.0,265.4 69.9,264.5 Q68.8,263.6 68.0,262.6 Q67.2,261.5 66.6,260.5 Q66.1,259.4 66.8,257.9 Q67.6,256.4 67.2,255.6 Q66.8,254.8 65.7,254.2 Q64.5,253.6 63.4,252.8 Q62.4,252.0 61.1,251.0 Q59.8,250.0 59.7,248.9 Q59.5,247.7 58.9,246.5 Q58.3,245.2 58.7,244.0 Q59.1,242.8 59.6,241.5 Q60.1,240.3 61.7,239.6 Q63.3,239.0 65.0,238.5 Q66.7,238.1 68.3,237.8 Q69.9,237.5 71.1,236.9 Q72.3,236.3 73.1,235.0 Q74.0,233.7 75.6,233.4 Q77.2,233.2 78.9,233.7 Q80.5,234.2 81.9,234.8 Q83.4,235.3 84.7,235.8 Q85.9,236.3 87.3,236.4 Q88.6,236.5 89.9,236.9 Q91.1,237.2 92.1,237.9 Q93.1,238.6 95.0,238.5 Q96.9,238.4 98.5,238.9 Q100.1,239.3 102.5,239.6 Q105.0,239.8 105.6,241.1 Q106.2,242.3 106.8,243.6 Q107.3,244.8 106.5,246.2 Q105.7,247.6 104.7,248.8 Q103.8,250.0 103.5,251.1Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M103.5,251.1 Q103.1,252.1 102.0,253.0 Q100.8,253.8 100.1,254.7 Q99.5,255.5 98.9,256.3 Q98.2,257.2 98.1,258.3 Q98.0,259.5 97.2,260.3 Q96.3,261.1 95.6,262.2 Q94.9,263.3 93.4,263.6 Q91.8,263.8 90.6,264.5 Q89.4,265.2 88.0,265.5 Q86.5,265.8 85.0,265.9 Q83.5,266.0 81.9,267.2 Q80.3,268.5 78.6,268.3 Q76.8,268.1 75.4,267.3 Q73.9,266.5 72.5,266.0 Q71.0,265.4 69.9,264.5 Q68.8,263.6 68.0,262.6 Q67.2,261.5 66.6,260.5 Q66.1,259.4 66.8,257.9 Q67.6,256.4 67.2,255.6 Q66.8,254.8 65.7,254.2 Q64.5,253.6 63.4,252.8 Q62.4,252.0 61.1,251.0 Q59.8,250.0 59.7,248.9 Q59.5,247.7 58.9,246.5 Q58.3,245.2 58.7,244.0 Q59.1,242.8 59.6,241.5 Q60.1,240.3 61.7,239.6 Q63.3,239.0 65.0,238.5 Q66.7,238.1 68.3,237.8 Q69.9,237.5 71.1,236.9 Q72.3,236.3 73.1,235.0 Q74.0,233.7 75.6,233.4 Q77.2,233.2 78.9,233.7 Q80.5,234.2 81.9,234.8 Q83.4,235.3 84.7,235.8 Q85.9,236.3 87.3,236.4 Q88.6,236.5 89.9,236.9 Q91.1,237.2 92.1,237.9 Q93.1,238.6 95.0,238.5 Q96.9,238.4 98.5,238.9 Q100.1,239.3 102.5,239.6 Q105.0,239.8 105.6,241.1 Q106.2,242.3 106.8,243.6 Q107.3,244.8 106.5,246.2 Q105.7,247.6 104.7,248.8 Q103.8,250.0 103.5,251.1Z" class="terra" /><path d="M82,244 L382,180 L382,290 Z" fill="var(--note)" fill-opacity=".07"/><path d="M77,254 L79,234 L85,234 L87,254 Z" fill="var(--paper,#efe6d2)" stroke="var(--ink)" stroke-width="1.3"/><circle cx="82" cy="232" r="3.4" fill="var(--rubric)"/><line x1="88" y1="232" x2="98.7" y2="223.0" class="fino"/><line x1="88" y1="232" x2="101.2" y2="227.2" class="fino"/><line x1="88" y1="232" x2="102.0" y2="232.0" class="fino"/><line x1="88" y1="232" x2="101.2" y2="236.8" class="fino"/><line x1="88" y1="232" x2="98.7" y2="241.0" class="fino"/><text x="82" y="286" class="menor" text-anchor="middle">O Farol Velho</text><text x="82" y="302" class="mao" text-anchor="middle">aceso em 1700</text><path d="M649.4,219.8 Q636.4,224.6 629.5,228.4 Q622.6,232.2 628.0,238.4 Q633.3,244.5 628.0,248.5 Q622.8,252.5 617.8,256.4 Q612.8,260.3 608.8,264.9 Q604.7,269.4 592.8,268.1 Q580.9,266.7 575.9,270.4 Q571.0,274.0 563.5,274.8 Q555.9,275.7 549.1,277.5 Q542.3,279.3 534.4,276.2 Q526.6,273.0 519.6,276.6 Q512.6,280.2 503.1,285.5 Q493.7,290.9 482.8,293.6 Q471.8,296.4 459.5,297.9 Q447.2,299.3 440.0,294.3 Q432.8,289.2 433.1,279.9 Q433.4,270.7 426.4,267.4 Q419.5,264.1 418.0,258.4 Q416.5,252.8 418.6,246.8 Q420.8,240.9 426.2,235.4 Q431.7,229.8 426.3,226.5 Q420.9,223.2 420.8,219.1 Q420.7,215.0 411.6,210.2 Q402.5,205.3 397.9,199.5 Q393.4,193.7 398.7,189.3 Q404.1,184.8 409.5,180.7 Q414.9,176.7 423.4,174.3 Q431.9,172.0 431.5,164.9 Q431.1,157.9 437.2,153.9 Q443.3,149.8 448.8,144.3 Q454.2,138.8 463.8,137.6 Q473.4,136.4 483.9,138.7 Q494.4,141.1 502.8,139.1 Q511.1,137.1 519.9,137.6 Q528.8,138.1 537.2,139.6 Q545.6,141.1 548.8,151.1 Q551.9,161.1 556.3,164.5 Q560.6,168.0 565.7,169.9 Q570.9,171.8 581.4,170.3 Q591.9,168.8 599.8,170.5 Q607.7,172.2 614.2,175.2 Q620.7,178.3 629.8,181.1 Q639.0,184.0 647.6,188.0 Q656.1,192.1 664.3,197.3 Q672.4,202.4 667.5,208.7 Q662.5,215.0 649.4,219.8Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M649.4,219.8 Q636.4,224.6 629.5,228.4 Q622.6,232.2 628.0,238.4 Q633.3,244.5 628.0,248.5 Q622.8,252.5 617.8,256.4 Q612.8,260.3 608.8,264.9 Q604.7,269.4 592.8,268.1 Q580.9,266.7 575.9,270.4 Q571.0,274.0 563.5,274.8 Q555.9,275.7 549.1,277.5 Q542.3,279.3 534.4,276.2 Q526.6,273.0 519.6,276.6 Q512.6,280.2 503.1,285.5 Q493.7,290.9 482.8,293.6 Q471.8,296.4 459.5,297.9 Q447.2,299.3 440.0,294.3 Q432.8,289.2 433.1,279.9 Q433.4,270.7 426.4,267.4 Q419.5,264.1 418.0,258.4 Q416.5,252.8 418.6,246.8 Q420.8,240.9 426.2,235.4 Q431.7,229.8 426.3,226.5 Q420.9,223.2 420.8,219.1 Q420.7,215.0 411.6,210.2 Q402.5,205.3 397.9,199.5 Q393.4,193.7 398.7,189.3 Q404.1,184.8 409.5,180.7 Q414.9,176.7 423.4,174.3 Q431.9,172.0 431.5,164.9 Q431.1,157.9 437.2,153.9 Q443.3,149.8 448.8,144.3 Q454.2,138.8 463.8,137.6 Q473.4,136.4 483.9,138.7 Q494.4,141.1 502.8,139.1 Q511.1,137.1 519.9,137.6 Q528.8,138.1 537.2,139.6 Q545.6,141.1 548.8,151.1 Q551.9,161.1 556.3,164.5 Q560.6,168.0 565.7,169.9 Q570.9,171.8 581.4,170.3 Q591.9,168.8 599.8,170.5 Q607.7,172.2 614.2,175.2 Q620.7,178.3 629.8,181.1 Q639.0,184.0 647.6,188.0 Q656.1,192.1 664.3,197.3 Q672.4,202.4 667.5,208.7 Q662.5,215.0 649.4,219.8Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M649.4,219.8 Q636.4,224.6 629.5,228.4 Q622.6,232.2 628.0,238.4 Q633.3,244.5 628.0,248.5 Q622.8,252.5 617.8,256.4 Q612.8,260.3 608.8,264.9 Q604.7,269.4 592.8,268.1 Q580.9,266.7 575.9,270.4 Q571.0,274.0 563.5,274.8 Q555.9,275.7 549.1,277.5 Q542.3,279.3 534.4,276.2 Q526.6,273.0 519.6,276.6 Q512.6,280.2 503.1,285.5 Q493.7,290.9 482.8,293.6 Q471.8,296.4 459.5,297.9 Q447.2,299.3 440.0,294.3 Q432.8,289.2 433.1,279.9 Q433.4,270.7 426.4,267.4 Q419.5,264.1 418.0,258.4 Q416.5,252.8 418.6,246.8 Q420.8,240.9 426.2,235.4 Q431.7,229.8 426.3,226.5 Q420.9,223.2 420.8,219.1 Q420.7,215.0 411.6,210.2 Q402.5,205.3 397.9,199.5 Q393.4,193.7 398.7,189.3 Q404.1,184.8 409.5,180.7 Q414.9,176.7 423.4,174.3 Q431.9,172.0 431.5,164.9 Q431.1,157.9 437.2,153.9 Q443.3,149.8 448.8,144.3 Q454.2,138.8 463.8,137.6 Q473.4,136.4 483.9,138.7 Q494.4,141.1 502.8,139.1 Q511.1,137.1 519.9,137.6 Q528.8,138.1 537.2,139.6 Q545.6,141.1 548.8,151.1 Q551.9,161.1 556.3,164.5 Q560.6,168.0 565.7,169.9 Q570.9,171.8 581.4,170.3 Q591.9,168.8 599.8,170.5 Q607.7,172.2 614.2,175.2 Q620.7,178.3 629.8,181.1 Q639.0,184.0 647.6,188.0 Q656.1,192.1 664.3,197.3 Q672.4,202.4 667.5,208.7 Q662.5,215.0 649.4,219.8Z" class="terra" /><path d="M368.8,121.8 Q369.8,123.6 368.6,125.2 Q367.3,126.8 368.6,129.1 Q369.9,131.3 369.9,133.6 Q369.9,135.8 367.8,137.4 Q365.8,139.0 365.1,141.5 Q364.5,144.1 361.2,144.9 Q357.9,145.8 355.4,147.4 Q353.0,148.9 349.2,148.6 Q345.4,148.2 342.4,149.0 Q339.5,149.8 336.4,150.9 Q333.4,152.0 330.0,152.0 Q326.6,152.0 323.2,152.0 Q319.8,152.1 317.1,150.3 Q314.5,148.5 311.8,147.3 Q309.2,146.2 307.5,144.3 Q305.8,142.3 304.9,140.2 Q304.0,138.2 301.1,137.5 Q298.2,136.9 298.7,134.6 Q299.1,132.2 296.2,131.3 Q293.2,130.4 291.0,129.0 Q288.8,127.5 285.1,125.9 Q281.4,124.4 276.8,122.2 Q272.2,120.0 275.1,117.7 Q277.9,115.3 280.4,113.4 Q282.9,111.4 283.1,109.1 Q283.2,106.7 285.2,104.9 Q287.3,103.1 291.0,102.2 Q294.7,101.3 296.5,99.6 Q298.3,97.9 302.2,97.9 Q306.0,97.9 308.1,96.5 Q310.2,95.1 312.9,94.4 Q315.6,93.6 317.9,91.4 Q320.2,89.2 323.6,90.2 Q327.0,91.2 329.9,91.7 Q332.9,92.2 335.8,92.6 Q338.6,92.9 341.5,93.2 Q344.5,93.5 348.4,92.7 Q352.3,92.0 355.5,92.8 Q358.6,93.5 361.4,94.9 Q364.1,96.2 366.5,97.8 Q368.9,99.4 372.0,100.8 Q375.0,102.2 376.9,104.2 Q378.7,106.2 375.6,109.2 Q372.6,112.2 371.6,114.3 Q370.7,116.4 369.2,118.2 Q367.7,120.0 368.8,121.8Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M368.8,121.8 Q369.8,123.6 368.6,125.2 Q367.3,126.8 368.6,129.1 Q369.9,131.3 369.9,133.6 Q369.9,135.8 367.8,137.4 Q365.8,139.0 365.1,141.5 Q364.5,144.1 361.2,144.9 Q357.9,145.8 355.4,147.4 Q353.0,148.9 349.2,148.6 Q345.4,148.2 342.4,149.0 Q339.5,149.8 336.4,150.9 Q333.4,152.0 330.0,152.0 Q326.6,152.0 323.2,152.0 Q319.8,152.1 317.1,150.3 Q314.5,148.5 311.8,147.3 Q309.2,146.2 307.5,144.3 Q305.8,142.3 304.9,140.2 Q304.0,138.2 301.1,137.5 Q298.2,136.9 298.7,134.6 Q299.1,132.2 296.2,131.3 Q293.2,130.4 291.0,129.0 Q288.8,127.5 285.1,125.9 Q281.4,124.4 276.8,122.2 Q272.2,120.0 275.1,117.7 Q277.9,115.3 280.4,113.4 Q282.9,111.4 283.1,109.1 Q283.2,106.7 285.2,104.9 Q287.3,103.1 291.0,102.2 Q294.7,101.3 296.5,99.6 Q298.3,97.9 302.2,97.9 Q306.0,97.9 308.1,96.5 Q310.2,95.1 312.9,94.4 Q315.6,93.6 317.9,91.4 Q320.2,89.2 323.6,90.2 Q327.0,91.2 329.9,91.7 Q332.9,92.2 335.8,92.6 Q338.6,92.9 341.5,93.2 Q344.5,93.5 348.4,92.7 Q352.3,92.0 355.5,92.8 Q358.6,93.5 361.4,94.9 Q364.1,96.2 366.5,97.8 Q368.9,99.4 372.0,100.8 Q375.0,102.2 376.9,104.2 Q378.7,106.2 375.6,109.2 Q372.6,112.2 371.6,114.3 Q370.7,116.4 369.2,118.2 Q367.7,120.0 368.8,121.8Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M368.8,121.8 Q369.8,123.6 368.6,125.2 Q367.3,126.8 368.6,129.1 Q369.9,131.3 369.9,133.6 Q369.9,135.8 367.8,137.4 Q365.8,139.0 365.1,141.5 Q364.5,144.1 361.2,144.9 Q357.9,145.8 355.4,147.4 Q353.0,148.9 349.2,148.6 Q345.4,148.2 342.4,149.0 Q339.5,149.8 336.4,150.9 Q333.4,152.0 330.0,152.0 Q326.6,152.0 323.2,152.0 Q319.8,152.1 317.1,150.3 Q314.5,148.5 311.8,147.3 Q309.2,146.2 307.5,144.3 Q305.8,142.3 304.9,140.2 Q304.0,138.2 301.1,137.5 Q298.2,136.9 298.7,134.6 Q299.1,132.2 296.2,131.3 Q293.2,130.4 291.0,129.0 Q288.8,127.5 285.1,125.9 Q281.4,124.4 276.8,122.2 Q272.2,120.0 275.1,117.7 Q277.9,115.3 280.4,113.4 Q282.9,111.4 283.1,109.1 Q283.2,106.7 285.2,104.9 Q287.3,103.1 291.0,102.2 Q294.7,101.3 296.5,99.6 Q298.3,97.9 302.2,97.9 Q306.0,97.9 308.1,96.5 Q310.2,95.1 312.9,94.4 Q315.6,93.6 317.9,91.4 Q320.2,89.2 323.6,90.2 Q327.0,91.2 329.9,91.7 Q332.9,92.2 335.8,92.6 Q338.6,92.9 341.5,93.2 Q344.5,93.5 348.4,92.7 Q352.3,92.0 355.5,92.8 Q358.6,93.5 361.4,94.9 Q364.1,96.2 366.5,97.8 Q368.9,99.4 372.0,100.8 Q375.0,102.2 376.9,104.2 Q378.7,106.2 375.6,109.2 Q372.6,112.2 371.6,114.3 Q370.7,116.4 369.2,118.2 Q367.7,120.0 368.8,121.8Z" class="terra" /><path d="M388.5,332.2 Q387.7,334.4 386.4,336.4 Q385.0,338.4 384.0,340.4 Q383.1,342.4 379.2,343.1 Q375.4,343.9 373.0,344.8 Q370.7,345.7 368.3,346.2 Q365.9,346.8 365.1,348.6 Q364.2,350.4 363.4,353.0 Q362.6,355.5 360.8,357.5 Q359.0,359.5 356.0,359.2 Q353.0,358.8 350.4,359.5 Q347.8,360.2 344.9,361.4 Q342.0,362.7 338.8,363.2 Q335.7,363.7 333.1,362.1 Q330.5,360.5 328.5,358.6 Q326.5,356.8 323.7,356.2 Q320.9,355.6 319.4,353.6 Q318.0,351.7 314.3,351.4 Q310.6,351.0 310.2,348.5 Q309.8,346.0 310.4,343.6 Q310.9,341.1 311.5,339.0 Q312.2,336.9 311.7,335.2 Q311.2,333.5 309.6,331.7 Q308.0,330.0 309.1,328.2 Q310.3,326.4 309.8,324.5 Q309.4,322.5 309.3,320.4 Q309.1,318.3 309.1,316.0 Q309.0,313.6 308.9,310.7 Q308.7,307.8 311.2,306.3 Q313.7,304.9 316.9,304.2 Q320.1,303.5 323.3,303.4 Q326.5,303.2 329.0,302.4 Q331.5,301.5 334.3,301.5 Q337.1,301.4 339.8,301.6 Q342.4,301.7 345.0,301.9 Q347.5,302.2 349.9,303.0 Q352.3,303.8 354.7,304.1 Q357.2,304.3 360.4,303.7 Q363.7,303.0 366.1,304.0 Q368.6,304.9 369.6,307.2 Q370.7,309.4 372.3,310.9 Q374.0,312.3 375.8,313.7 Q377.6,315.1 380.9,316.2 Q384.3,317.2 386.5,319.0 Q388.6,320.8 388.7,323.2 Q388.8,325.5 389.1,327.7 Q389.4,330.0 388.5,332.2Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M388.5,332.2 Q387.7,334.4 386.4,336.4 Q385.0,338.4 384.0,340.4 Q383.1,342.4 379.2,343.1 Q375.4,343.9 373.0,344.8 Q370.7,345.7 368.3,346.2 Q365.9,346.8 365.1,348.6 Q364.2,350.4 363.4,353.0 Q362.6,355.5 360.8,357.5 Q359.0,359.5 356.0,359.2 Q353.0,358.8 350.4,359.5 Q347.8,360.2 344.9,361.4 Q342.0,362.7 338.8,363.2 Q335.7,363.7 333.1,362.1 Q330.5,360.5 328.5,358.6 Q326.5,356.8 323.7,356.2 Q320.9,355.6 319.4,353.6 Q318.0,351.7 314.3,351.4 Q310.6,351.0 310.2,348.5 Q309.8,346.0 310.4,343.6 Q310.9,341.1 311.5,339.0 Q312.2,336.9 311.7,335.2 Q311.2,333.5 309.6,331.7 Q308.0,330.0 309.1,328.2 Q310.3,326.4 309.8,324.5 Q309.4,322.5 309.3,320.4 Q309.1,318.3 309.1,316.0 Q309.0,313.6 308.9,310.7 Q308.7,307.8 311.2,306.3 Q313.7,304.9 316.9,304.2 Q320.1,303.5 323.3,303.4 Q326.5,303.2 329.0,302.4 Q331.5,301.5 334.3,301.5 Q337.1,301.4 339.8,301.6 Q342.4,301.7 345.0,301.9 Q347.5,302.2 349.9,303.0 Q352.3,303.8 354.7,304.1 Q357.2,304.3 360.4,303.7 Q363.7,303.0 366.1,304.0 Q368.6,304.9 369.6,307.2 Q370.7,309.4 372.3,310.9 Q374.0,312.3 375.8,313.7 Q377.6,315.1 380.9,316.2 Q384.3,317.2 386.5,319.0 Q388.6,320.8 388.7,323.2 Q388.8,325.5 389.1,327.7 Q389.4,330.0 388.5,332.2Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M388.5,332.2 Q387.7,334.4 386.4,336.4 Q385.0,338.4 384.0,340.4 Q383.1,342.4 379.2,343.1 Q375.4,343.9 373.0,344.8 Q370.7,345.7 368.3,346.2 Q365.9,346.8 365.1,348.6 Q364.2,350.4 363.4,353.0 Q362.6,355.5 360.8,357.5 Q359.0,359.5 356.0,359.2 Q353.0,358.8 350.4,359.5 Q347.8,360.2 344.9,361.4 Q342.0,362.7 338.8,363.2 Q335.7,363.7 333.1,362.1 Q330.5,360.5 328.5,358.6 Q326.5,356.8 323.7,356.2 Q320.9,355.6 319.4,353.6 Q318.0,351.7 314.3,351.4 Q310.6,351.0 310.2,348.5 Q309.8,346.0 310.4,343.6 Q310.9,341.1 311.5,339.0 Q312.2,336.9 311.7,335.2 Q311.2,333.5 309.6,331.7 Q308.0,330.0 309.1,328.2 Q310.3,326.4 309.8,324.5 Q309.4,322.5 309.3,320.4 Q309.1,318.3 309.1,316.0 Q309.0,313.6 308.9,310.7 Q308.7,307.8 311.2,306.3 Q313.7,304.9 316.9,304.2 Q320.1,303.5 323.3,303.4 Q326.5,303.2 329.0,302.4 Q331.5,301.5 334.3,301.5 Q337.1,301.4 339.8,301.6 Q342.4,301.7 345.0,301.9 Q347.5,302.2 349.9,303.0 Q352.3,303.8 354.7,304.1 Q357.2,304.3 360.4,303.7 Q363.7,303.0 366.1,304.0 Q368.6,304.9 369.6,307.2 Q370.7,309.4 372.3,310.9 Q374.0,312.3 375.8,313.7 Q377.6,315.1 380.9,316.2 Q384.3,317.2 386.5,319.0 Q388.6,320.8 388.7,323.2 Q388.8,325.5 389.1,327.7 Q389.4,330.0 388.5,332.2Z" class="terra" /><path d="M721.0,361.5 Q720.5,363.1 718.8,364.3 Q717.1,365.6 714.0,366.1 Q710.8,366.6 710.8,368.0 Q710.9,369.3 710.9,370.9 Q711.0,372.5 709.9,373.6 Q708.7,374.7 707.8,376.2 Q707.0,377.6 705.6,378.9 Q704.3,380.2 702.4,381.1 Q700.6,381.9 698.8,383.2 Q696.9,384.5 694.6,384.1 Q692.2,383.6 690.1,383.1 Q687.9,382.5 686.0,381.5 Q684.2,380.6 682.0,380.7 Q679.9,380.9 677.3,381.3 Q674.7,381.6 672.9,380.6 Q671.1,379.6 669.7,378.3 Q668.4,377.0 668.4,374.9 Q668.5,372.8 667.5,371.6 Q666.6,370.4 666.7,368.9 Q666.8,367.4 665.8,366.3 Q664.8,365.2 664.0,363.9 Q663.2,362.7 662.8,361.4 Q662.4,360.0 661.9,358.6 Q661.3,357.1 660.4,355.4 Q659.4,353.7 658.6,351.7 Q657.7,349.7 659.0,348.2 Q660.3,346.7 662.5,345.8 Q664.7,344.9 666.4,343.9 Q668.1,342.8 670.6,342.6 Q673.2,342.5 674.5,341.2 Q675.8,339.9 678.0,339.8 Q680.1,339.7 682.5,340.8 Q684.9,342.0 686.6,341.4 Q688.2,340.9 690.1,340.1 Q691.9,339.3 693.9,339.4 Q695.8,339.5 697.8,339.6 Q699.9,339.6 701.7,340.2 Q703.6,340.8 704.4,342.5 Q705.1,344.3 707.6,344.2 Q710.1,344.2 712.0,345.0 Q713.8,345.8 716.3,346.5 Q718.8,347.2 720.3,348.5 Q721.9,349.8 721.4,351.7 Q721.0,353.6 721.3,355.2 Q721.6,356.8 721.6,358.4 Q721.6,360.0 721.0,361.5Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M721.0,361.5 Q720.5,363.1 718.8,364.3 Q717.1,365.6 714.0,366.1 Q710.8,366.6 710.8,368.0 Q710.9,369.3 710.9,370.9 Q711.0,372.5 709.9,373.6 Q708.7,374.7 707.8,376.2 Q707.0,377.6 705.6,378.9 Q704.3,380.2 702.4,381.1 Q700.6,381.9 698.8,383.2 Q696.9,384.5 694.6,384.1 Q692.2,383.6 690.1,383.1 Q687.9,382.5 686.0,381.5 Q684.2,380.6 682.0,380.7 Q679.9,380.9 677.3,381.3 Q674.7,381.6 672.9,380.6 Q671.1,379.6 669.7,378.3 Q668.4,377.0 668.4,374.9 Q668.5,372.8 667.5,371.6 Q666.6,370.4 666.7,368.9 Q666.8,367.4 665.8,366.3 Q664.8,365.2 664.0,363.9 Q663.2,362.7 662.8,361.4 Q662.4,360.0 661.9,358.6 Q661.3,357.1 660.4,355.4 Q659.4,353.7 658.6,351.7 Q657.7,349.7 659.0,348.2 Q660.3,346.7 662.5,345.8 Q664.7,344.9 666.4,343.9 Q668.1,342.8 670.6,342.6 Q673.2,342.5 674.5,341.2 Q675.8,339.9 678.0,339.8 Q680.1,339.7 682.5,340.8 Q684.9,342.0 686.6,341.4 Q688.2,340.9 690.1,340.1 Q691.9,339.3 693.9,339.4 Q695.8,339.5 697.8,339.6 Q699.9,339.6 701.7,340.2 Q703.6,340.8 704.4,342.5 Q705.1,344.3 707.6,344.2 Q710.1,344.2 712.0,345.0 Q713.8,345.8 716.3,346.5 Q718.8,347.2 720.3,348.5 Q721.9,349.8 721.4,351.7 Q721.0,353.6 721.3,355.2 Q721.6,356.8 721.6,358.4 Q721.6,360.0 721.0,361.5Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M721.0,361.5 Q720.5,363.1 718.8,364.3 Q717.1,365.6 714.0,366.1 Q710.8,366.6 710.8,368.0 Q710.9,369.3 710.9,370.9 Q711.0,372.5 709.9,373.6 Q708.7,374.7 707.8,376.2 Q707.0,377.6 705.6,378.9 Q704.3,380.2 702.4,381.1 Q700.6,381.9 698.8,383.2 Q696.9,384.5 694.6,384.1 Q692.2,383.6 690.1,383.1 Q687.9,382.5 686.0,381.5 Q684.2,380.6 682.0,380.7 Q679.9,380.9 677.3,381.3 Q674.7,381.6 672.9,380.6 Q671.1,379.6 669.7,378.3 Q668.4,377.0 668.4,374.9 Q668.5,372.8 667.5,371.6 Q666.6,370.4 666.7,368.9 Q666.8,367.4 665.8,366.3 Q664.8,365.2 664.0,363.9 Q663.2,362.7 662.8,361.4 Q662.4,360.0 661.9,358.6 Q661.3,357.1 660.4,355.4 Q659.4,353.7 658.6,351.7 Q657.7,349.7 659.0,348.2 Q660.3,346.7 662.5,345.8 Q664.7,344.9 666.4,343.9 Q668.1,342.8 670.6,342.6 Q673.2,342.5 674.5,341.2 Q675.8,339.9 678.0,339.8 Q680.1,339.7 682.5,340.8 Q684.9,342.0 686.6,341.4 Q688.2,340.9 690.1,340.1 Q691.9,339.3 693.9,339.4 Q695.8,339.5 697.8,339.6 Q699.9,339.6 701.7,340.2 Q703.6,340.8 704.4,342.5 Q705.1,344.3 707.6,344.2 Q710.1,344.2 712.0,345.0 Q713.8,345.8 716.3,346.5 Q718.8,347.2 720.3,348.5 Q721.9,349.8 721.4,351.7 Q721.0,353.6 721.3,355.2 Q721.6,356.8 721.6,358.4 Q721.6,360.0 721.0,361.5Z" class="terra" /><path d="M657.8,150.9 Q659.4,151.7 661.3,152.9 Q663.1,154.1 663.7,155.4 Q664.2,156.7 663.2,157.7 Q662.3,158.6 660.8,159.3 Q659.3,160.0 658.5,161.0 Q657.8,162.1 656.9,163.3 Q656.0,164.4 653.2,163.6 Q650.4,162.8 648.5,162.3 Q646.6,161.8 645.2,161.8 Q643.9,161.9 642.5,161.5 Q641.2,161.1 640.0,161.5 Q638.7,161.9 637.3,162.3 Q635.8,162.8 634.2,163.0 Q632.6,163.3 631.7,162.3 Q630.9,161.2 629.4,161.0 Q628.0,160.8 626.1,160.8 Q624.3,160.7 622.7,160.2 Q621.1,159.8 620.9,158.6 Q620.6,157.5 620.6,156.4 Q620.7,155.3 618.7,154.7 Q616.7,154.2 616.1,153.1 Q615.5,152.1 614.9,151.1 Q614.4,150.0 615.4,149.0 Q616.4,147.9 617.6,147.1 Q618.9,146.2 621.1,145.8 Q623.4,145.4 623.6,144.6 Q623.9,143.8 625.4,143.5 Q626.8,143.2 627.8,142.8 Q628.8,142.4 629.7,142.0 Q630.6,141.5 630.5,139.9 Q630.5,138.3 631.1,136.7 Q631.6,135.0 633.2,134.6 Q634.8,134.1 636.5,134.0 Q638.3,133.9 639.9,134.7 Q641.5,135.6 643.2,135.5 Q644.8,135.4 646.1,136.0 Q647.5,136.5 648.9,136.9 Q650.3,137.3 651.9,137.6 Q653.5,137.8 654.2,138.9 Q654.8,139.9 655.4,140.8 Q655.9,141.8 656.5,142.6 Q657.2,143.4 658.7,143.9 Q660.2,144.4 659.8,145.5 Q659.5,146.5 658.4,147.5 Q657.3,148.5 656.8,149.2 Q656.2,150.0 657.8,150.9Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M657.8,150.9 Q659.4,151.7 661.3,152.9 Q663.1,154.1 663.7,155.4 Q664.2,156.7 663.2,157.7 Q662.3,158.6 660.8,159.3 Q659.3,160.0 658.5,161.0 Q657.8,162.1 656.9,163.3 Q656.0,164.4 653.2,163.6 Q650.4,162.8 648.5,162.3 Q646.6,161.8 645.2,161.8 Q643.9,161.9 642.5,161.5 Q641.2,161.1 640.0,161.5 Q638.7,161.9 637.3,162.3 Q635.8,162.8 634.2,163.0 Q632.6,163.3 631.7,162.3 Q630.9,161.2 629.4,161.0 Q628.0,160.8 626.1,160.8 Q624.3,160.7 622.7,160.2 Q621.1,159.8 620.9,158.6 Q620.6,157.5 620.6,156.4 Q620.7,155.3 618.7,154.7 Q616.7,154.2 616.1,153.1 Q615.5,152.1 614.9,151.1 Q614.4,150.0 615.4,149.0 Q616.4,147.9 617.6,147.1 Q618.9,146.2 621.1,145.8 Q623.4,145.4 623.6,144.6 Q623.9,143.8 625.4,143.5 Q626.8,143.2 627.8,142.8 Q628.8,142.4 629.7,142.0 Q630.6,141.5 630.5,139.9 Q630.5,138.3 631.1,136.7 Q631.6,135.0 633.2,134.6 Q634.8,134.1 636.5,134.0 Q638.3,133.9 639.9,134.7 Q641.5,135.6 643.2,135.5 Q644.8,135.4 646.1,136.0 Q647.5,136.5 648.9,136.9 Q650.3,137.3 651.9,137.6 Q653.5,137.8 654.2,138.9 Q654.8,139.9 655.4,140.8 Q655.9,141.8 656.5,142.6 Q657.2,143.4 658.7,143.9 Q660.2,144.4 659.8,145.5 Q659.5,146.5 658.4,147.5 Q657.3,148.5 656.8,149.2 Q656.2,150.0 657.8,150.9Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M657.8,150.9 Q659.4,151.7 661.3,152.9 Q663.1,154.1 663.7,155.4 Q664.2,156.7 663.2,157.7 Q662.3,158.6 660.8,159.3 Q659.3,160.0 658.5,161.0 Q657.8,162.1 656.9,163.3 Q656.0,164.4 653.2,163.6 Q650.4,162.8 648.5,162.3 Q646.6,161.8 645.2,161.8 Q643.9,161.9 642.5,161.5 Q641.2,161.1 640.0,161.5 Q638.7,161.9 637.3,162.3 Q635.8,162.8 634.2,163.0 Q632.6,163.3 631.7,162.3 Q630.9,161.2 629.4,161.0 Q628.0,160.8 626.1,160.8 Q624.3,160.7 622.7,160.2 Q621.1,159.8 620.9,158.6 Q620.6,157.5 620.6,156.4 Q620.7,155.3 618.7,154.7 Q616.7,154.2 616.1,153.1 Q615.5,152.1 614.9,151.1 Q614.4,150.0 615.4,149.0 Q616.4,147.9 617.6,147.1 Q618.9,146.2 621.1,145.8 Q623.4,145.4 623.6,144.6 Q623.9,143.8 625.4,143.5 Q626.8,143.2 627.8,142.8 Q628.8,142.4 629.7,142.0 Q630.6,141.5 630.5,139.9 Q630.5,138.3 631.1,136.7 Q631.6,135.0 633.2,134.6 Q634.8,134.1 636.5,134.0 Q638.3,133.9 639.9,134.7 Q641.5,135.6 643.2,135.5 Q644.8,135.4 646.1,136.0 Q647.5,136.5 648.9,136.9 Q650.3,137.3 651.9,137.6 Q653.5,137.8 654.2,138.9 Q654.8,139.9 655.4,140.8 Q655.9,141.8 656.5,142.6 Q657.2,143.4 658.7,143.9 Q660.2,144.4 659.8,145.5 Q659.5,146.5 658.4,147.5 Q657.3,148.5 656.8,149.2 Q656.2,150.0 657.8,150.9Z" class="terra" /><path d="M673.0,255.9 Q673.8,256.7 674.4,257.7 Q674.9,258.7 674.7,259.7 Q674.6,260.7 673.7,261.5 Q672.9,262.2 671.0,262.5 Q669.2,262.7 667.6,262.8 Q666.0,262.8 665.2,263.4 Q664.4,263.9 663.4,264.2 Q662.4,264.6 661.0,264.0 Q659.5,263.4 658.7,263.8 Q657.9,264.2 656.9,264.1 Q655.9,263.9 654.9,264.8 Q653.9,265.8 652.5,266.6 Q651.1,267.4 649.2,268.4 Q647.3,269.4 646.1,268.7 Q645.0,267.9 643.9,267.2 Q642.7,266.6 641.9,265.7 Q641.1,264.9 640.8,263.9 Q640.5,262.8 639.9,262.1 Q639.4,261.3 639.4,260.4 Q639.4,259.5 640.0,258.6 Q640.5,257.7 638.8,257.2 Q637.1,256.6 637.3,255.8 Q637.4,255.0 637.8,254.2 Q638.3,253.5 638.5,252.7 Q638.6,251.9 640.5,251.7 Q642.4,251.4 641.8,250.4 Q641.1,249.4 641.5,248.6 Q642.0,247.9 642.1,246.9 Q642.2,245.9 643.2,245.3 Q644.1,244.7 644.9,243.9 Q645.8,243.2 646.9,242.6 Q648.1,242.1 649.4,241.5 Q650.6,241.0 652.0,240.4 Q653.4,239.7 654.8,241.3 Q656.3,242.8 657.3,243.5 Q658.4,244.2 659.0,245.3 Q659.6,246.5 661.0,246.0 Q662.4,245.4 663.6,245.6 Q664.7,245.8 665.5,246.4 Q666.4,246.9 667.2,247.4 Q668.0,247.9 669.0,248.4 Q669.9,249.0 671.5,249.4 Q673.0,249.8 673.1,250.7 Q673.2,251.6 673.6,252.4 Q674.0,253.3 673.1,254.1 Q672.2,255.0 673.0,255.9Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M673.0,255.9 Q673.8,256.7 674.4,257.7 Q674.9,258.7 674.7,259.7 Q674.6,260.7 673.7,261.5 Q672.9,262.2 671.0,262.5 Q669.2,262.7 667.6,262.8 Q666.0,262.8 665.2,263.4 Q664.4,263.9 663.4,264.2 Q662.4,264.6 661.0,264.0 Q659.5,263.4 658.7,263.8 Q657.9,264.2 656.9,264.1 Q655.9,263.9 654.9,264.8 Q653.9,265.8 652.5,266.6 Q651.1,267.4 649.2,268.4 Q647.3,269.4 646.1,268.7 Q645.0,267.9 643.9,267.2 Q642.7,266.6 641.9,265.7 Q641.1,264.9 640.8,263.9 Q640.5,262.8 639.9,262.1 Q639.4,261.3 639.4,260.4 Q639.4,259.5 640.0,258.6 Q640.5,257.7 638.8,257.2 Q637.1,256.6 637.3,255.8 Q637.4,255.0 637.8,254.2 Q638.3,253.5 638.5,252.7 Q638.6,251.9 640.5,251.7 Q642.4,251.4 641.8,250.4 Q641.1,249.4 641.5,248.6 Q642.0,247.9 642.1,246.9 Q642.2,245.9 643.2,245.3 Q644.1,244.7 644.9,243.9 Q645.8,243.2 646.9,242.6 Q648.1,242.1 649.4,241.5 Q650.6,241.0 652.0,240.4 Q653.4,239.7 654.8,241.3 Q656.3,242.8 657.3,243.5 Q658.4,244.2 659.0,245.3 Q659.6,246.5 661.0,246.0 Q662.4,245.4 663.6,245.6 Q664.7,245.8 665.5,246.4 Q666.4,246.9 667.2,247.4 Q668.0,247.9 669.0,248.4 Q669.9,249.0 671.5,249.4 Q673.0,249.8 673.1,250.7 Q673.2,251.6 673.6,252.4 Q674.0,253.3 673.1,254.1 Q672.2,255.0 673.0,255.9Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M673.0,255.9 Q673.8,256.7 674.4,257.7 Q674.9,258.7 674.7,259.7 Q674.6,260.7 673.7,261.5 Q672.9,262.2 671.0,262.5 Q669.2,262.7 667.6,262.8 Q666.0,262.8 665.2,263.4 Q664.4,263.9 663.4,264.2 Q662.4,264.6 661.0,264.0 Q659.5,263.4 658.7,263.8 Q657.9,264.2 656.9,264.1 Q655.9,263.9 654.9,264.8 Q653.9,265.8 652.5,266.6 Q651.1,267.4 649.2,268.4 Q647.3,269.4 646.1,268.7 Q645.0,267.9 643.9,267.2 Q642.7,266.6 641.9,265.7 Q641.1,264.9 640.8,263.9 Q640.5,262.8 639.9,262.1 Q639.4,261.3 639.4,260.4 Q639.4,259.5 640.0,258.6 Q640.5,257.7 638.8,257.2 Q637.1,256.6 637.3,255.8 Q637.4,255.0 637.8,254.2 Q638.3,253.5 638.5,252.7 Q638.6,251.9 640.5,251.7 Q642.4,251.4 641.8,250.4 Q641.1,249.4 641.5,248.6 Q642.0,247.9 642.1,246.9 Q642.2,245.9 643.2,245.3 Q644.1,244.7 644.9,243.9 Q645.8,243.2 646.9,242.6 Q648.1,242.1 649.4,241.5 Q650.6,241.0 652.0,240.4 Q653.4,239.7 654.8,241.3 Q656.3,242.8 657.3,243.5 Q658.4,244.2 659.0,245.3 Q659.6,246.5 661.0,246.0 Q662.4,245.4 663.6,245.6 Q664.7,245.8 665.5,246.4 Q666.4,246.9 667.2,247.4 Q668.0,247.9 669.0,248.4 Q669.9,249.0 671.5,249.4 Q673.0,249.8 673.1,250.7 Q673.2,251.6 673.6,252.4 Q674.0,253.3 673.1,254.1 Q672.2,255.0 673.0,255.9Z" class="terra" /><path d="M441.8,285.8 Q442.7,286.7 443.1,287.6 Q443.5,288.6 442.2,289.2 Q440.9,289.7 440.5,290.5 Q440.2,291.3 438.9,291.7 Q437.7,292.1 437.7,293.2 Q437.7,294.3 436.1,294.3 Q434.5,294.3 433.5,294.6 Q432.4,294.8 431.5,295.2 Q430.5,295.6 429.4,295.8 Q428.3,295.9 427.2,296.3 Q426.2,296.6 425.1,296.1 Q424.0,295.5 423.3,294.2 Q422.6,292.9 421.6,293.2 Q420.6,293.4 419.7,293.4 Q418.7,293.3 417.4,293.5 Q416.1,293.6 414.8,293.6 Q413.5,293.5 411.8,293.4 Q410.1,293.3 409.5,292.5 Q408.9,291.7 407.6,291.2 Q406.3,290.6 405.9,289.7 Q405.6,288.7 405.8,287.8 Q406.0,286.8 407.7,285.9 Q409.5,285.0 410.4,284.4 Q411.4,283.7 411.7,283.1 Q412.1,282.5 412.2,281.9 Q412.4,281.2 411.7,280.2 Q411.1,279.2 412.4,278.9 Q413.7,278.7 414.2,278.0 Q414.6,277.4 415.2,276.7 Q415.7,276.0 416.6,275.5 Q417.4,274.9 418.6,274.9 Q419.7,274.8 420.6,274.2 Q421.5,273.6 422.7,273.6 Q423.9,273.7 425.0,273.7 Q426.1,273.7 427.4,273.3 Q428.7,272.9 430.2,272.5 Q431.7,272.0 432.4,273.2 Q433.0,274.3 434.0,274.8 Q434.9,275.3 434.9,276.6 Q434.8,277.8 435.2,278.4 Q435.6,279.0 435.9,279.7 Q436.2,280.3 436.6,280.9 Q437.0,281.4 437.5,282.0 Q438.0,282.5 438.2,283.1 Q438.3,283.7 439.6,284.4 Q440.9,285.0 441.8,285.8Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M441.8,285.8 Q442.7,286.7 443.1,287.6 Q443.5,288.6 442.2,289.2 Q440.9,289.7 440.5,290.5 Q440.2,291.3 438.9,291.7 Q437.7,292.1 437.7,293.2 Q437.7,294.3 436.1,294.3 Q434.5,294.3 433.5,294.6 Q432.4,294.8 431.5,295.2 Q430.5,295.6 429.4,295.8 Q428.3,295.9 427.2,296.3 Q426.2,296.6 425.1,296.1 Q424.0,295.5 423.3,294.2 Q422.6,292.9 421.6,293.2 Q420.6,293.4 419.7,293.4 Q418.7,293.3 417.4,293.5 Q416.1,293.6 414.8,293.6 Q413.5,293.5 411.8,293.4 Q410.1,293.3 409.5,292.5 Q408.9,291.7 407.6,291.2 Q406.3,290.6 405.9,289.7 Q405.6,288.7 405.8,287.8 Q406.0,286.8 407.7,285.9 Q409.5,285.0 410.4,284.4 Q411.4,283.7 411.7,283.1 Q412.1,282.5 412.2,281.9 Q412.4,281.2 411.7,280.2 Q411.1,279.2 412.4,278.9 Q413.7,278.7 414.2,278.0 Q414.6,277.4 415.2,276.7 Q415.7,276.0 416.6,275.5 Q417.4,274.9 418.6,274.9 Q419.7,274.8 420.6,274.2 Q421.5,273.6 422.7,273.6 Q423.9,273.7 425.0,273.7 Q426.1,273.7 427.4,273.3 Q428.7,272.9 430.2,272.5 Q431.7,272.0 432.4,273.2 Q433.0,274.3 434.0,274.8 Q434.9,275.3 434.9,276.6 Q434.8,277.8 435.2,278.4 Q435.6,279.0 435.9,279.7 Q436.2,280.3 436.6,280.9 Q437.0,281.4 437.5,282.0 Q438.0,282.5 438.2,283.1 Q438.3,283.7 439.6,284.4 Q440.9,285.0 441.8,285.8Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M441.8,285.8 Q442.7,286.7 443.1,287.6 Q443.5,288.6 442.2,289.2 Q440.9,289.7 440.5,290.5 Q440.2,291.3 438.9,291.7 Q437.7,292.1 437.7,293.2 Q437.7,294.3 436.1,294.3 Q434.5,294.3 433.5,294.6 Q432.4,294.8 431.5,295.2 Q430.5,295.6 429.4,295.8 Q428.3,295.9 427.2,296.3 Q426.2,296.6 425.1,296.1 Q424.0,295.5 423.3,294.2 Q422.6,292.9 421.6,293.2 Q420.6,293.4 419.7,293.4 Q418.7,293.3 417.4,293.5 Q416.1,293.6 414.8,293.6 Q413.5,293.5 411.8,293.4 Q410.1,293.3 409.5,292.5 Q408.9,291.7 407.6,291.2 Q406.3,290.6 405.9,289.7 Q405.6,288.7 405.8,287.8 Q406.0,286.8 407.7,285.9 Q409.5,285.0 410.4,284.4 Q411.4,283.7 411.7,283.1 Q412.1,282.5 412.2,281.9 Q412.4,281.2 411.7,280.2 Q411.1,279.2 412.4,278.9 Q413.7,278.7 414.2,278.0 Q414.6,277.4 415.2,276.7 Q415.7,276.0 416.6,275.5 Q417.4,274.9 418.6,274.9 Q419.7,274.8 420.6,274.2 Q421.5,273.6 422.7,273.6 Q423.9,273.7 425.0,273.7 Q426.1,273.7 427.4,273.3 Q428.7,272.9 430.2,272.5 Q431.7,272.0 432.4,273.2 Q433.0,274.3 434.0,274.8 Q434.9,275.3 434.9,276.6 Q434.8,277.8 435.2,278.4 Q435.6,279.0 435.9,279.7 Q436.2,280.3 436.6,280.9 Q437.0,281.4 437.5,282.0 Q438.0,282.5 438.2,283.1 Q438.3,283.7 439.6,284.4 Q440.9,285.0 441.8,285.8Z" class="terra" /><path d="M573.4,120.7 Q574.4,121.4 575.3,122.3 Q576.1,123.2 575.4,123.9 Q574.7,124.6 573.9,125.1 Q573.1,125.7 572.6,126.3 Q572.0,127.0 571.1,127.4 Q570.2,127.8 569.4,128.3 Q568.6,128.7 567.3,128.4 Q565.9,128.1 564.9,128.0 Q563.9,127.9 563.3,128.5 Q562.7,129.1 561.8,129.3 Q560.9,129.6 560.0,129.8 Q559.0,130.0 558.1,129.8 Q557.2,129.6 556.7,128.7 Q556.1,127.8 555.6,127.2 Q555.2,126.7 553.8,127.2 Q552.4,127.7 551.4,127.5 Q550.3,127.4 549.2,127.2 Q548.2,126.9 547.4,126.3 Q546.7,125.8 545.5,125.3 Q544.3,124.9 544.0,124.1 Q543.6,123.3 542.9,122.5 Q542.1,121.8 543.3,120.9 Q544.4,120.0 545.6,119.3 Q546.7,118.7 547.7,118.2 Q548.7,117.7 549.4,117.3 Q550.1,116.9 550.3,116.4 Q550.5,115.9 550.5,115.1 Q550.4,114.4 550.8,113.8 Q551.2,113.2 551.8,112.8 Q552.4,112.3 553.0,111.7 Q553.5,111.0 554.1,110.2 Q554.7,109.4 555.9,109.6 Q557.0,109.7 558.0,110.0 Q559.1,110.2 560.0,110.3 Q560.9,110.3 562.0,109.8 Q563.1,109.2 564.2,109.4 Q565.2,109.5 566.2,109.8 Q567.2,110.0 567.8,110.7 Q568.4,111.5 568.6,112.3 Q568.9,113.2 569.3,113.8 Q569.8,114.3 570.3,114.8 Q570.9,115.3 571.2,115.8 Q571.5,116.4 570.7,117.2 Q570.0,118.0 570.1,118.5 Q570.1,119.0 571.2,119.5 Q572.3,120.0 573.4,120.7Z" fill="none" stroke="var(--ink)" stroke-opacity=".18" stroke-width="9" stroke-linejoin="round"/><path d="M573.4,120.7 Q574.4,121.4 575.3,122.3 Q576.1,123.2 575.4,123.9 Q574.7,124.6 573.9,125.1 Q573.1,125.7 572.6,126.3 Q572.0,127.0 571.1,127.4 Q570.2,127.8 569.4,128.3 Q568.6,128.7 567.3,128.4 Q565.9,128.1 564.9,128.0 Q563.9,127.9 563.3,128.5 Q562.7,129.1 561.8,129.3 Q560.9,129.6 560.0,129.8 Q559.0,130.0 558.1,129.8 Q557.2,129.6 556.7,128.7 Q556.1,127.8 555.6,127.2 Q555.2,126.7 553.8,127.2 Q552.4,127.7 551.4,127.5 Q550.3,127.4 549.2,127.2 Q548.2,126.9 547.4,126.3 Q546.7,125.8 545.5,125.3 Q544.3,124.9 544.0,124.1 Q543.6,123.3 542.9,122.5 Q542.1,121.8 543.3,120.9 Q544.4,120.0 545.6,119.3 Q546.7,118.7 547.7,118.2 Q548.7,117.7 549.4,117.3 Q550.1,116.9 550.3,116.4 Q550.5,115.9 550.5,115.1 Q550.4,114.4 550.8,113.8 Q551.2,113.2 551.8,112.8 Q552.4,112.3 553.0,111.7 Q553.5,111.0 554.1,110.2 Q554.7,109.4 555.9,109.6 Q557.0,109.7 558.0,110.0 Q559.1,110.2 560.0,110.3 Q560.9,110.3 562.0,109.8 Q563.1,109.2 564.2,109.4 Q565.2,109.5 566.2,109.8 Q567.2,110.0 567.8,110.7 Q568.4,111.5 568.6,112.3 Q568.9,113.2 569.3,113.8 Q569.8,114.3 570.3,114.8 Q570.9,115.3 571.2,115.8 Q571.5,116.4 570.7,117.2 Q570.0,118.0 570.1,118.5 Q570.1,119.0 571.2,119.5 Q572.3,120.0 573.4,120.7Z" fill="none" stroke="var(--ink)" stroke-opacity=".12" stroke-width="18" stroke-linejoin="round"/><path d="M573.4,120.7 Q574.4,121.4 575.3,122.3 Q576.1,123.2 575.4,123.9 Q574.7,124.6 573.9,125.1 Q573.1,125.7 572.6,126.3 Q572.0,127.0 571.1,127.4 Q570.2,127.8 569.4,128.3 Q568.6,128.7 567.3,128.4 Q565.9,128.1 564.9,128.0 Q563.9,127.9 563.3,128.5 Q562.7,129.1 561.8,129.3 Q560.9,129.6 560.0,129.8 Q559.0,130.0 558.1,129.8 Q557.2,129.6 556.7,128.7 Q556.1,127.8 555.6,127.2 Q555.2,126.7 553.8,127.2 Q552.4,127.7 551.4,127.5 Q550.3,127.4 549.2,127.2 Q548.2,126.9 547.4,126.3 Q546.7,125.8 545.5,125.3 Q544.3,124.9 544.0,124.1 Q543.6,123.3 542.9,122.5 Q542.1,121.8 543.3,120.9 Q544.4,120.0 545.6,119.3 Q546.7,118.7 547.7,118.2 Q548.7,117.7 549.4,117.3 Q550.1,116.9 550.3,116.4 Q550.5,115.9 550.5,115.1 Q550.4,114.4 550.8,113.8 Q551.2,113.2 551.8,112.8 Q552.4,112.3 553.0,111.7 Q553.5,111.0 554.1,110.2 Q554.7,109.4 555.9,109.6 Q557.0,109.7 558.0,110.0 Q559.1,110.2 560.0,110.3 Q560.9,110.3 562.0,109.8 Q563.1,109.2 564.2,109.4 Q565.2,109.5 566.2,109.8 Q567.2,110.0 567.8,110.7 Q568.4,111.5 568.6,112.3 Q568.9,113.2 569.3,113.8 Q569.8,114.3 570.3,114.8 Q570.9,115.3 571.2,115.8 Q571.5,116.4 570.7,117.2 Q570.0,118.0 570.1,118.5 Q570.1,119.0 571.2,119.5 Q572.3,120.0 573.4,120.7Z" class="terra" /><path d="M502.0,200.0 L502.7,201.5 L502.3,203.5 L500.4,205.3 L497.3,205.8 L494.0,204.5 L491.5,201.2 L490.9,196.6 L492.9,191.8 L497.5,188.4 L503.7,187.5 L510.0,190.1 L514.6,195.8 L515.9,203.5 L513.1,211.4 L506.4,217.4 L497.1,219.4 L487.5,216.5 L480.1,209.0 L477.2,198.3 L479.9,186.9 L488.1,177.9" class="fino"/><path d="M567.0,235.0 L567.7,236.5 L567.3,238.5 L565.4,240.3 L562.3,240.8 L559.0,239.5 L556.5,236.2 L555.9,231.6 L557.9,226.8 L562.5,223.4 L568.7,222.5 L575.0,225.1 L579.6,230.8 L580.9,238.5 L578.1,246.4 L571.4,252.4 L562.1,254.4 L552.5,251.5 L545.1,244.0 L542.2,233.3 L544.9,221.9 L553.1,212.9" class="fino"/><path d="M600,180 l-8,14 h7 l-9,16" class="traco" stroke="var(--rubric)"/><text x="520" y="300" class="nome" text-anchor="middle">CLIMÁTICA</text><text x="520" y="318" class="mao" text-anchor="middle">tudo de ruim ao mesmo tempo</text><path d="M322,103 l-7,13 h7 l-8,15" class="traco" stroke="var(--rubric)"/><path d="M345,112 v22 M339,118 h12" class="traco"/><text x="330" y="172" class="menor" text-anchor="middle">ERMOS DO TROVÃO</text><path d="M401.0,330.0 L400.7,334.4 L399.9,338.7 L398.5,343.0 L396.6,347.1 L394.1,351.1 L391.2,354.8 L387.8,358.3 L384.0,361.6 L379.8,364.5 L375.3,367.0 L370.4,369.2" class="fino" marker-end=""/><path d="M374.6,363.6 L370.4,369.2 L377.4,369.7" class="fino"/><path d="M316.7,368.0 L312.0,365.6 L307.7,362.8 L303.7,359.7 L300.1,356.3 L297.0,352.7 L294.4,348.8 L292.2,344.7 L290.6,340.5 L289.6,336.2 L289.0,331.8 L289.1,327.4" class="fino" marker-end=""/><path d="M292.4,333.6 L289.1,327.4 L285.7,333.5" class="fino"/><path d="M317.5,291.7 L322.6,289.7 L327.8,288.1 L333.2,287.0 L338.7,286.3 L344.3,286.0 L349.9,286.2 L355.4,286.8 L360.9,287.8 L366.2,289.3 L371.2,291.1 L376.0,293.4" class="fino" marker-end=""/><path d="M369.1,293.8 L376.0,293.4 L371.9,287.7" class="fino"/><text x="345" y="392" class="menor" text-anchor="middle">TERRAS GIRATÓRIAS</text><text x="345" y="408" class="mao" text-anchor="middle">a ilha que gira</text><text x="690" y="366" class="nome" text-anchor="middle">Z</text><text x="690" y="400" class="menor" text-anchor="middle">ILHA Z</text><text x="690" y="416" class="mao" text-anchor="middle">só descanso, dizem</text><text x="520" y="80" class="rubro" text-anchor="middle">ARQUIPÉLAGO DELUGE</text><path d="M150,560 Q220,520 300,548 Q360,528 430,552 Q500,520 580,546 Q650,526 720,548 Q800,530 888,540 L888,628 L150,628 Z" fill="none" stroke="var(--ink)" stroke-opacity=".15" stroke-width="12"/><path d="M150,560 Q220,520 300,548 Q360,528 430,552 Q500,520 580,546 Q650,526 720,548 Q800,530 888,540 L888,628 L150,628 Z" class="terra"/><path d="M150,560 Q220,520 300,548 Q360,528 430,552 Q500,520 580,546 Q650,526 720,548 Q800,530 888,540 L888,628 L150,628 Z" fill="url(#neve)"/><path d="M188,605 L200,587 L212,605 M196,593 L200,587 L203,592" class="fino"/><path d="M234,605 L246,587 L258,605 M242,593 L246,587 L249,592" class="fino"/><path d="M280,605 L292,587 L304,605 M288,593 L292,587 L295,592" class="fino"/><path d="M326,605 L338,587 L350,605 M334,593 L338,587 L341,592" class="fino"/><path d="M372,605 L384,587 L396,605 M380,593 L384,587 L387,592" class="fino"/><path d="M648,605 L660,587 L672,605 M656,593 L660,587 L663,592" class="fino"/><path d="M694,605 L706,587 L718,605 M702,593 L706,587 L709,592" class="fino"/><path d="M740,605 L752,587 L764,605 M748,593 L752,587 L755,592" class="fino"/><path d="M786,605 L798,587 L810,605 M794,593 L798,587 L801,592" class="fino"/><path d="M832,605 L844,587 L856,605 M840,593 L844,587 L847,592" class="fino"/><text x="520" y="600" class="nome" text-anchor="middle">VETRHEIM</text><text x="520" y="618" class="mao" text-anchor="middle">o sul do Kósmos, terra dos Frostborn</text><path d="M740,30 Q790,70 860,52 M880,120 Q850,180 880,240" class="fino" stroke-dasharray="3 5"/><text x="820" y="150" class="rubro" text-anchor="middle">não mapeado</text><text x="820" y="168" class="mao" text-anchor="middle">o Kósmos continua para lá</text><text x="270" y="440" class="rubro" text-anchor="middle">não mapeado</text><text x="270" y="458" class="mao" text-anchor="middle">ilhas que ainda não anotei</text><circle cx="800" cy="300" r="26" class="fino"/><path d="M800,264 L806,300 L800,336 L794,300 Z" fill="var(--ink)" fill-opacity=".8"/><path d="M764,300 L800,294 L836,300 L800,306 Z" fill="none" stroke="var(--ink)" stroke-width="1"/><text x="800" y="258" class="menor" text-anchor="middle">N</text><text x="880" y="36" class="nome" text-anchor="end">O KÓSMOS</text><text x="880" y="54" class="mao" text-anchor="end">o pedaço que me descreveram</text><text x="880" y="470" class="mao" text-anchor="end">aqui é noite quando lá é dia</text></svg></figure>
+      <p class="note r">copiei esta carta de um marinheiro que jurava ter passado pela parede. ele não sabia desenhar o norte. disse que ninguém que foi até lá voltou para contar.</p>
+      <section class="ficha alt" aria-label="O Kósmos">
+        <h3>O Kósmos <small>registro nº 515</small></h3>
+        <dl class="stats atlas-stats long"><div><dt>Como se chega</dt><dd>pelo facho do Farol Velho, atravessando a parede de Música.</dd></div><div><dt>Arquipélago Deluge</dt><dd>Ermos do Trovão, Terras Giratórias, Climática e Ilha Z.</dd></div><div><dt>Kósmos Sul</dt><dd>Vetrheim, terra do tamanho de um continente, onde vivem os Frostborn.</dd></div><div><dt>Profundezas</dt><dd>as mesmas do nosso lado.</dd></div></dl>
+        
+      </section>
+    </div>
+  </article>
+
+  <article class="page" id="deluge" aria-labelledby="h-deluge">
+    <div class="folio"><b>Registro nº 516</b><span>Atlas</span></div>
+    <div class="spread">
+      <h2 id="h-deluge"><span class="kicker">Kósmos · as ilhas do meio</span>O Arquipélago Deluge</h2>
+      <div class="prose"><p>Nos Ermos do Trovão, o Stormlord, o Rainbound mais antigo, lutou contra um guerreiro que só chamam de Imperador sem Nome. A luta durou um mês. Ninguém sabe quem ganhou. A Música que os dois soltaram queimou a terra e mudou os bichos que viviam ali, e a ilha nunca mais foi a mesma.</p><p>As Terras Giratórias são o mercado do arquipélago, cheias de gente de toda raça. Debaixo da ilha corre um redemoinho pequeno demais para ser visto. A ilha não afunda: gira, e as coisas mudam de lugar com a hora, com a maré e com a Música usada por perto.</p><p>Climática é enorme, ou são várias ilhas coladas, depende de quem conta. Ali acontece todo desastre que existe, ao mesmo tempo: é o campo de batalha entre a natureza e as coisas do fundo. Foi lá que nasceram os Rainbound.</p><p>A Ilha Z é para descansar. Tem praia, um pavilhão e cabanas. Embaixo dela há um laboratório com registros sobre o passado, e quem sabe disso não fala.</p></div>
+      
+      <p class="note">na Terra Giratória, deixei a mochila numa barraca ao meio-dia. à noite, a barraca estava do outro lado da praça, e a mochila, não.</p>
+      <section class="ficha" aria-label="O Arquipélago Deluge">
+        <h3>O Arquipélago Deluge <small>registro nº 516</small></h3>
+        <dl class="stats atlas-stats long"><div><dt>Ermos do Trovão</dt><dd>pequena. Terra queimada, vidro de raio, criaturas transformadas.</dd></div><div><dt>Terras Giratórias</dt><dd>pequena. Mercado, porto, o redemoinho embaixo.</dd></div><div><dt>Climática</dt><dd>gigante. Neve, vulcão, enchente e tempestade; berço dos Rainbound.</dd></div><div><dt>Ilha Z</dt><dd>descanso em cima, laboratório embaixo.</dd></div></dl>
         
       </section>
     </div>
@@ -2554,6 +2590,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-vigilias"><span class="kicker">Leste · território de Etrea</span>Ilha das Vigílias</h2>
       <div class="prose"><p>A Ilha das Vigílias é um santuário de pedra no mar Etrean, feito de ilhotas ligadas por pontes e escadas. Já foi presa a Etris; hoje está sozinha, e parece gostar. Quem manda lá são os espadachins das Vigílias, gente que acorda antes do sol para treinar golpes que nunca vai precisar usar, até o dia em que precisa.</p><p>No meio da ilha fica o Templo da Lâmina. Ao redor, os Jardins da Pedra Ardente, onde as pedras soltam calor como se lembrassem de um incêndio, e onde dizem estar enterrado um guerreiro sem nome. Ninguém sabe quem ele foi. Todo mundo sabe que não se deve acordá-lo.</p><p>Quem manda nas Vigílias é o Maestro Evengarde Rest, que domina armas leves, médias e pesadas e é, dizem, o maior conjurador de Galebreathe vivo. Quando ele abre um certo olho, apara qualquer golpe, até os que não se aparam. O Maestro sabe o que o Lorde Regente é de verdade e quer derrubá-lo. Só não faz isso porque, sem o Regente, a Autoridade invadiria Etrea no dia seguinte.</p></div>
+      
       <p class="note r">os mestres das Vigílias treinam antes de o sol nascer, todos os dias, com chuva ou sem. passei uma semana lá e não vi um deles faltar.</p>
       <section class="ficha alt" aria-label="Ilha das Vigílias">
         <h3>Ilha das Vigílias <small>registro nº 503</small></h3>
@@ -2568,6 +2605,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-erisia"><span class="kicker">Leste · ilha de ninguém</span>Erisia</h2>
       <div class="prose"><p>Erisia já afundou uma vez. Sumiu no Mar do Vazio e voltou anos depois, encalhada no Leste com tudo o que tinha em cima. Hoje tem duas metades: a de baixo, cheia de ladrões e ruínas, e a de cima, onde mora o Duque.</p><p>A Erisia de baixo é chamada de ilha dos bandidos, e com razão. Soldados de Etrea e da Autoridade se enfrentam nas praias dela, e acho que metade deles já esqueceu por quê.</p><p>O Duque Ishamon é Celtor e conjura vento como poucos. Os golens de pedra que andam pela ilha são dele, e o que eu ouvi sobre eles me tirou o sono: antes de a ilha afundar, o Duque mandou os golens raptarem o próprio povo. Depois, com uma relíquia chamada Forja do Pecado, tirada de um templo do deus do fogo, ele pôs as almas daquela gente dentro da pedra. O Duque acha que está salvando o mundo. Quem chega perto dele ouve sempre a mesma pergunta: "você quer que Celtor se repita?"</p></div>
+      
       <p class="note">em Erisia, durma com a bolsa por baixo do corpo. acordei duas vezes com alguém mexendo na minha.</p>
       <section class="ficha" aria-label="Erisia">
         <h3>Erisia <small>registro nº 504</small></h3>
@@ -2582,6 +2620,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-etris"><span class="kicker">Leste · capital de Etrea</span>Etris e o Lorde Regente</h2>
       <div class="prose"><p>Etris é a capital do reino de Etrea, e quem manda nela é um homem que ninguém vê. O Lorde Regente nunca sai do palácio. O povo acha que ele é doente. Eu acho que ele não precisa sair.</p><p>Antes dele, Etrea teve o Rei Rolen Vashtir, que dominava os Murmúrios como ninguém (um Juramento de que falo em outra folha, se ela sobreviveu) e partiu para o Sul atrás de Yun’Shul. Não voltou. Teve também um Lorde Guardião, que foi assassinado na noite em que o Regente tomou o trono. No mesmo ano, o arquivo de história da cidade pegou fogo, com todos os livros sobre os reis antigos dentro.</p><p>Um relatório da Autoridade que vi de relance fala de um inquisidor que quebrou a mente de um guarda de Etris e viu, através dele, a forma verdadeira do Regente: uma coisa de tentáculos negros e muitos olhos verdes. O guarda não sobreviveu. Dizem que o Regente é o Quarto Profeta do Ministério, e que quer fazer com Etris o que alguém fez com Celtor.</p></div>
+      
       <p class="note">não entre na sala do trono sem ser chamado. um homem fez isso. o Regente o ergueu no ar com fios que ninguém viu, sem levantar da cadeira.</p>
       <section class="ficha" aria-label="Etris e o Lorde Regente">
         <h3>Etris e o Lorde Regente <small>registro nº 514</small></h3>
@@ -2596,6 +2635,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-minityrsa"><span class="kicker">Leste · a ilha da neve</span>Minityrsa</h2>
       <div class="prose"><p>Minityrsa fica além dos portões do Leste e vive debaixo de neve, sem estação nenhuma que a derreta. O mar congela contra as pedras da costa. Há ruínas por toda parte, de gente que tentou morar ali e desistiu ou não teve tempo de desistir.</p><p>O Ministério mantém um posto na ilha, o Antumbra, e não gosta de visitas. Por baixo dele, dizem, existe uma prova que se enfrenta sozinho: quem entra não leva ninguém, e quem sai não conta o que viu. Há também uma cripta que nunca foi aberta, a dos Inquebrantáveis, e um vale cheio de estátuas de heróis cujos nomes o gelo comeu.</p></div>
+      
       <p class="note r">em Minityrsa, um companheiro perdeu dois dedos do pé na primeira noite. leve mais lã do que acha que precisa, e não durma no chão.</p>
       <section class="ficha alt" aria-label="Minityrsa">
         <h3>Minityrsa <small>registro nº 505</small></h3>
@@ -2610,6 +2650,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-aratel"><span class="kicker">Leste · a maior terra do mar Aratel</span>Aratel e o Vale Varrido</h2>
       <div class="prose"><p>Aratel é a maior ilha do Leste, e a maior parte dela é um deserto que não devia existir. Tem esqueletos de peixe no meio da areia e coral seco nas pedras, como se o mar tivesse ido embora de repente. Os Ganymede com quem falei acham que foi a Grande Colmeia: a árvore da Colmeia plantada no norte da ilha bebeu tudo o que a terra tinha.</p><p>O meio da ilha é o Vale Varrido de Estrelas. A Autoridade manda soldados para lá, a Colmeia manda construtos para expulsá-los, e os dois se enfrentam entre cavaleiros de pedra que acordam sem aviso. Há portas grandes e verdes no centro do vale, que só abrem para quem lavou o rosto num templo dos Guardiões da Luz. Não sei por quê. Vi funcionar.</p></div>
+      
       <p class="note">lavei o rosto num templo dos Guardiões da Luz antes de descer o vale. as portas verdes abriram para mim. para o homem que veio comigo e não quis lavar, não abriram.</p>
       <section class="ficha" aria-label="Aratel e o Vale Varrido">
         <h3>Aratel e o Vale Varrido <small>registro nº 506</small></h3>
@@ -2624,6 +2665,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-verao"><span class="kicker">Leste · o paraíso da pólvora</span>Ilha do Verão</h2>
       <div class="prose"><p>A Ilha do Verão tem praia, sol, palmeira e cheiro de pólvora em tudo. É a sede da Companhia do Verão, os únicos que fabricam armas de fogo no Leste, a partir de máquinas de antes das Marés que eles não deixam ninguém ver.</p><p>O castelo da Companhia fica no alto e tem um canhão apontado para quem estiver devendo. Os Mineiros vivem roubando caixas de explosivo deles, e a Companhia vive fingindo que não sabe quem foi. No andar de cima do castelo, um mestre de Thundercall ensina quem paga.</p><p>Quem começou tudo foi o Armeiro Rosen, um Vesperian que desceu fundo o bastante para o tempo se quebrar e voltou com máquinas de antes das Marés. Ele não inventou as armas: copiou. O aprendiz dele, Hierka, vendeu os segredos para a Autoridade, e a Companhia deixou, para não perder o contrato.</p></div>
+      
       <p class="note r">na Ilha do Verão, atirar dentro da cidade sem licença é crime. vi um estrangeiro ser levado por isso antes de a fumaça baixar.</p>
       <section class="ficha alt" aria-label="Ilha do Verão">
         <h3>Ilha do Verão <small>registro nº 507</small></h3>
@@ -2638,6 +2680,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-cancao-ninar"><span class="kicker">Central · terra dos Chrysid</span>Ilhas da Canção de Ninar</h2>
       <div class="prose"><p>As Ilhas da Canção de Ninar são cercadas de montanhas tão difíceis que pouca gente consegue sair, e só quem sai pode voltar. Lá nasceram os Chrysid, e lá vive a Fé do Luar, que reza pela passagem das almas até o Olho da Lua.</p><p>No centro do arquipélago fica o Echelon, uma cidade de arenito claro, cheia de afrescos e arquivos, onde moram os sábios e os sacerdotes do Conselho. Quem governa é a Dama Confessora. Nunca a vi. Os Chrysid falam dela baixinho, como quem fala de alguém que pode estar ouvindo.</p></div>
+      
       <p class="note">os Chrysid cantam para os mortos no caminho até a lua. ouvi uma dessas canções numa noite sem vento. ninguém me disse para quem era.</p>
       <section class="ficha" aria-label="Ilhas da Canção de Ninar">
         <h3>Ilhas da Canção de Ninar <small>registro nº 508</small></h3>
@@ -2652,6 +2695,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-markor"><span class="kicker">Central · onde o mundo guarda a memória</span>Markor e a Cidadela</h2>
       <div class="prose"><p>Markor é uma savana larga no Luminant Central, e no meio dela fica a Cidadela, a maior casa de saber que restou. Ali se guarda tudo o que o mundo ainda lembra, se ensina quem pode pagar, e se conta o tempo: o calendário que todo mundo usa começa na fundação dela.</p><p>A Cidadela também é a casa dos Mergulhadores, os que descem às Profundezas por pesquisa, por material ou para matar o que sobe de lá. Os aprendizes morrem muito. Os Mergulhadores Negros, os que desceram sozinhos além da primeira camada e voltaram, são poucos, e cada um é mais estranho que o outro.</p><p>Alguns Mergulhadores Negros ficaram famosos. Akira cuida dos recrutas na primeira camada, a contragosto. Carrega um sino que mata na hora quem é muito mais fraco que ele, e cada uso desse sino encurta a vida dele, por isso nunca desce mais fundo. Klaris, a Mãe das Luzes, é Canor e inventou o Gancho de Luz. Comanda as descidas à segunda camada e trata mal todo mundo. Foi ela quem mandou o Capitão Orlandeau, do Lote Podre, para Nova Kyrsa, depois de uma briga que ninguém conta direito.</p><p>O primeiro Mergulhador Negro, Deukalion Akarad, desceu com a expedição inteira e voltou subindo, sem ritual nenhum. Ao atravessar a fronteira, as almas de todos foram arrancadas dos corpos. Os aprendizes ainda falam dele como herói.</p></div>
+      
       <p class="note r">a Cidadela guarda tudo e empresta pouco. esperei onze dias por uma única folha, e me deixaram copiar só metade.</p>
       <section class="ficha alt" aria-label="Markor e a Cidadela">
         <h3>Markor e a Cidadela <small>registro nº 509</small></h3>
@@ -2666,6 +2710,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-scyphozia"><span class="kicker">Profundezas · primeira camada</span>Scyphozia e a Cidade Afogada</h2>
       <div class="prose"><p>Scyphozia parece uma caverna no fundo do mar. Bolhas sobem do chão, peixes nadam no ar, e mesmo assim dá para respirar. É para cá que vem quem morre: a alma afunda, e alguns acordam aqui, molhados e confusos, ainda com o corpo.</p><p>No meio da camada está a Cidade Afogada de Celtor, a antiga capital do povo Celtor. Afundou há séculos. A maioria diz que foi o Horror Celtoriano, uma criatura do tamanho de uma ilha. Outros juram que foi o Ministério, como oferenda a alguma coisa lá embaixo, e que a oferenda foi recusada. Os guardas Celtor ainda patrulham as ruas, presos a um juramento que os proíbe de matar os monstros da própria cidade.</p><p>No centro dela fica a Catedral do Interstício, e na Catedral, a Provação. Quem quer voltar para cima atravessa a Provação. Quem não atravessa fica.</p><p>A Provação é cuidada por Vozes. Já ouvi falar de quatro: a da Autoridade, que parece mandar nas outras; a do Sequestro, que se interessa demais por quem passa; a do Ódio e a da Inimizade. Se cinco ou mais pessoas tentam a Provação juntas, a da Inimizade se ofende e desce em pessoa. As almas dos fortes que morrem lá vão para um "Mestre lá de baixo". As dos fracos viram os Executores que guardam a cidade.</p></div>
+      
       <p class="note">fiquei uma hora escondido vendo a ronda dos Executores. eles não cansam, não conversam e não mudam o caminho.</p>
       <section class="ficha" aria-label="Scyphozia e a Cidade Afogada">
         <h3>Scyphozia e a Cidade Afogada <small>registro nº 510</small></h3>
@@ -2680,6 +2725,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-fundo"><span class="kicker">Profundezas · o que dizem</span>Abaixo de Scyphozia</h2>
       <div class="prose"><p>Do que existe abaixo da primeira camada, tenho só o que me contaram, e quem me contou estava assustado demais para contar direito. Dizem que a segunda camada é o Vendaval Eterno, um deserto de neve batido por ventos que arrastam até o tempo. A neve, me jurou um Mergulhador, são ovos de alguma coisa.</p><p>No fundo desse vendaval estaria Nova Kyrsa, uma cidade construída em cima de um deus que dorme. A terceira camada seria só calor e gêiseres, e lá vive, dizem, o homem que inventou o Flamecharm, sem envelhecer um dia.</p><p>As lendas falam em nove camadas. Também dizem que elas não estão empilhadas, e que dá para cair direto na terceira sem passar pelas outras. Prefiro não testar.</p><p>Sobre Nova Kyrsa ouvi uma história pior. Um Mergulhador Negro chamado Chaser, que era espião do Ministério, matou a própria equipe lá embaixo e tentou chegar à cidade. Nova Kyrsa fica em cima do corpo de Ethiron, e perto do deus o tempo dobra. Chaser está preso num laço: morre tentando chegar, volta, e morre de novo. Uma névoa branca controla a mente de quem fica perto demais, menos a dos que já enlouqueceram.</p><p>Uma coruja do fundo, das que comem pensamento, disse a alguém que chamar aquilo de "camadas" é coisa de gente. Para ela, as Profundezas são o espaço entre a cabeça humana e o mundo de verdade. Anoto porque é a coisa mais assustadora que já me contaram.</p></div>
+      
       <p class="note r">o Mergulhador que me falou dos ovos tinha voltado da segunda camada. tremia quando falava dela, e não deixava ninguém apagar a luz do quarto.</p>
       <section class="ficha alt" aria-label="Abaixo de Scyphozia">
         <h3>Abaixo de Scyphozia <small>registro nº 511</small></h3>
@@ -2694,6 +2740,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-deuses-afogados"><span class="kicker">Coisas que dormem</span>Os Deuses Afogados</h2>
       <div class="prose"><p>Lá embaixo dormem coisas do tamanho de montanhas, e a gente chama de Deuses Afogados por falta de coragem para chamar de outra coisa. Não são guerreiros. São desastres esperando para acontecer. Quando se mexem no sono, o mundo muda; se acordarem de vez, o mundo acaba. Venerá-los é proibido em quase todo lugar, o que quer dizer que tem gente venerando em quase todo lugar.</p><p>Conheço três nomes. <span class="term">Ethiron</span>, o Olho do Turbilhão, deus do vento e da pressão, que dorme sob Nova Kyrsa e criou um rebento para acordá-lo. O rebento foi selado antes de crescer. <span class="term">Korilfiend</span>, a Origem do Inferno, uma serpente de fogo na terceira camada, que forjou a Forja do Pecado. E <span class="term">Yun’Shul</span>, o Guardião dos Corações, que negocia almas por pedidos e, dizem, aceitou Celtor como oferenda.</p><p>Os Celestiais e os Lightborn já lutaram contra os Deuses Afogados, e perderam. Quem come um pedaço de um deus vira Deepwoken: não envelhece e entende a Música como ninguém. Por onde um Deepwoken passa, sobra ruína. Conheço três de nome. Um deles governa o maior império do mundo. Não vou escrever nenhum.</p></div>
+      
       <p class="note">conheci um homem que fez um pedido a Yun’Shul e recebeu o que pediu. três anos depois os servos vieram cobrar, e ele foi com eles sem dizer nada.</p>
       <section class="ficha" aria-label="Os Deuses Afogados">
         <h3>Os Deuses Afogados <small>registro nº 512</small></h3>
@@ -2708,6 +2755,7 @@ a.fx-btn{text-decoration:none;display:inline-block}
     <div class="spread">
       <h2 id="h-poderes"><span class="kicker">Facções</span>Quem Manda no Mar</h2>
       <div class="prose"><p>Todo mundo trabalha para alguém, deve a alguém ou foge de alguém. Anotei os nomes que mais ouvi, com o que eles querem.</p></div>
+      
       <p class="note r">toda facção desta lista já me ofereceu trabalho. aceitei de duas. não escrevo quais.</p>
       <section class="ficha alt" aria-label="Quem Manda no Mar">
         <h3>Quem Manda no Mar <small>registro nº 513</small></h3>
@@ -4033,12 +4081,14 @@ const MAPA_T = {
   '.': ['Chão', ''], g: ['Grama', ''], r: ['Terra', ''], s: ['Areia', ''], k: ['Pedra', ''], m: ['Tábuas', ''], o: ['Chão de caverna', ''],
   a: ['Água rasa', 'terreno difícil'], f: ['Água funda', 'só nadando'], l: ['Lama', 'terreno difícil'], v: ['Mato alto', 'terreno difícil'], d: ['Entulho', 'terreno difícil'],
   c: ['Mureta', 'meia cobertura'], b: ['Rocha', 'bloqueia'], p: ['Parede', 'bloqueia'], x: ['Abismo', 'quem entra cai'],
+  n: ['Neve', 'terreno difícil'], i: ['Gelo', 'terreno difícil'], e: ['Lava', 'quem entra se queima'], h: ['Terra queimada', ''], q: ['Metal', ''],
 };
-const MAPA_ORDEM = 'xfaslrogvdkmcbp';            // quem vem depois se espalha por cima de quem vem antes
-const MAPA_ORGANICO = new Set('faslrogvd');      // bordas irregulares (rocha e abismo têm desenho próprio); o resto tem borda reta
+const MAPA_ORDEM = 'xfaeslrohgvnidkqmcbp';            // quem vem depois se espalha por cima de quem vem antes
+const MAPA_ORGANICO = new Set('faeslrohgvnid');      // bordas irregulares (rocha e abismo têm desenho próprio); o resto tem borda reta
 const MAPA_BLOQ = new Set('pb');
 const VARIANTES = { g: 'G', s: 'S', o: 'O', r: 'R', k: 'K' };   // terreno → mancha que aparece por cima dele em alguns lugares                 // seguram a luz
-const MAPA_ALTO = new Set('pbc');                // fazem sombra no chão
+const MAPA_ALTO = new Set('pbc');
+const MAPA_DENTRO = new Set(['caverna', 'gruta', 'santuario', 'laboratorio']);   // lugares fechados: sem sol, sem mato nas frestas                // fazem sombra no chão
 const MAPA_AGUA = new Set('af');
 const MAPA_PROPS = {
   arvore: ['Árvore', 'meia cobertura'], palmeira: ['Palmeira', 'meia cobertura'], arbusto: ['Arbusto', 'terreno difícil'], rocha: ['Rocha', 'meia cobertura'],
@@ -4048,19 +4098,24 @@ const MAPA_PROPS = {
   braseiro: ['Braseiro', 'quem entra se queima'], chama: ['Chama azul', 'quem entra se queima'], tocha: ['Tocha', ''], altar: ['Altar', 'meia cobertura'],
   estatua: ['Estátua', 'cobertura total'], estalagmite: ['Estalagmite', 'meia cobertura'], bau: ['Baú', 'meia cobertura'], teia: ['Teia', 'terreno difícil'],
   runas: ['Círculo de runas', ''], escada: ['Escada', ''],
+  farol: ['Farol', 'bloqueia'], tenda: ['Tenda', 'bloqueia a visão'], estandarte: ['Estandarte', ''], barricada: ['Barricada', 'meia cobertura'], barraca: ['Barraca', 'meia cobertura'],
+  maquina: ['Máquina', 'meia cobertura'], tanque: ['Tanque de vidro', 'meia cobertura'], maca: ['Maca', 'meia cobertura'], estante: ['Estante', 'meia cobertura'], guardasol: ['Guarda-sol', ''],
+  escotilha: ['Escotilha', ''], cratera: ['Cratera', 'terreno difícil'], fulgurito: ['Vidro de raio', 'meia cobertura'], lamina: ['Lâmina gigante', 'meia cobertura'],
   pinheiro: ['Pinheiro', 'meia cobertura'], toco: ['Toco', 'meia cobertura'], juncos: ['Juncos', 'terreno difícil'], nenufar: ['Vitórias-régias', ''],
   vaso: ['Vasos', 'meia cobertura'], mesa: ['Mesa', 'meia cobertura'], saco: ['Sacos', 'meia cobertura'], ancora: ['Âncora', ''],
   lanterna: ['Lanterna', ''], coluna: ['Coluna caída', 'meia cobertura'], entulho: ['Pilha de entulho', 'terreno difícil'], rede: ['Rede de pesca', 'terreno difícil'],
   fungo: ['Fungo gigante', 'cobertura total'],
 };
 // objetos maiores que um quadrado: largura × altura, contando do quadrado de cima à esquerda
-const PROP_TAM = { runas: [4, 4], escada: [2, 3], altar: [2, 1], coluna: [2, 1], rede: [2, 2] };
+const PROP_TAM = { runas: [4, 4], escada: [2, 3], altar: [2, 1], coluna: [2, 1], rede: [2, 2], farol: [3, 3], tenda: [2, 2], barricada: [2, 1], barraca: [2, 1], maquina: [2, 1], maca: [1, 2], estante: [2, 1], cratera: [2, 2], lamina: [1, 3] };
 const propTam = t => PROP_TAM[t] || [1, 1];
 // luz que cada objeto solta: alcance em quadrados, cor e força
 const LUZES = { fogueira: [6, [255, 160, 80], 1], braseiro: [5.5, [255, 118, 52], 1], chama: [5.5, [70, 228, 214], 1], tocha: [4.5, [255, 172, 92], .9],
-  cristal: [3.6, [96, 206, 255], .85], cogumelo: [2.6, [178, 128, 255], .7], runas: [3.4, [230, 60, 60], .55], lanterna: [4.2, [255, 192, 112], .85], fungo: [3.4, [110, 160, 255], .8] };
+  cristal: [3.6, [96, 206, 255], .85], cogumelo: [2.6, [178, 128, 255], .7], runas: [3.4, [230, 60, 60], .55], lanterna: [4.2, [255, 192, 112], .85], fungo: [3.4, [110, 160, 255], .8], farol: [7, [255, 232, 170], .7], tanque: [3, [80, 230, 200], .75], maquina: [2.2, [90, 240, 170], .5], cratera: [2.4, [170, 140, 255], .45], fulgurito: [2.2, [180, 160, 255], .5] };
 const MAPA_LUZ = { dia: ['Dia', 0, [0, 0, 0]], entardecer: ['Entardecer', .32, [46, 20, 58]], noite: ['Noite', .58, [6, 12, 36]], escuro: ['Escuro', .74, [5, 8, 24]] };
-const MAPA_BIOMAS = { praia: ['Praia', 's', 'dia'], floresta: ['Floresta', 'g', 'dia'], cais: ['Cais', 'f', 'entardecer'], ruinas: ['Ruínas', 'g', 'dia'], caverna: ['Caverna', 'o', 'escuro'], gruta: ['Gruta luminosa', 'o', 'escuro'], santuario: ['Santuário', 'x', 'escuro'] };
+const MAPA_BIOMAS = { praia: ['Praia', 's', 'dia'], floresta: ['Floresta', 'g', 'dia'], cais: ['Cais', 'f', 'entardecer'], ruinas: ['Ruínas', 'g', 'dia'], caverna: ['Caverna', 'o', 'escuro'], gruta: ['Gruta luminosa', 'o', 'escuro'], santuario: ['Santuário', 'x', 'escuro'],
+  // só para os lugares prontos do mundo (não têm gerador)
+  farol: ['Farol', 'f', 'noite', 1], vetrheim: ['Vetrheim', 'n', 'entardecer', 1], ermos: ['Ermos do Trovão', 'h', 'entardecer', 1], climatica: ['Climática', 'r', 'entardecer', 1], laboratorio: ['Laboratório', 'q', 'escuro', 1] };
 
 function mapaRng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const mapaHash = (x, y, k = 0) => { const s = Math.sin(x * 127.1 + y * 311.7 + k * 74.7) * 43758.5453; return s - Math.floor(s); };
@@ -4314,6 +4369,57 @@ function gerarTextura(tipo) {
       for (let i = 0; i < 40; i++) { let x = r() * S, y = r() * S, a = r() * 6.3; g.strokeStyle = 'rgba(15,15,15,.55)'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 6; k++) { a += (r() - .5) * 1.2; x += Math.cos(a) * 9; y += Math.sin(a) * 9; g.lineTo(x, y); } g.stroke(); }
       break;
     }
+    // ---------- Kósmos ----------
+    case 'n': {
+      baseRuido(g, r, ['#d6e0ea', '#e4ebf3', '#f2f6fa', '#dce5ee'], 4, .7, .3);
+      // marcas do vento na neve: ondas compridas com o lado de baixo azulado
+      const ond = fbmTile(r), forca = fbmTile(r);
+      mexe(g, (d, o, x, y) => { const f = .3 + lisa(.4, .65, forca(x, y)) * .7, ph = 6.2832 * (x / S + 9 * y / S) + (ond(x, y) - .5) * 16, s = Math.sin(ph); luzPx(d, o, 1 + Math.cos(ph) * .025 * f); if (s < -.86) { d[o] -= 12 * f; d[o + 1] -= 6 * f; } });
+      manchas(30, 10, 30, 'rgba(110,140,190,.12)');
+      for (let i = 0; i < 900; i++) { g.fillStyle = r() < .7 ? 'rgba(255,255,255,.85)' : 'rgba(130,160,205,.35)'; g.fillRect(r() * S, r() * S, 1.2, 1.2); }
+      break;
+    }
+    case 'i': {
+      baseRuido(g, r, ['#78aec8', '#92c4da', '#b0dbea', '#86bbd2'], 6, 1, .3);
+      const W = worley(r, 6), W2 = worley(r, 14);
+      mexe(g, (d, o, x, y, i) => { const a = W.E[i] < 1.6 ? .55 : W2.E[i] < 1 ? .22 : 0; if (a) for (let c = 0; c < 3; c++) d[o + c] += (255 - d[o + c]) * a; });
+      linhas(50, ['rgba(255,255,255,.55)'], [20, 60], [-.6, -.3], 1.4, .5);
+      for (let i = 0; i < 90; i++) { const x = r() * S, y = r() * S, rr = .8 + r() * 2.2; emVolta(g, x, y, 4, h => { h.strokeStyle = 'rgba(255,255,255,.45)'; h.lineWidth = .8; h.beginPath(); h.arc(0, 0, rr, 0, 7); h.stroke(); }); }
+      break;
+    }
+    case 'e': {
+      baseRuido(g, r, ['#e8380c', '#ff6a14', '#ffa62a', '#ff8a1e'], 10, 1.2);
+      // crosta escura em placas; as fendas entre elas brilham
+      // onde o ruído diz "quente", a lava corre solta; no resto, crosta escura com as fendas acesas
+      const W = worley(r, 9), quente = fbmTile(r), fio = fbmTile(r);
+      mexe(g, (d, o, x, y, i) => { const h = lisa(.5, .66, quente(x, y)), e = W.E[i], crosta = (1 - h) * lisa(1.6, 3.2, e); if (crosta > 0) { const q = 1 - crosta * .82; d[o] = d[o] * q + 30 * crosta; d[o + 1] = d[o + 1] * q + 14 * crosta; d[o + 2] = d[o + 2] * q + 12 * crosta; } else { const w = Math.sin((x + y) * .09 + fio(x, y) * 12); if (w > .6) { d[o + 1] = Math.min(255, d[o + 1] + 50); d[o + 2] = Math.min(255, d[o + 2] + 40); } } });
+      break;
+    }
+    case 'h': {
+      baseRuido(g, r, ['#1e1a20', '#2b2630', '#3a3240', '#25202a'], 12, 1.1, 1.2);
+      const W = worley(r, 12);
+      mexe(g, (d, o, x, y, i) => { if (W.E[i] < 1.4) luzPx(d, o, .55); });
+      manchas(40, 6, 18, 'rgba(0,0,0,.25)');
+      pedrinhas(g, r, 110, 1.2, 3.5, ['#4a4450', '#5a5262', '#38323e']);
+      // vidro de raio: riscos que se dividem, roxos por fora e quase brancos no meio
+      for (let i = 0; i < 16; i++) { const x = r() * S, y = r() * S, ramos = []; const anda = (px, py, a, n, w) => { const pts = [[px, py]]; for (let k2 = 0; k2 < n; k2++) { a += (r() - .5) * 1.1; px += Math.cos(a) * (5 + r() * 6); py += Math.sin(a) * (5 + r() * 6); pts.push([px, py]); if (r() < .25 && w > .8) anda(px, py, a + (r() < .5 ? .9 : -.9), Math.floor(n / 2), w * .6); } ramos.push([pts, w]); }; anda(0, 0, r() * 6.3, 7, 1.6);
+        emVolta(g, x, y, 90, h => { h.lineCap = 'round'; h.lineJoin = 'round'; for (const [pts, w] of ramos) for (const [cor, lw] of [['rgba(150,120,255,.35)', w * 3], ['rgba(225,215,255,.75)', w]]) { h.strokeStyle = cor; h.lineWidth = lw; h.beginPath(); pts.forEach(([a, b], k2) => k2 ? h.lineTo(a, b) : h.moveTo(a, b)); h.stroke(); } }); }
+      break;
+    }
+    case 'q': {
+      g.fillStyle = '#121518'; g.fillRect(0, 0, S, S);
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+        const px = x * 64, py = y * 64, tom = 56 + r() * 14, tipo = r(), gr = g.createLinearGradient(px, py, px + 64, py + 64);
+        gr.addColorStop(0, `rgb(${tom + 12},${tom + 16},${tom + 22})`); gr.addColorStop(1, `rgb(${tom - 8},${tom - 4},${tom + 2})`); g.fillStyle = gr; g.fillRect(px + 2, py + 2, 60, 60);
+        if (tipo < .3) { g.strokeStyle = 'rgba(0,0,0,.28)'; g.lineWidth = 2; for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) { const cx = px + 8 + i * 9.6, cy = py + 8 + j * 9.6, a = (i + j) % 2 ? .6 : -.6; g.beginPath(); g.moveTo(cx - Math.cos(a) * 3, cy - Math.sin(a) * 3); g.lineTo(cx + Math.cos(a) * 3, cy + Math.sin(a) * 3); g.stroke(); } }
+        else if (tipo < .42) { g.fillStyle = '#0a0c0e'; for (let i = 0; i < 6; i++) g.fillRect(px + 12, py + 10 + i * 8, 40, 4); }
+        g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(px + 3, py + 61); g.lineTo(px + 3, py + 3); g.lineTo(px + 61, py + 3); g.stroke();
+        g.strokeStyle = 'rgba(0,0,0,.45)'; g.beginPath(); g.moveTo(px + 61, py + 3); g.lineTo(px + 61, py + 61); g.lineTo(px + 3, py + 61); g.stroke();
+        for (const [ox, oy] of [[7, 7], [57, 7], [7, 57], [57, 57]]) { g.fillStyle = '#2a2e34'; g.beginPath(); g.arc(px + ox, py + oy, 2.2, 0, 7); g.fill(); g.fillStyle = 'rgba(255,255,255,.3)'; g.fillRect(px + ox - 1, py + oy - 1.4, 1, 1); }
+      }
+      sujeira(g, r, .3); manchas(14, 8, 24, 'rgba(110,60,20,.16)');
+      break;
+    }
     // variantes: manchas grandes por cima do terreno principal, para o chão não parecer repetido
     case 'G':
       baseRuido(g, r, ['#4a5526', '#5f6c34', '#76803f', '#55602c'], 12, 1, .4);
@@ -4360,7 +4466,7 @@ function textura(tipo, g) {
 /* ---------- o mapa inteiro ---------- */
 // Cada terreno vira uma máscara suavizada com ruído (bordas de verdade, sem cara de quadradinho).
 // Rocha, abismo, água funda e a sombra de contato usam um campo de distância: quanto mais para dentro, mais fundo.
-const MASK_R = 16;
+let MASK_R = 16;   // pontos de máscara por quadrado; menos quando o mapa é grande e a tela mostra ele pequeno
 const lisa = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 function ruidoBorda(u, v) {
   const x0 = Math.floor(u), y0 = Math.floor(v), tx = u - x0, ty = v - y0, sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
@@ -4369,7 +4475,7 @@ function ruidoBorda(u, v) {
 }
 // ruído das bordas, calculado uma vez por desenho e reaproveitado por todas as camadas
 function ruidoDaRegiao(reg) {
-  const R = MASK_R, w = (reg.x1 - reg.x0 + 1) * R, h = (reg.y1 - reg.y0 + 1) * R, N = new Float32Array(w * h);
+  const R = Math.max(6, MASK_R >> 1), w = (reg.x1 - reg.x0 + 1) * R, h = (reg.y1 - reg.y0 + 1) * R, N = new Float32Array(w * h);
   for (let py = 0; py < h; py++) { const v = reg.y0 + (py + .5) / R; for (let px = 0; px < w; px++) { const u = reg.x0 + (px + .5) / R; N[py * w + px] = (ruidoBorda(u * .55 + 2.3, v * .55 + 7.1) - .5) * .7 + (ruidoBorda(u * 1.7 + .5, v * 1.7 + .5) - .5) * .42 + (ruidoBorda(u * 4.1, v * 4.1) - .5) * .18; } }
   // lido com interpolação: com zoom, as bordas finas (espuma, brilho da margem) não ficam em degrau
   return (u, v) => { const fx = Math.min(w - 1.001, Math.max(0, (u - reg.x0) * R - .5)), fy = Math.min(h - 1.001, Math.max(0, (v - reg.y0) * R - .5)), x0 = fx | 0, y0 = fy | 0, tx = fx - x0, ty = fy - y0, i = y0 * w + x0, a = N[i] + (N[i + 1] - N[i]) * tx, b = N[i + w] + (N[i + w + 1] - N[i + w]) * tx; return a + (b - a) * ty; };
@@ -4459,8 +4565,12 @@ const PALETA = {
   padrao: { sombra: [14, 16, 34], fundo: [18, 18, 30], risco: [9, 10, 18], borda: [205, 208, 228], fundoAgua: [4, 20, 38], beira: [190, 235, 235] },
   gruta: { sombra: [8, 10, 40], fundo: [12, 14, 48], risco: [5, 6, 22], borda: [150, 200, 255], fundoAgua: [4, 10, 44], beira: [110, 230, 250] },
   santuario: { sombra: [22, 8, 22], fundo: [26, 14, 28], risco: [10, 5, 12], borda: [230, 185, 170], fundoAgua: [10, 14, 30], beira: [190, 220, 230] },
+  vetrheim: { sombra: [30, 44, 80], fundo: [24, 30, 50], risco: [10, 14, 26], borda: [220, 235, 255], fundoAgua: [8, 26, 50], beira: [210, 240, 255] },
+  ermos: { sombra: [24, 12, 40], fundo: [22, 16, 34], risco: [10, 6, 18], borda: [200, 185, 255], fundoAgua: [10, 14, 40], beira: [190, 200, 240] },
+  laboratorio: { sombra: [8, 16, 22], fundo: [12, 18, 24], risco: [6, 8, 10], borda: [170, 210, 220], fundoAgua: [4, 20, 30], beira: [150, 230, 220] },
 };
 function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
+  MASK_R = k >= 1.4 ? 16 : k >= 1 ? 12 : 10;
   const { cols, linhas, terreno } = t, Q = TQ, bioma = cena.bioma && MAPA_BIOMAS[cena.bioma] ? cena.bioma : '';
   const chao = bioma ? MAPA_BIOMAS[bioma][1] : '', pal = PALETA[bioma] || PALETA.padrao;
   const reg = parte ? { x0: Math.max(0, parte.x0), y0: Math.max(0, parte.y0), x1: Math.min(cols - 1, parte.x1), y1: Math.min(linhas - 1, parte.y1) } : { x0: 0, y0: 0, x1: cols - 1, y1: linhas - 1 };
@@ -4561,11 +4671,11 @@ function desenharMapa(g, t, cena, W, H, k, rapido, parte) {
     }), 'screen');
   }
   // cor do lugar e bordas escurecidas
-  const tinta = { gruta: 'rgba(70,100,255,.32)', santuario: 'rgba(150,60,110,.18)', caverna: 'rgba(80,70,140,.18)' }[bioma];
+  const tinta = { gruta: 'rgba(70,100,255,.32)', santuario: 'rgba(150,60,110,.18)', caverna: 'rgba(80,70,140,.18)', vetrheim: 'rgba(120,160,255,.2)', ermos: 'rgba(120,80,220,.22)', laboratorio: 'rgba(60,150,170,.16)', climatica: 'rgba(200,110,70,.14)', farol: 'rgba(60,90,200,.16)' }[bioma];
   if (tinta) { g.save(); g.globalCompositeOperation = 'soft-light'; g.fillStyle = tinta; g.fillRect(0, 0, W, H); g.restore(); }
   if (bioma === 'praia') { g.save(); g.globalCompositeOperation = 'soft-light'; const lg = g.createLinearGradient(0, 0, W, H); lg.addColorStop(0, 'rgba(255,225,170,.45)'); lg.addColorStop(1, 'rgba(255,225,170,0)'); g.fillStyle = lg; g.fillRect(0, 0, W, H); g.restore(); }
   const vg = g.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.hypot(W, H) * .6);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(${pal.sombra.join(',')},${['caverna', 'gruta', 'santuario'].includes(bioma) ? .7 : .38})`); g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(${pal.sombra.join(',')},${MAPA_DENTRO.has(bioma) ? .7 : .38})`); g.fillStyle = vg; g.fillRect(0, 0, W, H);
 }
 // manchas: grama seca, areia escura, musgo na caverna, folhas na terra, musgo nas lajes, em lugares sorteados pelo ruído largo
 function variacao(g, k, reg, tipos, cols, linhas, T, tw, bioma) {
@@ -4614,7 +4724,7 @@ function desenharAbismo(g, k, reg, tipos, cols, linhas, nz, pal, tw) {
 }
 // detalhes espalhados: pedrinhas, rachaduras, musgo, conchas, folhas… mais perto das paredes, menos no meio
 function desenharDetalhes(g, tipos, cols, linhas, reg, bioma, dBloq, emissivos) {
-  const Q = TQ, tt = (x, y) => x < 0 || y < 0 || x >= cols || y >= linhas ? null : tipos[y * cols + x], aberto = !['caverna', 'gruta', 'santuario'].includes(bioma);
+  const Q = TQ, tt = (x, y) => x < 0 || y < 0 || x >= cols || y >= linhas ? null : tipos[y * cols + x], aberto = !MAPA_DENTRO.has(bioma);
   // pegada: o bico aponta para onde a pessoa ia; a borda de baixo pega luz como um buraquinho
   const pegada = (px, py, a, cor, luz) => { g.save(); g.translate(px, py); g.rotate(a + Math.PI / 2); g.fillStyle = cor; g.beginPath(); g.ellipse(0, -1.7, 2.5, 3.7, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(0, 3.9, 1.9, 2.1, 0, 0, 7); g.fill(); if (luz) { g.strokeStyle = luz; g.lineWidth = 1; g.beginPath(); g.ellipse(.6, -1.2, 2.5, 3.7, 0, -.6, 1.4); g.stroke(); g.beginPath(); g.ellipse(.5, 4.1, 1.9, 2.1, 0, -.6, 1.4); g.stroke(); } g.restore(); };
   const poca = (px, py, rr, c1, c2, borda) => { g.save(); g.translate(px, py); g.rotate(mapaHash(px, py, 3) * 3); g.scale(1, .62); g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.arc(0, 0, rr + 1.6, 0, 7); g.fill(); const gr = g.createRadialGradient(-rr * .3, -rr * .4, 0, 0, 0, rr); gr.addColorStop(0, c1); gr.addColorStop(1, c2); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rr, 0, 7); g.fill(); g.strokeStyle = borda; g.lineWidth = 1.2; g.beginPath(); g.arc(0, 0, rr - 1, 3.4, 5.3); g.stroke(); g.restore(); };
@@ -4685,7 +4795,7 @@ function desenharBordas(g, tipos, cols, linhas, reg, bioma, tw, emissivos, veios
   };
   const grama = cob(c => c === 'g' || c === 'v'), agua = cob(c => MAPA_AGUA.has(c)), rocha = cob(c => c === 'b');
   const fora = (f, u, v) => { const gx = f(u + .08, v) - f(u - .08, v), gy = f(u, v + .08) - f(u, v - .08); return Math.atan2(-gy, -gx); };
-  const dia = !['caverna', 'gruta', 'santuario'].includes(bioma), doce = bioma === 'floresta' || bioma === 'ruinas';
+  const dia = !MAPA_DENTRO.has(bioma), doce = bioma === 'floresta' || bioma === 'ruinas';
   const lasca = (r, px, py, rr) => { g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(px + 1.2, py + 1.8, rr, rr * .8, 0, 0, 7); g.fill(); g.fillStyle = ['#6a6672', '#55515c', '#7c7884', '#8a8478'][Math.floor(r() * 4)]; g.beginPath(); g.moveTo(px - rr, py); g.lineTo(px - rr * .2, py - rr * .9); g.lineTo(px + rr, py - rr * .2); g.lineTo(px + rr * .4, py + rr * .8); g.closePath(); g.fill(); g.fillStyle = 'rgba(255,255,255,.16)'; g.beginPath(); g.moveTo(px - rr, py); g.lineTo(px - rr * .2, py - rr * .9); g.lineTo(px, py - rr * .1); g.closePath(); g.fill(); };
   for (let y = reg.y0; y <= reg.y1; y++) for (let x = reg.x0; x <= reg.x1; x++) {
     const t = T(x, y), r = mapaRng(Math.floor(mapaHash(x, y, 57) * 4e9));
@@ -4765,8 +4875,9 @@ function desenharLuz(g, cena, tipos, cols, linhas, W, H, bioma, emissivos, dBloq
   const chave = cena.luz && MAPA_LUZ[cena.luz] ? cena.luz : (bioma ? MAPA_BIOMAS[bioma][2] : 'dia');
   const [, escuro, amb] = MAPA_LUZ[chave];
   const fontes = [];
-  for (const p of cena.props || []) { const L = LUZES[p.t]; if (!L || (!escuro && (p.t === 'cogumelo' || p.t === 'cristal' || p.t === 'fungo'))) continue; const [w, h] = propTam(p.t); fontes.push({ x: p.x + w / 2, y: p.y + h / 2, r: L[0], c: L[1], f: L[2], sombra: true, nucleo: p.t !== 'runas' }); }
+  for (const p of cena.props || []) { const L = LUZES[p.t]; if (!L || (!escuro && (p.t === 'cogumelo' || p.t === 'cristal' || p.t === 'fungo'))) continue; const [w, h] = propTam(p.t); fontes.push({ x: p.x + w / 2, y: p.y + h / 2, r: L[0], c: L[1], f: L[2], sombra: p.t !== 'farol', nucleo: p.t !== 'runas' && p.t !== 'farol' }); }
   if (bioma === 'gruta') for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) if (MAPA_AGUA.has(tipos[y * cols + x]) && (x + y) % 2 === 0) fontes.push({ x: x + .5, y: y + .5, r: 2.2, c: [60, 210, 240], f: .34, sombra: false });
+  for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) if (tipos[y * cols + x] === 'e' && (x + y) % 2 === 0) fontes.push({ x: x + .5, y: y + .5, r: 2.8, c: [255, 120, 40], f: .55, sombra: false });
   const LR = 4, w = cols * LR, h = linhas * LR, I = new Float32Array(w * h), CR = new Float32Array(w * h), CG = new Float32Array(w * h), CB = new Float32Array(w * h);
   const bloq = (x, y) => MAPA_BLOQ.has(tipos[y * cols + x]);
   // raio de luz andando de quarto em quarto de quadrado; o quadrado de saída e o de chegada não contam (a parede iluminada é a própria chegada)
@@ -4848,8 +4959,10 @@ function chamas(g, cx, cy, R, cores, semente) {
     for (let i = 0; i < 7; i++) { const a = semente * .7 + i / 7 * 6.283, L = R * q * (.75 + mapaHash(semente, i, 3) * .5), w = R * .28 * q, px = Math.cos(a + 1.57) * w, py = Math.sin(a + 1.57) * w; g.moveTo(cx - px, cy - py); g.quadraticCurveTo(cx + Math.cos(a - .3) * L * .6, cy + Math.sin(a - .3) * L * .6, cx + Math.cos(a) * L, cy + Math.sin(a) * L); g.quadraticCurveTo(cx + Math.cos(a + .3) * L * .6, cy + Math.sin(a + .3) * L * .6, cx + px, cy + py); }
     g.fill(); g.beginPath(); g.arc(cx, cy, R * .38 * q, 0, 7); g.fill(); });
 }
+// neve acumulada no lado de cima das copas e das pedras
+function neveEm(g, cx, cy, R, r) { for (let i = 0; i < 9; i++) { const a = -2.4 + (r() - .5) * 1.6, d = R * (.2 + r() * .55), x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d, rr = R * (.1 + r() * .12); g.fillStyle = 'rgba(70,100,150,.35)'; g.beginPath(); g.ellipse(x + 1, y + 1.5, rr, rr * .7, a, 0, 7); g.fill(); g.fillStyle = '#f4f8fc'; g.beginPath(); g.ellipse(x, y, rr, rr * .7, a, 0, 7); g.fill(); } }
 function desenharObjeto(g, p, k, bioma) {
-  const Q = TQ, r = mapaRng((p.v >>> 0) * 2654435761 + 7), fixo = PROP_TAM[p.t] || p.t === 'tocha' || p.t === 'estatua' || p.t === 'lanterna', cx = (p.x + .5 + (fixo ? 0 : (r() - .5) * .18)) * Q, cy = (p.y + .5 + (fixo ? 0 : (r() - .5) * .18)) * Q, rot = r() * Math.PI * 2, esc = .85 + r() * .3;
+  const Q = TQ, r = mapaRng((p.v >>> 0) * 2654435761 + 7), fixo = PROP_TAM[p.t] || p.t === 'tocha' || p.t === 'estatua' || p.t === 'lanterna' || p.t === 'escotilha', cx = (p.x + .5 + (fixo ? 0 : (r() - .5) * .18)) * Q, cy = (p.y + .5 + (fixo ? 0 : (r() - .5) * .18)) * Q, rot = r() * Math.PI * 2, esc = .85 + r() * .3;
   g.save();
   switch (p.t) {
     case 'arvore': {
@@ -4876,6 +4989,7 @@ function desenharObjeto(g, p, k, bioma) {
         }
       }
       bola(g, cx, cy, R * .08, '#7a5a34', '#3a2614');
+      if (bioma === 'vetrheim' || bioma === 'climatica') neveEm(g, cx, cy, R, r);
       break;
     }
     case 'toco': {
@@ -4977,8 +5091,9 @@ function desenharObjeto(g, p, k, bioma) {
       break;
     }
     case 'rocha': {
-      const cores = ['caverna', 'gruta', 'santuario'].includes(bioma) ? PEDRA.escuro : bioma === 'praia' ? PEDRA.praia : PEDRA.padrao;
+      const cores = MAPA_DENTRO.has(bioma) ? PEDRA.escuro : bioma === 'praia' ? PEDRA.praia : PEDRA.padrao;
       pedraFacetada(g, cx, cy, Q * .44 * esc, r, rot, cores, bioma === 'floresta' || bioma === 'ruinas' || (bioma === 'praia' && r() < .3));
+      if (bioma === 'vetrheim') neveEm(g, cx - Q * .06, cy - Q * .08, Q * .32, r);
       break;
     }
     case 'caixote': {
@@ -5062,7 +5177,7 @@ function desenharObjeto(g, p, k, bioma) {
       break;
     }
     case 'cogumelo': {
-      const n = 3 + Math.floor(r() * 3), brilho = ['caverna', 'gruta', 'santuario'].includes(bioma) || r() < .3;
+      const n = 3 + Math.floor(r() * 3), brilho = MAPA_DENTRO.has(bioma) || r() < .3;
       const tons = brilho ? ['#e6d4ff', '#8a5ae0', '#3e2280'] : r() < .5 ? ['#ffb08a', '#d2442c', '#6a1a10'] : ['#f2dcb0', '#b88a4a', '#5a3a18'];
       const cs = Array.from({ length: n }, () => [cx + (r() - .5) * Q * .6, cy + (r() - .5) * Q * .6, Q * (.07 + r() * .09)]).sort((a, b) => a[2] - b[2]);
       for (const [x, y, R] of cs) { sombraOval(g, x + 2.5, y + 3.5, R * 1.3, R, .4); g.fillStyle = TINTA; g.beginPath(); g.arc(x, y, R + 1.5, 0, 7); g.fill(); const gr = g.createRadialGradient(x - R * .35, y - R * .4, 0, x, y, R); gr.addColorStop(0, tons[0]); gr.addColorStop(.5, tons[1]); gr.addColorStop(1, tons[2]); g.fillStyle = gr; g.beginPath(); g.arc(x, y, R, 0, 7); g.fill();
@@ -5192,6 +5307,168 @@ function desenharObjeto(g, p, k, bioma) {
       const n = 9; for (let i = 0; i < n; i++) { const y = -h / 2 + i * h / n, luz = .45 + (i / n) * .55; g.fillStyle = `rgb(${Math.round(150 * luz)},${Math.round(144 * luz)},${Math.round(156 * luz)})`; g.fillRect(-w / 2 + 6, y, w - 12, h / n - 3); g.fillStyle = 'rgba(10,8,14,.55)'; g.fillRect(-w / 2 + 6, y + h / n - 3, w - 12, 3); }
       g.fillStyle = '#2b2830'; g.fillRect(-w / 2, -h / 2, 6, h); g.fillRect(w / 2 - 6, -h / 2, 6, h);
       g.strokeStyle = 'rgba(9,8,14,.9)'; g.lineWidth = 2.4; g.strokeRect(-w / 2, -h / 2, w, h);
+      break;
+    }
+    // ---------- Kósmos ----------
+    case 'farol': {
+      const ox = (p.x + 1.5) * Q, oy = (p.y + 1.5) * Q, R = Q * 1.25;
+      // facho de luz girando para um lado
+      const fa = rot, fg = g.createRadialGradient(ox, oy, R * .3, ox, oy, Q * 7); fg.addColorStop(0, 'rgba(255,240,190,.5)'); fg.addColorStop(1, 'rgba(255,240,190,0)'); g.fillStyle = fg; g.beginPath(); g.moveTo(ox, oy); g.arc(ox, oy, Q * 7, fa - .22, fa + .22); g.closePath(); g.fill();
+      sombraOval(g, ox + Q * .5, oy + Q * .7, R * 1.4, R * 1.1, .5);
+      g.fillStyle = TINTA; g.beginPath(); g.arc(ox, oy, R + 2, 0, 7); g.fill();
+      const gb = g.createRadialGradient(ox - R * .3, oy - R * .35, 0, ox, oy, R); gb.addColorStop(0, '#bab2a4'); gb.addColorStop(1, '#5e574e'); g.fillStyle = gb; g.beginPath(); g.arc(ox, oy, R, 0, 7); g.fill();
+      // anéis de pedra e juntas
+      g.strokeStyle = 'rgba(30,26,22,.55)'; g.lineWidth = 1.1; for (const q of [.86, .7, .55]) { g.beginPath(); g.arc(ox, oy, R * q, 0, 7); g.stroke(); }
+      for (let i = 0; i < 24; i++) { const a = i / 24 * 6.283 + (i % 2) * .13, q0 = i % 2 ? .7 : .86; g.beginPath(); g.moveTo(ox + Math.cos(a) * R * q0, oy + Math.sin(a) * R * q0); g.lineTo(ox + Math.cos(a) * R * (q0 + .14 + (q0 > .8 ? 0 : .02)), oy + Math.sin(a) * R * (q0 + .14)); g.stroke(); }
+      // musgo velho cobrindo a pedra
+      for (let i = 0; i < 26; i++) { const a = r() * 6.3, d = R * (.55 + r() * .45), mr = 3 + r() * 6; g.fillStyle = ['#4e7a2a', '#6a9636', '#3c6222'][i % 3]; g.beginPath(); g.arc(ox + Math.cos(a) * d, oy + Math.sin(a) * d, mr, 0, 7); g.fill(); if (r() < .4) { g.fillStyle = 'rgba(210,245,150,.45)'; g.beginPath(); g.arc(ox + Math.cos(a) * d - mr * .3, oy + Math.sin(a) * d - mr * .3, mr * .4, 0, 7); g.fill(); } }
+      // sala da lanterna: grade, vidro e a chama
+      g.fillStyle = TINTA; g.beginPath(); for (let i = 0; i < 8; i++) { const a = i / 8 * 6.283 + .39; g.lineTo(ox + Math.cos(a) * R * .5, oy + Math.sin(a) * R * .5); } g.closePath(); g.fill();
+      g.fillStyle = '#3a3836'; g.beginPath(); for (let i = 0; i < 8; i++) { const a = i / 8 * 6.283 + .39; g.lineTo(ox + Math.cos(a) * R * .44, oy + Math.sin(a) * R * .44); } g.closePath(); g.fill();
+      const fl = g.createRadialGradient(ox, oy, 0, ox, oy, R * .38); fl.addColorStop(0, '#fffbe6'); fl.addColorStop(.5, '#ffd26a'); fl.addColorStop(1, '#c87a1e'); g.fillStyle = fl; g.beginPath(); g.arc(ox, oy, R * .36, 0, 7); g.fill();
+      g.strokeStyle = 'rgba(40,36,30,.8)'; g.lineWidth = 1.4; for (let i = 0; i < 8; i++) { const a = i / 8 * 6.283 + .39; g.beginPath(); g.moveTo(ox + Math.cos(a) * R * .2, oy + Math.sin(a) * R * .2); g.lineTo(ox + Math.cos(a) * R * .44, oy + Math.sin(a) * R * .44); g.stroke(); }
+      g.strokeStyle = TINTA; g.lineWidth = 2.4; g.beginPath(); g.arc(ox, oy, R * .62, 0, 7); g.stroke(); g.strokeStyle = '#8a8070'; g.lineWidth = 1; g.stroke();
+      break;
+    }
+    case 'tenda': {
+      const x0 = p.x * Q + 5, y0 = p.y * Q + 5, L = Q * 2 - 10, c2 = x0 + L / 2, cy2 = y0 + L / 2, cor = bioma === 'vetrheim' ? ['#8a3a2a', '#b25038', '#5a2218', '#6e2e20'] : ['#b8a07a', '#d8c49c', '#8a7452', '#a08a64'];
+      g.fillStyle = 'rgba(0,0,0,.32)'; g.fillRect(x0 + 6, y0 + 9, L, L);
+      g.strokeStyle = 'rgba(60,40,20,.8)'; g.lineWidth = 1; for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { g.beginPath(); g.moveTo(c2 + sx * L / 2, cy2 + sy * L / 2); g.lineTo(c2 + sx * (L / 2 + 8), cy2 + sy * (L / 2 + 8)); g.stroke(); bolaT(g, c2 + sx * (L / 2 + 8), cy2 + sy * (L / 2 + 8), 1.8, '#8a6a44', '#3a2614', 1); }
+      g.lineJoin = 'round'; g.strokeStyle = TINTA; g.lineWidth = 3.4; g.strokeRect(x0, y0, L, L);
+      const faces = [[[x0, y0], [x0 + L, y0], cor[1]], [[x0 + L, y0], [x0 + L, y0 + L], cor[0]], [[x0 + L, y0 + L], [x0, y0 + L], cor[2]], [[x0, y0 + L], [x0, y0], cor[3]]];
+      for (const [[ax, ay], [bx, by], c] of faces) { g.fillStyle = c; g.beginPath(); g.moveTo(ax, ay); g.lineTo(bx, by); g.lineTo(c2, cy2); g.closePath(); g.fill(); }
+      g.strokeStyle = 'rgba(20,12,6,.55)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + L, y0 + L); g.moveTo(x0 + L, y0); g.lineTo(x0, y0 + L); g.stroke();
+      g.strokeStyle = 'rgba(255,255,255,.12)'; for (let i = 1; i < 4; i++) { const q = i / 4; g.beginPath(); g.moveTo(x0 + L * q * .5, y0 + L * q * .5); g.lineTo(x0 + L - L * q * .5, y0 + L * q * .5); g.stroke(); }
+      if (bioma === 'vetrheim') { g.fillStyle = 'rgba(240,246,252,.85)'; for (let i = 0; i < 6; i++) { g.beginPath(); g.ellipse(x0 + L * (.2 + r() * .6), y0 + L * (.08 + r() * .25), 5 + r() * 6, 3, 0, 0, 7); g.fill(); } }
+      bolaT(g, c2, cy2, 3, '#a07848', '#3a2614', 1.2);
+      g.strokeStyle = TINTA; g.lineWidth = 2; g.strokeRect(x0, y0, L, L);
+      break;
+    }
+    case 'estandarte': {
+      const cor = bioma === 'vetrheim' ? '#9a2a22' : '#2a4a8a';
+      sombraOval(g, cx + 4, cy + 6, Q * .3, Q * .2, .4);
+      g.save(); g.translate(cx, cy); g.rotate(rot * .3 - .5);
+      const L = Q * .75, A = Q * .36;
+      g.fillStyle = 'rgba(0,0,0,.28)'; g.beginPath(); g.moveTo(6, 8); g.lineTo(L + 6, 8 + A * .1); g.lineTo(L - 6, A / 2 + 8); g.lineTo(L + 6, A + 8 - A * .1); g.lineTo(6, A + 8); g.closePath(); g.fill();
+      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(L * .5, -4, L, A * .1); g.lineTo(L - 9, A / 2); g.lineTo(L, A - A * .1); g.quadraticCurveTo(L * .5, A + 4, 0, A); g.closePath(); g.strokeStyle = TINTA; g.lineWidth = 3; g.stroke(); g.fillStyle = cor; g.fill();
+      g.fillStyle = 'rgba(255,255,255,.15)'; g.fillRect(4, 3, L * .7, 3);
+      g.strokeStyle = '#e8dcc0'; g.lineWidth = 1.6; const ex = L * .38, ey = A / 2; for (let i = 0; i < 3; i++) { const a = i * Math.PI / 3; g.beginPath(); g.moveTo(ex - Math.cos(a) * 6, ey - Math.sin(a) * 6); g.lineTo(ex + Math.cos(a) * 6, ey + Math.sin(a) * 6); g.stroke(); }
+      g.restore(); bolaT(g, cx, cy, 3.4, '#8a7a6a', '#2a2420', 1.4);
+      break;
+    }
+    case 'barricada': {
+      const x0 = p.x * Q + 3, y0 = (p.y + .5) * Q, L = Q * 2 - 6;
+      g.fillStyle = 'rgba(0,0,0,.3)'; g.fillRect(x0 + 4, y0 - 3 + 7, L, 7);
+      g.lineCap = 'round'; for (let i = 0; i < 5; i++) { const x = x0 + 8 + i * (L - 16) / 4, s = i % 2 ? 1 : -1; for (const [c, lw] of [[TINTA, 7], ['#7a5430', 4]]) { g.strokeStyle = c; g.lineWidth = lw; g.beginPath(); g.moveTo(x - 9, y0 - 14 * s); g.lineTo(x + 9, y0 + 14 * s); g.stroke(); } g.fillStyle = '#d8c4a0'; g.beginPath(); g.arc(x + 9, y0 + 14 * s, 1.6, 0, 7); g.fill(); }
+      for (const [c, lw] of [[TINTA, 9], ['#8a6038', 6]]) { g.strokeStyle = c; g.lineWidth = lw; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + L, y0); g.stroke(); }
+      g.strokeStyle = 'rgba(255,230,190,.3)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x0 + 2, y0 - 1.5); g.lineTo(x0 + L - 2, y0 - 1.5); g.stroke();
+      break;
+    }
+    case 'barraca': {
+      const x0 = p.x * Q + 3, y0 = p.y * Q + 6, L = Q * 2 - 6, A = Q * .62, cores = [['#c23a2a', '#f0e6d2'], ['#2a6a9a', '#f0e6d2'], ['#3a7a3a', '#f2e2a0'], ['#8a3a8a', '#f0e6d2']][Math.floor(r() * 4)];
+      // mercadoria na frente do toldo
+      for (let i = 0; i < 7; i++) { const x = x0 + 8 + i * (L - 16) / 6, y = y0 + A + 9; const tipo = Math.floor(r() * 3); if (tipo === 0) bolaT(g, x, y, 3.4, ['#f0a030', '#d84a2a', '#a8c040'][Math.floor(r() * 3)], '#6a2a10', 1.1); else if (tipo === 1) { g.fillStyle = TINTA; g.beginPath(); g.ellipse(x, y, 6.4, 3.2, .3, 0, 7); g.fill(); g.fillStyle = '#9ab0c0'; g.beginPath(); g.ellipse(x, y, 5.2, 2.2, .3, 0, 7); g.fill(); } else { g.fillStyle = TINTA; g.fillRect(x - 4.6, y - 3.6, 9.2, 7.2); g.fillStyle = '#b08850'; g.fillRect(x - 3.4, y - 2.4, 6.8, 4.8); } }
+      g.fillStyle = 'rgba(0,0,0,.32)'; g.fillRect(x0 + 5, y0 + 8, L, A);
+      g.strokeStyle = TINTA; g.lineWidth = 3.4; g.lineJoin = 'round'; g.strokeRect(x0, y0, L, A);
+      const n = 8; for (let i = 0; i < n; i++) { g.fillStyle = cores[i % 2]; g.fillRect(x0 + i * L / n, y0, L / n + .5, A); }
+      const gr = g.createLinearGradient(0, y0, 0, y0 + A); gr.addColorStop(0, 'rgba(255,255,255,.18)'); gr.addColorStop(1, 'rgba(0,0,0,.25)'); g.fillStyle = gr; g.fillRect(x0, y0, L, A);
+      g.beginPath(); for (let i = 0; i < n; i++) { const x = x0 + i * L / n; g.moveTo(x, y0 + A); g.arc(x + L / n / 2, y0 + A, L / n / 2, 0, Math.PI); } g.fillStyle = TINTA; g.save(); g.translate(0, 1.6); g.fill(); g.restore(); for (let i = 0; i < n; i++) { const x = x0 + i * L / n; g.fillStyle = cores[i % 2]; g.beginPath(); g.arc(x + L / n / 2, y0 + A, L / n / 2 - .5, 0, Math.PI); g.fill(); }
+      g.strokeStyle = TINTA; g.lineWidth = 2; g.strokeRect(x0, y0, L, A);
+      break;
+    }
+    case 'maquina': {
+      const x0 = p.x * Q + 4, y0 = p.y * Q + 7, L = Q * 2 - 8, A = Q - 14;
+      g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x0 + 5, y0 + 7, L, A);
+      g.strokeStyle = TINTA; g.lineWidth = 3.4; g.strokeRect(x0, y0, L, A);
+      const gr = g.createLinearGradient(0, y0, 0, y0 + A); gr.addColorStop(0, '#5a636c'); gr.addColorStop(1, '#2a3036'); g.fillStyle = gr; g.fillRect(x0, y0, L, A);
+      g.fillStyle = TINTA; g.fillRect(x0 + 6, y0 + 5, L * .45, A - 10); const tela = g.createLinearGradient(x0, y0, x0, y0 + A); tela.addColorStop(0, '#5af0b0'); tela.addColorStop(1, '#147a5a'); g.fillStyle = tela; g.fillRect(x0 + 7.5, y0 + 6.5, L * .45 - 3, A - 13);
+      g.strokeStyle = 'rgba(10,40,30,.7)'; g.lineWidth = 1; for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(x0 + 10, y0 + 10 + i * 5); g.lineTo(x0 + 10 + r() * (L * .4 - 10), y0 + 10 + i * 5); g.stroke(); }
+      for (let i = 0; i < 6; i++) { const bx = x0 + L * .58 + (i % 3) * 10, by = y0 + 10 + Math.floor(i / 3) * 11; bolaT(g, bx, by, 2.6, ['#ff5a4a', '#ffd04a', '#6ac8ff'][i % 3], '#3a1a10', 1); }
+      g.strokeStyle = TINTA; g.lineWidth = 4; g.beginPath(); g.moveTo(x0 + L, y0 + A * .6); g.bezierCurveTo(x0 + L + 14, y0 + A, x0 + L + 4, y0 + A + 14, x0 + L + 16, y0 + A + 16); g.stroke(); g.strokeStyle = '#3a3a3a'; g.lineWidth = 2; g.stroke();
+      g.strokeStyle = 'rgba(255,255,255,.2)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x0 + 1.5, y0 + A - 2); g.lineTo(x0 + 1.5, y0 + 1.5); g.lineTo(x0 + L - 2, y0 + 1.5); g.stroke();
+      break;
+    }
+    case 'tanque': {
+      const R = Q * .38; sombraOval(g, cx + 4, cy + 7, R * 1.3, R, .45);
+      g.fillStyle = TINTA; g.beginPath(); g.arc(cx, cy, R + 2, 0, 7); g.fill();
+      g.fillStyle = '#4a5058'; g.beginPath(); g.arc(cx, cy, R, 0, 7); g.fill();
+      const lq = g.createRadialGradient(cx - R * .25, cy - R * .3, 0, cx, cy, R * .85); lq.addColorStop(0, '#c8fff0'); lq.addColorStop(.5, '#3ad0b8'); lq.addColorStop(1, '#0a5a5a'); g.fillStyle = lq; g.beginPath(); g.arc(cx, cy, R * .82, 0, 7); g.fill();
+      // algo dentro do vidro, encolhido
+      g.fillStyle = 'rgba(20,50,50,.6)'; g.beginPath(); g.ellipse(cx + 1, cy + 2, R * .32, R * .42, rot, 0, 7); g.fill(); g.beginPath(); g.arc(cx + Math.cos(rot - 1.57) * R * .38, cy + Math.sin(rot - 1.57) * R * .38, R * .17, 0, 7); g.fill();
+      g.fillStyle = 'rgba(230,255,250,.75)'; for (let i = 0; i < 6; i++) { const a = r() * 6.3, d = r() * R * .7; g.beginPath(); g.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d, .8 + r() * 1.4, 0, 7); g.fill(); }
+      g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 1.6; g.beginPath(); g.arc(cx, cy, R * .7, 3.5, 4.6); g.stroke();
+      g.fillStyle = '#c8ccd2'; for (let i = 0; i < 6; i++) { const a = i / 6 * 6.283; g.beginPath(); g.arc(cx + Math.cos(a) * R * .92, cy + Math.sin(a) * R * .92, 1.3, 0, 7); g.fill(); }
+      break;
+    }
+    case 'maca': {
+      const x0 = p.x * Q + 9, y0 = p.y * Q + 5, L = Q - 18, A = Q * 2 - 10;
+      g.fillStyle = 'rgba(0,0,0,.32)'; g.fillRect(x0 + 5, y0 + 7, L, A);
+      g.strokeStyle = TINTA; g.lineWidth = 3.4; g.strokeRect(x0, y0, L, A); g.fillStyle = '#6a7078'; g.fillRect(x0, y0, L, A);
+      g.fillStyle = '#e8e4da'; g.fillRect(x0 + 3, y0 + 3, L - 6, A - 6); g.fillStyle = 'rgba(120,110,100,.25)'; g.fillRect(x0 + 3, y0 + A * .55, L - 6, A * .45 - 3);
+      bolaT(g, x0 + L / 2, y0 + 10, 5.5, '#ffffff', '#b8b4aa', 1.2);
+      g.fillStyle = '#5a3a22'; for (const q of [.38, .7]) { g.fillStyle = TINTA; g.fillRect(x0 - 2, y0 + A * q - 2.5, L + 4, 5); g.fillStyle = '#7a5434'; g.fillRect(x0 - 1, y0 + A * q - 1.5, L + 2, 3); }
+      if (r() < .5) { g.fillStyle = 'rgba(120,20,20,.45)'; g.beginPath(); g.ellipse(x0 + L * .6, y0 + A * .5, 4, 6, .4, 0, 7); g.fill(); }
+      break;
+    }
+    case 'estante': {
+      const x0 = p.x * Q + 3, y0 = p.y * Q + 8, L = Q * 2 - 6, A = Q - 18;
+      g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x0 + 5, y0 + 7, L, A);
+      g.strokeStyle = TINTA; g.lineWidth = 3.4; g.strokeRect(x0, y0, L, A); g.fillStyle = '#5a3a20'; g.fillRect(x0, y0, L, A);
+      let x = x0 + 3; while (x < x0 + L - 4) { const w = 3 + r() * 4, c = ['#7a2a22', '#2a4a6a', '#3a5a2a', '#8a6a2a', '#d8cbb0', '#4a2a4a'][Math.floor(r() * 6)]; if (r() < .12) { bolaT(g, x + 3, y0 + A / 2, 3.4, '#9ae0d0', '#2a6a6a', 1); x += 8; continue; } g.fillStyle = c; g.fillRect(x, y0 + 3, w, A - 6); g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x, y0 + 3, 1, A - 6); x += w + .6; }
+      g.strokeStyle = 'rgba(255,230,190,.3)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x0 + 1.5, y0 + A - 2); g.lineTo(x0 + 1.5, y0 + 1.5); g.lineTo(x0 + L - 2, y0 + 1.5); g.stroke();
+      if (r() < .6) for (let i = 0; i < 3; i++) { const px = x0 + r() * L, py = y0 + A + 4 + r() * 8, a = r() * 3; g.save(); g.translate(px, py); g.rotate(a); g.fillStyle = TINTA; g.fillRect(-5.4, -3.9, 10.8, 7.8); g.fillStyle = '#ece4d0'; g.fillRect(-4.5, -3, 9, 6); g.strokeStyle = 'rgba(60,50,40,.6)'; g.lineWidth = .6; for (let j = -1; j <= 1; j++) { g.beginPath(); g.moveTo(-3.5, j * 1.6); g.lineTo(3.5, j * 1.6); g.stroke(); } g.restore(); }
+      break;
+    }
+    case 'guardasol': {
+      const R = Q * .6 * esc, n = 8, cor = [['#e85a3a', '#f8f0e0'], ['#2a8ac8', '#f8f0e0'], ['#f2c040', '#e85a3a']][Math.floor(r() * 3)];
+      g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); for (let i = 0; i < n; i++) { const a = rot + i / n * 6.283; g.lineTo(cx + R * .3 + Math.cos(a) * R, cy + R * .4 + Math.sin(a) * R); } g.closePath(); g.fill();
+      g.fillStyle = TINTA; g.beginPath(); for (let i = 0; i < n; i++) { const a = rot + i / n * 6.283; g.lineTo(cx + Math.cos(a) * (R + 2), cy + Math.sin(a) * (R + 2)); } g.closePath(); g.fill();
+      for (let i = 0; i < n; i++) { const a = rot + i / n * 6.283, b = rot + (i + 1) / n * 6.283, luz = .5 + .5 * Math.cos((a + b) / 2 + 2.36); g.fillStyle = mistura(i % 2 ? '#3a2a2a' : '#3a3a3a', cor[i % 2], .55 + luz * .45); g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); g.lineTo(cx + Math.cos(b) * R, cy + Math.sin(b) * R); g.closePath(); g.fill(); }
+      g.strokeStyle = 'rgba(20,14,10,.4)'; g.lineWidth = 1; for (let i = 0; i < n; i++) { const a = rot + i / n * 6.283; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); g.stroke(); }
+      bolaT(g, cx, cy, 2.6, '#f0e8d8', '#8a8070', 1.2);
+      break;
+    }
+    case 'escotilha': {
+      const L = Q * .66; g.translate(cx, cy); g.rotate(Math.round(rot / 1.57) * 1.57);
+      g.fillStyle = 'rgba(0,0,0,.3)'; g.fillRect(-L / 2 + 3, -L / 2 + 4, L, L);
+      g.strokeStyle = TINTA; g.lineWidth = 3.4; g.strokeRect(-L / 2, -L / 2, L, L);
+      const gr = g.createLinearGradient(-L / 2, -L / 2, L / 2, L / 2); gr.addColorStop(0, '#7a828a'); gr.addColorStop(1, '#3a4046'); g.fillStyle = gr; g.fillRect(-L / 2, -L / 2, L, L);
+      g.strokeStyle = 'rgba(0,0,0,.4)'; g.lineWidth = 1; g.strokeRect(-L / 2 + 5, -L / 2 + 5, L - 10, L - 10);
+      g.fillStyle = '#2a2e34'; for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { g.beginPath(); g.arc(sx * (L / 2 - 4), sy * (L / 2 - 4), 1.6, 0, 7); g.fill(); }
+      g.fillStyle = '#1e2226'; g.fillRect(-L / 2 - 2, -L * .3, 4, L * .18); g.fillRect(-L / 2 - 2, L * .12, 4, L * .18);
+      g.strokeStyle = TINTA; g.lineWidth = 4; g.beginPath(); g.arc(0, 0, L * .22, 0, 7); g.stroke(); g.strokeStyle = '#b84a2a'; g.lineWidth = 2.2; g.stroke(); g.beginPath(); for (let i = 0; i < 4; i++) { const a = i * 1.57 + .4; g.moveTo(0, 0); g.lineTo(Math.cos(a) * L * .22, Math.sin(a) * L * .22); } g.stroke();
+      break;
+    }
+    case 'cratera': {
+      const ox = (p.x + 1) * Q, oy = (p.y + 1) * Q, R = Q * .9;
+      const bo = g.createRadialGradient(ox + R * .15, oy + R * .2, R * .1, ox, oy, R); bo.addColorStop(0, 'rgba(10,6,14,.95)'); bo.addColorStop(.65, 'rgba(30,24,36,.85)'); bo.addColorStop(.85, 'rgba(90,80,100,.7)'); bo.addColorStop(1, 'rgba(40,34,46,0)'); g.fillStyle = bo; g.beginPath(); g.arc(ox, oy, R, 0, 7); g.fill();
+      g.strokeStyle = 'rgba(150,140,160,.5)'; g.lineWidth = 2; g.beginPath(); g.arc(ox, oy, R * .78, 3.3, 5.6); g.stroke();
+      g.lineCap = 'round'; for (let i = 0; i < 9; i++) { let a = rot + i / 9 * 6.283, px = ox + Math.cos(a) * R * .55, py = oy + Math.sin(a) * R * .55; const pts = [[px, py]]; for (let k2 = 0; k2 < 4; k2++) { a += (r() - .5) * .9; px += Math.cos(a) * (6 + r() * 6); py += Math.sin(a) * (6 + r() * 6); pts.push([px, py]); } for (const [c, lw] of [['rgba(150,120,255,.35)', 4], ['rgba(230,220,255,.8)', 1.2]]) { g.strokeStyle = c; g.lineWidth = lw; g.beginPath(); pts.forEach(([a2, b2], k2) => k2 ? g.lineTo(a2, b2) : g.moveTo(a2, b2)); g.stroke(); } }
+      const cv = g.createRadialGradient(ox, oy, 0, ox, oy, R * .35); cv.addColorStop(0, 'rgba(200,180,255,.7)'); cv.addColorStop(1, 'rgba(120,90,220,0)'); g.fillStyle = cv; g.beginPath(); g.arc(ox, oy, R * .35, 0, 7); g.fill();
+      break;
+    }
+    case 'fulgurito': {
+      sombraOval(g, cx + 5, cy + 8, Q * .45, Q * .3, .35);
+      const n = 5 + Math.floor(r() * 3), lascas = Array.from({ length: n }, (_, i) => { const a = rot + (i / (n - 1) - .5) * 2.6 + (r() - .5) * .3, meio = 1 - Math.abs(i / (n - 1) - .5) * 1.2; return [a, Q * (.18 + meio * .3 + r() * .1), Q * (.05 + meio * .035)]; }).sort((a, b) => a[1] - b[1]);
+      for (const [a, L, w] of lascas) { const bx = cx, by = cy, ux = Math.cos(a), uy = Math.sin(a), nx = -uy, ny = ux, P = [[bx + nx * w, by + ny * w], [bx + ux * L * .6 + nx * w * .7, by + uy * L * .6 + ny * w * .7], [bx + ux * L, by + uy * L], [bx + ux * L * .6 - nx * w * .7, by + uy * L * .6 - ny * w * .7], [bx - nx * w, by - ny * w]];
+        g.lineJoin = 'round'; g.beginPath(); P.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); g.strokeStyle = TINTA; g.lineWidth = 3; g.stroke(); const gr = g.createLinearGradient(bx, by, bx + ux * L, by + uy * L); gr.addColorStop(0, '#3a2a6a'); gr.addColorStop(.6, '#8a70e0'); gr.addColorStop(1, '#f0eaff'); g.fillStyle = gr; g.fill(); g.strokeStyle = 'rgba(255,255,255,.7)'; g.lineWidth = 1; g.beginPath(); g.moveTo(bx + ux * L * .15, by + uy * L * .15); g.lineTo(bx + ux * L * .9, by + uy * L * .9); g.stroke(); }
+      bolaT(g, cx, cy, Q * .09, '#4a3a6a', '#1a1428', 1.2);
+      break;
+    }
+    case 'lamina': {
+      // a lâmina enorme cravada na terra, caída de lado: lâmina, guarda, cabo e pomo
+      const ox = (p.x + .5) * Q, y0 = p.y * Q + 6, y1 = (p.y + 3) * Q - 6, L = y1 - y0, w = Q * .32;
+      g.save(); g.translate(ox, (y0 + y1) / 2); g.rotate((r() - .5) * .25); g.translate(0, -L / 2);
+      g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.moveTo(6 - w / 2, 8 + L * .3); g.lineTo(6 + w / 2, 8 + L * .3); g.lineTo(6 + w / 2, 8 + L * .9); g.lineTo(6, 8 + L + 6); g.lineTo(6 - w / 2, 8 + L * .9); g.closePath(); g.fill();
+      const lam = () => { g.beginPath(); g.moveTo(-w / 2, L * .3); g.lineTo(w / 2, L * .3); g.lineTo(w / 2 - 1, L * .9); g.lineTo(0, L); g.lineTo(-w / 2 + 1, L * .9); g.closePath(); };
+      lam(); g.lineJoin = 'round'; g.strokeStyle = TINTA; g.lineWidth = 3.4; g.stroke(); const gl = g.createLinearGradient(-w / 2, 0, w / 2, 0); gl.addColorStop(0, '#d8dce4'); gl.addColorStop(.5, '#8a909c'); gl.addColorStop(1, '#4a4e58'); g.fillStyle = gl; g.fill();
+      g.strokeStyle = 'rgba(40,44,52,.7)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, L * .33); g.lineTo(0, L * .88); g.stroke();
+      g.save(); lam(); g.clip(); g.fillStyle = 'rgba(140,70,30,.35)'; for (let i = 0; i < 7; i++) { g.beginPath(); g.arc((r() - .5) * w, L * (.35 + r() * .55), 2 + r() * 4, 0, 7); g.fill(); } g.strokeStyle = 'rgba(20,20,24,.8)'; g.lineWidth = 1; g.beginPath(); g.moveTo(-w / 2, L * .62); g.lineTo(-w * .1, L * .66); g.lineTo(w * .05, L * .6); g.stroke(); g.restore();
+      for (const [c, e] of [[TINTA, 1.8], [null, 0]]) { g.fillStyle = c || '#6a5a3a'; g.fillRect(-w * 1.15 - e, L * .25 - e, w * 2.3 + e * 2, L * .06 + e * 2); }
+      for (const [c, e] of [[TINTA, 1.8], [null, 0]]) { g.fillStyle = c || '#3a2a20'; g.fillRect(-w * .2 - e, L * .05 - e, w * .4 + e * 2, L * .2 + e * 2); }
+      g.strokeStyle = '#8a6a4a'; g.lineWidth = 1; for (let i = 0; i < 6; i++) { g.beginPath(); g.moveTo(-w * .2, L * .07 + i * L * .03); g.lineTo(w * .2, L * .09 + i * L * .03); g.stroke(); }
+      bolaT(g, 0, L * .04, w * .3, '#c8a860', '#5a4420', 1.6);
+      g.restore();
       break;
     }
     case 'poste': {
@@ -5361,12 +5638,343 @@ function gerarMapa(bioma, cols, linhas, semente) {
   return { terreno: T.join(''), props };
 }
 
+/* ---------- lugares prontos do mundo ---------- */
+// Cada lugar é desenhado à mão por código (formas, caminhos, salas) e sai sempre igual: o Mestre abre e joga.
+// Ao abrir, o terreno e os objetos vão para o banco como qualquer outro mapa, e dá para retocar depois.
+function fazerLugar(cols, linhas, base, semente, desenho) {
+  const r = mapaRng(semente), T = new Array(cols * linhas).fill(base), props = [], ocupado = new Set(), n = ruidoMapa(r, 3), n2 = ruidoMapa(r, 6);
+  const dentro = (x, y) => x >= 0 && y >= 0 && x < cols && y < linhas;
+  const get = (x, y) => dentro(x, y) ? T[y * cols + x] : null, set = (x, y, c) => { if (dentro(x, y)) T[y * cols + x] = c; };
+  const ret = (x0, y0, x1, y1, c, so) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (!so || so.includes(get(x, y))) set(x, y, c); };
+  // mancha de borda irregular (elipse torta pelo ruído)
+  const bolha = (cx, cy, rx, ry, c, irr = .3, so) => { for (let y = Math.floor(cy - ry - 2); y <= cy + ry + 2; y++) for (let x = Math.floor(cx - rx - 2); x <= cx + rx + 2; x++) { const d = Math.hypot((x + .5 - cx) / rx, (y + .5 - cy) / ry) + (n(x * 1.3, y * 1.3) - .5) * irr * 2; if (d < 1 && (!so || so.includes(get(x, y)))) set(x, y, c); } };
+  // faixa ao longo de uma linha quebrada
+  const caminho = (pts, w, c, so) => { for (let i = 0; i < pts.length - 1; i++) { const [ax, ay] = pts[i], [bx, by] = pts[i + 1], L = Math.hypot(bx - ax, by - ay); for (let t = 0; t <= L; t += .25) { const px = ax + (bx - ax) * t / L, py = ay + (by - ay) * t / L; for (let y = Math.floor(py - w); y <= py + w; y++) for (let x = Math.floor(px - w); x <= px + w; x++) if (Math.hypot(x + .5 - px, y + .5 - py) <= w / 2 + .35 && (!so || so.includes(get(x, y)))) set(x, y, c); } } };
+  const livre = (t, x, y) => { const [w, h] = propTam(t); for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (!dentro(x + dx, y + dy) || ocupado.has((x + dx) + ',' + (y + dy))) return false; return true; };
+  const por = (t, x, y, extra) => { if (!livre(t, x, y)) return false; const [w, h] = propTam(t); props.push({ t, x, y, v: Math.floor(r() * 1e9), ...(extra || {}) }); for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) ocupado.add((x + dx) + ',' + (y + dy)); return true; };
+  const espalha = (q, t, ok, tent = 80) => { let feitos = 0; for (let i = 0; i < q * tent && feitos < q; i++) { const x = Math.floor(r() * cols), y = Math.floor(r() * linhas); if (ok(get(x, y), x, y) && por(t, x, y)) feitos++; } };
+  const vizinho = (x, y, cs) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => cs.includes(get(x + dx, y + dy)));
+  // ilha inteira: costa torta pelo ruído largo, praia opcional na beirada e água rasa em volta
+  const n3 = ruidoMapa(r, 12);
+  const ilha = (cx, cy, rx, ry, terra, o = {}) => { const irr = o.irr ?? .35, D = new Float32Array(cols * linhas); for (let y = 0; y < linhas; y++) for (let x = 0; x < cols; x++) { const d = Math.hypot((x + .5 - cx) / rx, (y + .5 - cy) / ry) + (n3(x, y) - .5) * irr * 1.6 + (n(x * 1.2, y * 1.2) - .5) * irr * .5; D[y * cols + x] = d; const c = get(x, y); if (d < 1) set(x, y, o.praia && d > 1 - (o.lp || .1) ? o.praia : terra); else if (d < 1 + (o.raso ?? .1) && (c === 'f' || c === 'x')) set(x, y, 'a'); } return (x, y) => dentro(x, y) ? D[y * cols + x] : 9; };
+  // casa: paredes, piso e uma porta no lado pedido (n, s, l, o)
+  const casa = (x0, y0, w, h, porta = 's', piso = 'm') => { ret(x0, y0, x0 + w - 1, y0 + h - 1, 'p'); ret(x0 + 1, y0 + 1, x0 + w - 2, y0 + h - 2, piso); const mx = x0 + Math.floor(w / 2), my = y0 + Math.floor(h / 2); if (porta === 's') set(mx, y0 + h - 1, piso); if (porta === 'n') set(mx, y0, piso); if (porta === 'l') set(x0 + w - 1, my, piso); if (porta === 'o') set(x0, my, piso); return [x0 + 1, y0 + 1, x0 + w - 2, y0 + h - 2]; };
+  desenho({ r, n, n2, n3, get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, livre, cols, linhas });
+  return { terreno: T.join(''), props };
+}
+
+// grupo: a ilha (ou região); o primeiro mapa de cada grupo é ela inteira, os outros são partes de dentro dela
+const LUGARES = [
+  // ================= O Farol Velho =================
+  { id: 'farol-ilha', grupo: 'O Farol Velho', nome: 'A ilha inteira', onde: 'Kósmos · no Mar do Vazio', cols: 56, linhas: 44, bioma: 'farol', luz: 'noite',
+    texto: 'A ilhota do farol coberto de musgo, com os recifes e os navios que encalharam em volta. Foi daqui que o Kósmos foi visto pela primeira vez.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, r } = L;
+      ilha(26, 22, 13, 10.5, 'g', { irr: .3, raso: .14 });
+      for (let y = 0; y < 44; y++) for (let x = 0; x < 56; x++) if (get(x, y) === 'g' && (y < 17 || x < 17) && vizinho(x, y, 'af') && r() < .85) set(x, y, 'b');
+      for (const [cx, cy, rx, ry] of [[8, 8, 4.5, 3.4], [47, 9, 5, 4], [45, 35, 4, 3], [9, 36, 3.2, 2.6], [36, 40, 2.4, 1.8]]) { ilha(cx, cy, rx, ry, 'g', { irr: .5, raso: .25 }); bolha(cx - .5, cy - .6, rx * .55, ry * .5, 'b', .5); }
+      for (let i = 0; i < 18; i++) { const x = 2 + Math.floor(r() * 52), y = 2 + Math.floor(r() * 40); if (get(x, y) === 'f') { bolha(x, y, 1.6, 1.2, 'a', .4, 'f'); bolha(x, y, .7, .6, 'b', .3, 'a'); } }
+      bolha(26, 17, 3.8, 3.4, 'k', .12, 'gb');
+      for (let i = 0; i < 30; i++) { const a = i / 30 * 6.283, x = Math.floor(26 + Math.cos(a) * 4.3), y = Math.floor(17 + Math.sin(a) * 4); if (get(x, y) === 'g' && r() < .4) set(x, y, 'c'); }
+      por('farol', 25, 16, { r: 0 });
+      casa(32, 20, 7, 5, 'o'); por('mesa', 34, 21); por('bau', 36, 22); por('estante', 33, 23);
+      bolha(30, 27, 2.4, 1.6, 'r', .4, 'g'); espalha(4, 'arbusto', (c, x, y) => c === 'r');
+      caminho([[26, 20], [27.5, 25], [26.5, 30]], 1.4, 'r', 'gc');
+      ret(25, 30, 26, 38, 'm'); for (const [x, y] of [[24, 32], [27, 32], [24, 35], [27, 35], [24, 38], [27, 38]]) por('poste', x, y);
+      por('barco', 29, 36); por('lanterna', 26, 38); por('caixote', 24, 29); por('barril', 27, 29);
+      for (const [x, y] of [[18, 25], [20, 27], [17, 28]]) por('estatua', x, y); por('ossos', 19, 26);
+      por('barco', 44, 36, { r: 1 }); por('barco', 10, 9); bolha(44.5, 36.5, 2.2, 1.5, 'd', .5, 'ga'); bolha(9.5, 9.5, 1.8, 1.2, 'd', .5, 'ga');
+      espalha(14, 'rocha', (c, x, y) => c === 'g' && vizinho(x, y, 'ba')); espalha(5, 'cogumelo', c => c === 'g'); espalha(5, 'arbusto', c => c === 'g');
+      espalha(8, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'g')); espalha(4, 'entulho', c => c === 'd'); espalha(3, 'ossos', c => c === 'd' || c === 'g');
+    } },
+  { id: 'farol-torre', grupo: 'O Farol Velho', nome: 'O alto da torre', onde: 'Kósmos · no Mar do Vazio', cols: 18, linhas: 18, bioma: 'farol', luz: 'noite', base: 'p',
+    texto: 'A sala da lanterna. Ao acender esta chama, o Lightkeeper viu o Kósmos do outro lado da parede.',
+    fazer: L => {
+      const { get, set, por } = L;
+      for (let y = 0; y < 18; y++) for (let x = 0; x < 18; x++) { const d = Math.hypot(x + .5 - 9, y + .5 - 9); if (d < 7.2) set(x, y, 'k'); else if (d < 8.4) set(x, y, 'c'); }
+      por('farol', 7, 7, { r: 0 }); por('escada', 2, 7, { r: 0 });
+      for (const [t, x, y] of [['estante', 11, 3], ['mesa', 13, 12], ['bau', 4, 12], ['barril', 13, 5], ['caixote', 5, 4], ['lanterna', 9, 2], ['ossos', 10, 14]]) por(t, x, y);
+    } },
+  { id: 'farol-casa', grupo: 'O Farol Velho', nome: 'A casa do faroleiro', onde: 'Kósmos · no Mar do Vazio', cols: 16, linhas: 12, bioma: 'farol', luz: 'noite', base: 'p',
+    texto: 'Onde morava quem cuidava do farol antes de ele ser apagado. Os diários ainda estão na estante.',
+    fazer: L => {
+      const { ret, set, por } = L;
+      ret(1, 1, 14, 10, 'm'); ret(8, 1, 8, 10, 'p'); set(8, 5, 'm'); set(8, 6, 'm'); set(0, 5, 'm');
+      for (const [t, x, y] of [['maca', 12, 2], ['estante', 10, 1], ['bau', 13, 8], ['mesa', 4, 4], ['fogueira', 2, 8], ['barril', 6, 9], ['caixote', 1, 1], ['estante', 3, 1], ['vaso', 6, 1], ['lanterna', 11, 6], ['saco', 9, 9]]) por(t, x, y);
+    } },
+  // ================= Terras Giratórias =================
+  { id: 'terras-ilha', grupo: 'Terras Giratórias', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 80, linhas: 60, bioma: 'praia', luz: 'dia', base: 'f',
+    texto: 'A cidade que gira em cima do redemoinho. O Eixo, no meio da praça, é o único ponto que não sai do lugar; o resto muda de posição com a hora, a maré e a Música.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, livre, r } = L;
+      const d = ilha(40, 30, 35, 26, 'k', { irr: .22, raso: .06, praia: 's', lp: .07 });
+      ret(0, 29, 79, 30, 'a', 'kspm'); ret(39, 0, 40, 59, 'a', 'kspm');
+      for (const [x0, y0, x1, y1] of [[20, 29, 21, 30], [58, 29, 59, 30], [39, 12, 40, 13], [39, 46, 40, 47]]) ret(x0, y0, x1, y1, 'm');
+      ret(31, 22, 48, 37, 'k'); ret(39, 29, 40, 30, 'k');
+      por('runas', 38, 28);
+      for (const [x, y] of [[33, 24], [44, 24], [33, 35], [44, 35], [36, 23], [42, 36]]) por('barraca', x, y);
+      for (const [x, y] of [[32, 27], [47, 27], [32, 32], [47, 32]]) por('estandarte', x, y);
+      // quarteirões: casas de tamanhos diferentes, ruas de dois quadrados entre elas, uma praça verde aqui e ali
+      for (let by = 2; by < 58; by += 7) for (let bx = 2; bx < 78; bx += 8) {
+        const w = 5 + Math.floor(r() * 2), h = 4 + Math.floor(r() * 2), x0 = bx, y0 = by;
+        let ok = true; for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) { if (get(x, y) !== 'k' || d(x, y) > .86 || (x > 29 && x < 50 && y > 20 && y < 39)) ok = false; }
+        if (!ok) continue;
+        if (r() < .14) { bolha(x0 + w / 2, y0 + h / 2, w / 2 + .3, h / 2 + .3, 'g', .3, 'k'); por(r() < .6 ? 'arvore' : 'pinheiro', x0 + Math.floor(w / 2), y0 + Math.floor(h / 2)); continue; }
+        const [ix0, iy0, ix1, iy1] = casa(x0, y0, w, h, ['s', 'n', 'l', 'o'][Math.floor(r() * 4)]);
+        for (let i = 0; i < 3; i++) { const t = ['mesa', 'barril', 'caixote', 'estante', 'bau', 'saco', 'vaso', 'maca'][Math.floor(r() * 8)], x = ix0 + Math.floor(r() * (ix1 - ix0 + 1)), y = iy0 + Math.floor(r() * (iy1 - iy0 + 1)); if (get(x, y) === 'm') por(t, x, y); }
+      }
+      // portos: o cais sai da costa e entra no mar
+      for (const [y, dir] of [[17, 1], [42, 1], [17, -1], [42, -1]]) { let x = dir > 0 ? 78 : 1; while (x > 0 && x < 79 && 'fa'.includes(get(x, y))) x -= dir; for (let k2 = 1; k2 < 9; k2++) for (const yy of [y, y + 1]) if ('fa'.includes(get(x + dir * k2, yy))) set(x + dir * k2, yy, 'm'); por('barco', x + dir * 6, y + 3); por('barco', x + dir * 5, y - 2); }
+      espalha(18, 'poste', (c, x, y) => c === 'a' && vizinho(x, y, 'm'));
+      espalha(16, 'lanterna', (c, x, y) => c === 'k' && vizinho(x, y, 'a'));
+      espalha(14, 'caixote', (c, x, y) => c === 'k' && vizinho(x, y, 'sam')); espalha(10, 'barril', (c, x, y) => c === 'k' && vizinho(x, y, 'sam')); espalha(8, 'saco', c => c === 'k');
+      espalha(10, 'palmeira', c => c === 's'); espalha(6, 'rede', c => c === 's'); espalha(5, 'vaso', c => c === 'k');
+    } },
+  { id: 'terras-giratorias', grupo: 'Terras Giratórias', nome: 'A praça do mercado', onde: 'Kósmos · Arquipélago Deluge', cols: 28, linhas: 20, bioma: 'cais', luz: 'dia', base: 'k',
+    texto: 'Um canto do mercado, com o porto. As barracas mudam de lugar com a hora; o porto, não.',
+    fazer: L => {
+      const { set, ret, por, espalha } = L;
+      ret(23, 0, 27, 19, 'f'); ret(0, 9, 22, 10, 'a');
+      ret(6, 9, 7, 10, 'm'); ret(15, 9, 16, 10, 'm');
+      ret(23, 4, 26, 5, 'm'); ret(23, 14, 26, 15, 'm');
+      ret(0, 0, 6, 6, 'p'); ret(1, 1, 5, 5, 'm'); set(3, 6, 'm');
+      ret(9, 0, 15, 4, 'p'); ret(10, 1, 14, 3, 'm'); set(12, 4, 'm');
+      ret(0, 13, 5, 19, 'p'); ret(1, 14, 4, 18, 'm'); set(5, 16, 'm');
+      ret(14, 15, 20, 19, 'p'); ret(15, 16, 19, 18, 'm'); set(17, 15, 'm');
+      ret(10, 11, 12, 13, 'c'); set(11, 12, 'a');
+      for (const [x, y] of [[7, 12], [14, 12], [7, 14], [10, 15], [17, 12], [20, 13], [8, 6], [17, 6], [19, 2]]) por('barraca', x, y);
+      por('estandarte', 13, 11); por('estandarte', 9, 13);
+      for (const y of [1, 7, 12, 18]) por('lanterna', 22, y);
+      for (const [x, y] of [[23, 3], [26, 3], [23, 6], [26, 6], [23, 13], [26, 13], [23, 16], [26, 16]]) por('poste', x, y);
+      por('barco', 25, 9); por('barco', 25, 18);
+      for (const [t, x, y] of [['caixote', 21, 4], ['caixote', 21, 5], ['barril', 20, 5], ['saco', 21, 15], ['caixote', 21, 16], ['barril', 20, 16], ['rede', 24, 1]]) por(t, x, y);
+      for (const [t, x, y] of [['mesa', 2, 2], ['estante', 3, 1], ['bau', 4, 4], ['mesa', 11, 2], ['vaso', 14, 1], ['estante', 1, 14], ['mesa', 2, 16], ['caixote', 15, 16], ['caixote', 16, 16], ['barril', 18, 17], ['saco', 19, 18], ['vaso', 2, 7], ['vaso', 13, 5], ['vaso', 6, 17]]) por(t, x, y);
+      espalha(3, 'saco', (c, x, y) => c === 'k' && y > 10); espalha(2, 'vaso', c => c === 'k');
+    } },
+  { id: 'terras-taverna', grupo: 'Terras Giratórias', nome: 'A taverna', onde: 'Kósmos · Arquipélago Deluge', cols: 22, linhas: 16, bioma: 'cais', luz: 'entardecer', base: 'p',
+    texto: 'Uma taverna de mercadores. Quem bebe aqui de manhã às vezes sai, à noite, por uma porta que dá para outra rua.',
+    fazer: L => {
+      const { ret, set, por } = L;
+      ret(1, 1, 20, 14, 'm'); ret(14, 1, 14, 9, 'p'); set(14, 5, 'm'); ret(1, 10, 9, 10, 'c'); set(10, 15, 'm'); set(0, 7, 'm');
+      for (const [x, y] of [[3, 3], [7, 3], [11, 3], [3, 7], [7, 7], [11, 7], [4, 12], [16, 12]]) por('mesa', x, y);
+      for (const [t, x, y] of [['barril', 1, 11], ['barril', 2, 13], ['barril', 4, 13], ['estante', 6, 13], ['fogueira', 19, 12], ['caixote', 15, 1], ['caixote', 16, 1], ['saco', 18, 1], ['bau', 19, 3], ['maca', 17, 5], ['maca', 19, 6], ['lanterna', 10, 1], ['lanterna', 12, 12], ['vaso', 13, 13]]) por(t, x, y);
+    } },
+  { id: 'terras-redemoinho', grupo: 'Terras Giratórias', nome: 'Debaixo da ilha', onde: 'Kósmos · Arquipélago Deluge', cols: 32, linhas: 24, bioma: 'caverna', luz: 'escuro', base: 'b',
+    texto: 'As grutas embaixo da cidade, onde se ouve o redemoinho. A água corre em volta sem parar, e o meio dela não tem fundo.',
+    fazer: L => {
+      const { bolha, caminho, set, por, espalha, vizinho } = L;
+      bolha(16, 12, 12, 9, 'o', .35);
+      bolha(16, 12, 6.5, 5, 'a', .25); bolha(16, 12, 4.2, 3.2, 'f', .25); bolha(16, 12, 1.4, 1.1, 'x', .1);
+      caminho([[2, 4], [6, 6], [9, 8]], 2.4, 'o'); caminho([[30, 20], [26, 17], [23, 15]], 2.2, 'o'); caminho([[3, 21], [7, 18]], 2, 'o');
+      for (const [x, y] of [[9, 5], [25, 6], [24, 19], [7, 18]]) bolha(x, y, 1.3, 1, 'l', .3, 'o');
+      espalha(10, 'cristal', (c, x, y) => c === 'o' && vizinho(x, y, 'b')); espalha(8, 'estalagmite', (c, x, y) => c === 'o' && vizinho(x, y, 'b'));
+      espalha(5, 'rocha', (c, x, y) => c === 'a'); espalha(5, 'cogumelo', c => c === 'o'); espalha(3, 'ossos', c => c === 'o'); espalha(4, 'caixote', c => c === 'o'); espalha(2, 'barco', c => c === 'a');
+      por('escada', 2, 2, { r: 0 });
+    } },
+  // ================= Ermos do Trovão =================
+  { id: 'ermos-ilha', grupo: 'Ermos do Trovão', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 72, linhas: 52, bioma: 'ermos', luz: 'entardecer', base: 'f',
+    texto: 'A ilha onde o Stormlord e o Imperador sem Nome lutaram por um mês. As rachaduras saem da cratera do meio; os soldados de pedra estão onde caíram.',
+    fazer: L => {
+      const { get, set, bolha, caminho, por, espalha, vizinho, ilha, r } = L;
+      const d = ilha(36, 26, 31, 21, 'h', { irr: .35, raso: .08, praia: 'd', lp: .06 });
+      bolha(36, 26, 9, 7.5, 'b', .3); bolha(36, 26, 7.6, 6.2, 'h', .25); bolha(36, 26, 5, 4, 'r', .4);
+      for (let i = 0; i < 6; i++) { const a = i / 6 * 6.283 + .4, pts = [[36 + Math.cos(a) * 8, 26 + Math.sin(a) * 6.5]]; let x = pts[0][0], y = pts[0][1], b = a; for (let k = 0; k < 6; k++) { b += (r() - .5) * .7; x += Math.cos(b) * 4; y += Math.sin(b) * 3.2; pts.push([x, y]); } caminho(pts, 1.1, 'x', 'hdr'); }
+      for (let i = 0; i < 14; i++) { const x = 6 + Math.floor(r() * 60), y = 5 + Math.floor(r() * 42); if (get(x, y) === 'h' && d(x, y) < .85 && Math.hypot(x - 36, y - 26) > 11) { bolha(x, y, 2.2 + r() * 1.5, 1.6 + r(), 'd', .5, 'h'); bolha(x, y, 1 + r() * 1.2, .8 + r() * .8, 'b', .4); } }
+      for (let i = 0; i < 8; i++) { const x = 6 + Math.floor(r() * 60), y = 5 + Math.floor(r() * 42); if (get(x, y) === 'h') bolha(x, y, 2.5, 1.8, 'r', .5, 'h'); }
+      por('lamina', 36, 24); por('cratera', 33, 27); por('cratera', 38, 23);
+      espalha(14, 'cratera', (c, x, y) => c === 'h' && get(x + 1, y + 1) === 'h' && get(x + 1, y) === 'h' && get(x, y + 1) === 'h');
+      espalha(40, 'fulgurito', (c, x, y) => c === 'h' && !vizinho(x, y, 'x'));
+      espalha(16, 'estatua', (c, x, y) => (c === 'h' || c === 'r') && Math.hypot(x - 36, y - 26) < 18);
+      espalha(14, 'ossos', c => c === 'h' || c === 'd'); espalha(12, 'toco', c => c === 'h'); espalha(14, 'rocha', c => c === 'h' || c === 'd'); espalha(10, 'entulho', c => c === 'd');
+      espalha(6, 'estandarte', (c, x, y) => c === 'h' && Math.hypot(x - 36, y - 26) < 16);
+    } },
+  { id: 'ermos-do-trovao', grupo: 'Ermos do Trovão', nome: 'A beira da cratera', onde: 'Kósmos · Arquipélago Deluge', cols: 26, linhas: 18, bioma: 'ermos', luz: 'entardecer',
+    texto: 'Um pedaço da terra perto da cratera: vidro de raio, rachaduras e a lâmina que ninguém consegue arrancar.',
+    fazer: L => {
+      const { bolha, caminho, por, espalha, vizinho } = L;
+      caminho([[0, 12], [5, 10.5], [9, 12], [13, 9.5], [17, 10.5], [21, 7.5], [26, 8]], 1.3, 'x');
+      for (const [x, y, rx, ry] of [[4, 4, 1.9, 1.4], [20, 14, 2.2, 1.6], [23, 3, 1.6, 1.3], [8, 15.5, 1.5, 1.2], [15, 3, 1.2, 1]]) { bolha(x, y, rx + 1.4, ry + 1.2, 'd', .5, 'h'); bolha(x, y, rx, ry, 'b', .4); }
+      bolha(16, 15, 2.5, 1.5, 'r', .5, 'h'); bolha(2, 1.5, 2, 1.3, 'r', .5, 'h');
+      por('lamina', 11, 2); por('cratera', 6, 6); por('cratera', 17, 12); por('cratera', 1, 14); por('cratera', 21, 1);
+      espalha(9, 'fulgurito', (c, x, y) => c === 'h' && !vizinho(x, y, 'x'));
+      espalha(3, 'estatua', c => c === 'h'); espalha(4, 'ossos', c => c === 'h' || c === 'd'); espalha(4, 'toco', c => c === 'h'); espalha(5, 'rocha', c => c === 'h' || c === 'd'); espalha(3, 'entulho', c => c === 'd');
+    } },
+  { id: 'ermos-ninho', grupo: 'Ermos do Trovão', nome: 'O ninho dos transformados', onde: 'Kósmos · Arquipélago Deluge', cols: 30, linhas: 22, bioma: 'caverna', luz: 'escuro', base: 'b',
+    texto: 'Uma gruta onde dormem as criaturas que a batalha mudou. O vidro de raio cresce nas paredes como cristal.',
+    fazer: L => {
+      const { bolha, caminho, espalha, vizinho, por } = L;
+      bolha(9, 7, 6, 4.5, 'o', .35); bolha(21, 14, 7, 5, 'o', .35); bolha(6, 17, 4, 3, 'o', .35);
+      caminho([[0, 4], [5, 6]], 2.2, 'o'); caminho([[13, 9], [17, 12]], 2.4, 'o'); caminho([[9, 15], [15, 15]], 2, 'o');
+      bolha(23, 15, 2.5, 1.8, 'a', .3, 'o'); bolha(8, 6, 1.5, 1.1, 'h', .4, 'o');
+      espalha(10, 'fulgurito', (c, x, y) => c === 'o' && vizinho(x, y, 'b')); espalha(14, 'ossos', c => c === 'o' || c === 'h'); espalha(4, 'teia', (c, x, y) => c === 'o' && vizinho(x, y, 'b'));
+      espalha(5, 'estalagmite', (c, x, y) => c === 'o' && vizinho(x, y, 'b')); espalha(4, 'cogumelo', c => c === 'o'); por('cratera', 20, 12);
+    } },
+  // ================= Climática =================
+  { id: 'climatica-ilha', grupo: 'Climática', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 80, linhas: 60, bioma: 'climatica', luz: 'entardecer', base: 'f',
+    texto: 'A ilha gigante onde acontece de tudo ao mesmo tempo: nevasca no norte, vulcão no meio, enchente a leste, terra queimada a oeste. Os Rainbound nasceram aqui.',
+    fazer: L => {
+      const { get, set, bolha, caminho, por, espalha, vizinho, ilha, n, r } = L;
+      const d = ilha(40, 31, 30, 22, 'g', { irr: .3, raso: .08 });
+      for (const [cx, cy, rx, ry] of [[73, 8, 5, 4], [6, 52, 4.5, 3.5], [70, 53, 4, 3]]) ilha(cx, cy, rx, ry, 'r', { irr: .5, raso: .2 });
+      for (let y = 0; y < 60; y++) for (let x = 0; x < 80; x++) { const c = get(x, y); if (c !== 'g' && c !== 'r') continue; const a = Math.atan2(y - 31, x - 40) + (L.n3(x, y) - .5) * 2.4 + (n(x * .5, y * .5) - .5) * .5; let t; if (a < -1.9 || a > 2.6) t = 'h'; else if (a < -.6) t = 'n'; else if (a < .9) t = 'l'; else if (a < 2) t = 'g'; else t = 's'; if (Math.hypot(x - 40, y - 31) > 7) set(x, y, t); }
+      bolha(28, 15, 5, 3.5, 'i', .4, 'n'); bolha(62, 30, 6, 4, 'a', .4, 'l'); bolha(66, 24, 3, 2, 'f', .4, 'a'); bolha(58, 38, 3.5, 2.4, 'a', .4, 'lg');
+      bolha(40, 31, 8, 6.5, 'b', .25); bolha(40, 31, 4.5, 3.6, 'e', .2);
+      caminho([[42, 36], [44, 42], [42, 48], [45, 55]], 1.3, 'e', 'gsbhl'); caminho([[36, 35], [31, 40], [26, 46]], 1.1, 'e', 'hsgb');
+      for (let i = 0; i < 6; i++) { const x = 10 + Math.floor(r() * 60), y = 8 + Math.floor(r() * 44); if (d(x, y) < .85 && get(x, y) !== 'e') bolha(x, y, 1.6, 1.2, 'b', .5); }
+      espalha(30, 'pinheiro', c => c === 'n'); espalha(26, 'arvore', c => c === 'g'); espalha(14, 'tronco', c => c === 'g' || c === 'l'); espalha(10, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'lg'));
+      espalha(12, 'cratera', (c, x, y) => c === 'h' && get(x + 1, y) === 'h' && get(x, y + 1) === 'h' && get(x + 1, y + 1) === 'h'); espalha(24, 'fulgurito', c => c === 'h');
+      espalha(12, 'ossos', c => c === 's' || c === 'h'); espalha(10, 'rocha', c => c === 's' || c === 'n'); espalha(8, 'entulho', (c, x, y) => c === 'b' || vizinho(x, y, 'e')); espalha(6, 'toco', c => c === 'l');
+      por('runas', 63, 44);
+    } },
+  { id: 'climatica', grupo: 'Climática', nome: 'A costa partida', onde: 'Kósmos · Arquipélago Deluge', cols: 28, linhas: 20, bioma: 'climatica', luz: 'entardecer',
+    texto: 'Na mesma praia, neve, lava e enchente. É aqui que a natureza e as coisas do fundo brigam.',
+    fazer: L => {
+      const { set, bolha, caminho, por, espalha, vizinho, n } = L;
+      for (let y = 0; y < 20; y++) for (let x = 0; x < 28; x++) { const q = x + (n(x * .8, y * .8) - .5) * 5; set(x, y, q < 9 ? 'n' : q < 18 ? 'h' : q < 21 ? 'l' : 'a'); }
+      bolha(25, 6, 3.5, 4, 'f', .4); bolha(27, 15, 3, 5, 'f', .4);
+      bolha(4, 13, 3.2, 2.3, 'i', .3, 'n'); bolha(9.5, 4, 2, 1.6, 'g', .4);
+      caminho([[13, 0], [12, 5], [14.5, 9], [13, 14], [15, 20]], 1.5, 'e');
+      bolha(15.5, 10, 1.7, 1.2, 'e', .3);
+      bolha(6, 2, 1.6, 1.2, 'b', .4); bolha(18, 16, 1.4, 1.2, 'b', .4); bolha(21, 3, 1.2, 1, 'b', .4);
+      por('cratera', 10, 15); por('cratera', 17, 5);
+      espalha(7, 'pinheiro', c => c === 'n'); espalha(3, 'rocha', c => c === 'n');
+      espalha(4, 'fulgurito', (c, x, y) => c === 'h' && !vizinho(x, y, 'e')); espalha(3, 'entulho', c => c === 'h');
+      espalha(4, 'tronco', c => c === 'a' || c === 'l'); espalha(5, 'juncos', (c, x, y) => c === 'a' && vizinho(x, y, 'l')); espalha(2, 'toco', c => c === 'l');
+      espalha(2, 'arbusto', c => c === 'g'); espalha(2, 'ossos', c => c === 'h');
+    } },
+  { id: 'climatica-berco', grupo: 'Climática', nome: 'O berço dos Rainbound', onde: 'Kósmos · Arquipélago Deluge', cols: 28, linhas: 22, bioma: 'climatica', luz: 'noite',
+    texto: 'Um terreiro de pedra antigo, alagado pela chuva que não para. Os Rainbound contam que nasceram aqui, entre o trovão e o vento.',
+    fazer: L => {
+      const { bolha, ret, por, espalha, vizinho, set } = L;
+      bolha(14, 11, 12, 9, 'k', .3); bolha(14, 11, 13.5, 10.5, 'l', .3, 'g');
+      for (const [x, y] of [[5, 4], [22, 4], [5, 17], [22, 17]]) bolha(x, y, 2.4, 1.8, 'a', .4, 'k');
+      ret(12, 9, 15, 12, 'k'); por('runas', 12, 9);
+      for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283, x = Math.floor(14 + Math.cos(a) * 8), y = Math.floor(11 + Math.sin(a) * 6.4); por(i % 3 === 0 ? 'estatua' : 'pilar', x, y); }
+      por('chama', 9, 11); por('chama', 18, 11);
+      espalha(8, 'fulgurito', (c, x, y) => c === 'k' && !vizinho(x, y, 'a')); espalha(6, 'juncos', c => c === 'a'); espalha(5, 'entulho', c => c === 'k' || c === 'l'); espalha(6, 'arvore', c => c === 'g'); espalha(4, 'tronco', c => c === 'g' || c === 'l');
+    } },
+  // ================= Ilha Z =================
+  { id: 'ilhaz-ilha', grupo: 'Ilha Z', nome: 'A ilha inteira', onde: 'Kósmos · Arquipélago Deluge', cols: 64, linhas: 48, bioma: 'praia', luz: 'dia', base: 'f',
+    texto: 'Uma ilha de descanso: praia, pavilhão, cabanas e uma mata fechada no meio. Uma trilha de serviço atravessa a mata até um galpão que não aparece nos folhetos.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, ilha, casa, r } = L;
+      const d = ilha(32, 23, 28, 19, 'g', { irr: .3, raso: .12, praia: 's', lp: .16 });
+      for (let y = 30; y < 48; y++) for (let x = 0; x < 64; x++) if (get(x, y) === 'g' && d(x, y) > .7) set(x, y, 's');
+      bolha(32, 15, 13, 7, 'v', .5, 'g');
+      casa(26, 29, 12, 7, 's'); ret(27, 30, 36, 34, 'm'); por('mesa', 28, 31); por('mesa', 33, 31); por('estante', 27, 34); por('vaso', 36, 30); por('mesa', 30, 33);
+      ret(39, 31, 45, 35, 'c'); ret(40, 32, 44, 34, 'a');
+      for (const x of [12, 18, 46, 52]) { casa(x, 33, 5, 4, 's'); por('maca', x + 1, 34); }
+      caminho([[32, 36], [32, 39]], 1.6, 'k'); caminho([[14, 37], [50, 37]], 1.2, 'k', 's');
+      ret(31, 39, 32, 47, 'm'); for (const [x, y] of [[30, 41], [33, 41], [30, 44], [33, 44]]) por('poste', x, y); por('barco', 35, 43); por('barco', 28, 45); por('lanterna', 32, 47);
+      caminho([[38, 29], [42, 24], [46, 18], [48, 12]], 1.2, 'r', 'gvs');
+      casa(46, 8, 5, 5, 's'); por('escotilha', 48, 9); por('caixote', 47, 9); por('barril', 47, 11);
+      for (let i = 0; i < 6; i++) por('guardasol', 8 + i * 9 + Math.floor(r() * 3), 39 + Math.floor(r() * 3));
+      espalha(30, 'arvore', c => c === 'v'); espalha(18, 'palmeira', (c, x, y) => (c === 's' || c === 'g') && vizinho(x, y, 'sg')); espalha(14, 'arbusto', c => c === 'g');
+      espalha(6, 'rocha', c => c === 's'); espalha(5, 'juncos', c => c === 'a'); espalha(5, 'saco', c => c === 's'); espalha(4, 'cogumelo', c => c === 'v');
+    } },
+  { id: 'ilha-z', grupo: 'Ilha Z', nome: 'O pavilhão e a praia', onde: 'Kósmos · Arquipélago Deluge', cols: 24, linhas: 16, bioma: 'praia', luz: 'dia',
+    texto: 'O pavilhão de descanso, a piscina e o galpão dos fundos, onde fica a escotilha.',
+    fazer: L => {
+      const { set, ret, caminho, por, espalha, n } = L;
+      for (let x = 0; x < 24; x++) { const c = 10 + Math.round((n(x * .7, 2) - .5) * 2.5); for (let y = c; y < 16; y++) set(x, y, y < c + 2 ? 'a' : 'f'); }
+      ret(0, 0, 23, 2, 'g'); ret(0, 0, 3, 5, 'g'); ret(21, 0, 23, 6, 'g');
+      ret(7, 2, 14, 6, 'p'); ret(8, 3, 13, 5, 'm'); ret(10, 6, 11, 6, 'm');
+      ret(15, 7, 19, 9, 'c'); ret(16, 8, 18, 8, 'a');
+      ret(18, 1, 21, 4, 'p'); ret(19, 2, 20, 3, 'm'); set(19, 4, 'm');
+      caminho([[10.5, 7], [10.5, 9]], 1.5, 'k');
+      ret(4, 9, 5, 15, 'm');
+      por('escotilha', 20, 2); por('caixote', 19, 2); por('mesa', 9, 3); por('mesa', 12, 4); por('estante', 8, 5); por('vaso', 13, 3);
+      for (const [x, y] of [[13, 9], [8, 9], [2, 7], [20, 10]]) por('guardasol', x, y);
+      por('barco', 7, 13); por('lanterna', 5, 15); for (const [x, y] of [[3, 11], [6, 11], [3, 14], [6, 14]]) por('poste', x, y);
+      for (const [x, y] of [[1, 3], [5, 1], [16, 1], [22, 5], [0, 7], [22, 1], [15, 5]]) por('palmeira', x, y);
+      espalha(5, 'arbusto', c => c === 'g'); espalha(3, 'saco', c => c === 's'); espalha(2, 'rocha', c => c === 's'); espalha(2, 'juncos', c => c === 'a');
+    } },
+  { id: 'laboratorio-z', grupo: 'Ilha Z', nome: 'O laboratório', onde: 'Kósmos · debaixo da Ilha Z', cols: 40, linhas: 28, bioma: 'laboratorio', luz: 'escuro', base: 'p',
+    texto: 'O que fica embaixo da escotilha: tanques, máquinas, celas e um arquivo cheio de registros sobre o passado que ninguém deveria ler.',
+    fazer: L => {
+      const { ret, bolha, por, espalha, set } = L;
+      ret(1, 1, 7, 7, 'q'); por('escada', 2, 1, { r: 0 });
+      ret(8, 3, 33, 4, 'q'); ret(18, 5, 19, 22, 'q'); ret(8, 22, 33, 23, 'q');
+      ret(9, 6, 16, 13, 'q'); ret(12, 5, 13, 5, 'q');
+      for (let i = 0; i < 4; i++) por('tanque', 10 + i * 2, 7); for (let i = 0; i < 3; i++) por('tanque', 10 + i * 2, 12); por('maquina', 14, 10); por('maquina', 9, 10);
+      ret(21, 6, 32, 13, 'q'); ret(20, 9, 20, 10, 'q');
+      for (const [x, y] of [[22, 7], [25, 7], [28, 7], [22, 10], [25, 10], [28, 10], [22, 12], [25, 12]]) por('estante', x, y); por('mesa', 31, 12); por('bau', 32, 6); por('mesa', 31, 8);
+      ret(1, 9, 7, 17, 'q'); ret(8, 12, 8, 13, 'q'); ret(3, 8, 4, 8, 'q');
+      for (const [x, y] of [[2, 10], [4, 10], [6, 10], [2, 14], [4, 14]]) por('maca', x, y); por('caixote', 6, 16); por('estante', 5, 13);
+      ret(9, 15, 16, 20, 'q'); ret(12, 14, 13, 14, 'q'); for (const x of [9, 11, 13, 15]) { ret(x, 18, x, 20, 'p'); } for (const x of [10, 12, 14, 16]) por('ossos', x, 20); por('teia', 9, 15);
+      ret(21, 15, 32, 20, 'q'); ret(20, 17, 20, 18, 'q'); por('maquina', 22, 16); por('maquina', 26, 16); por('maquina', 22, 19); por('barril', 30, 16); por('barril', 31, 16); por('caixote', 31, 19);
+      ret(34, 1, 38, 8, 'q'); ret(34, 3, 34, 4, 'q'); por('mesa', 35, 2); por('estante', 36, 7); por('bau', 37, 2); por('estatua', 36, 5);
+      ret(34, 20, 38, 26, 'q'); ret(34, 22, 34, 23, 'q'); bolha(36.5, 24, 2.4, 2, 'a', .3, 'q'); bolha(35.5, 21.5, 1.4, 1, 'd', .4, 'q');
+      ret(1, 20, 7, 26, 'q'); ret(8, 22, 8, 23, 'q'); bolha(4, 23, 2.5, 2, 'd', .4, 'q'); espalha(3, 'entulho', c => c === 'd');
+      for (const [x, y] of [[10, 3], [24, 3], [31, 3], [18, 9], [19, 18], [12, 23], [27, 22], [4, 5], [5, 18]]) por('lanterna', x, y);
+      espalha(4, 'caixote', c => c === 'q'); espalha(2, 'ossos', c => c === 'q');
+    } },
+  // ================= Vetrheim =================
+  { id: 'vetrheim-fronteira', grupo: 'Vetrheim', nome: 'A fronteira norte', onde: 'Kósmos Sul · Vetrheim', cols: 80, linhas: 60, bioma: 'vetrheim', luz: 'entardecer',
+    texto: 'O pedaço de Vetrheim que olha para o arquipélago: serra ao norte, rio congelado, um forte de pedra, o acampamento e o campo onde a última batalha ficou.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, casa, n, r } = L;
+      for (let x = 0; x < 80; x++) { const cr = 6 + Math.round((n(x * .9, 3) - .5) * 9); for (let y = 0; y < cr; y++) set(x, y, 'b'); }
+      ret(22, 0, 25, 9, 'n', 'b'); ret(58, 0, 60, 9, 'n', 'b');
+      caminho([[24, 0], [28, 12], [24, 24], [32, 36], [46, 44], [60, 50], [80, 54]], 2.6, 'i', 'nb');
+      bolha(66, 46, 7, 5, 'i', .4, 'n'); bolha(68, 47, 1, .8, 'a', .3, 'i');
+      for (let i = 0; i < 9; i++) { const x = 4 + Math.floor(r() * 72), y = 12 + Math.floor(r() * 44); if (get(x, y) === 'n') bolha(x, y, 2 + r() * 2, 1.5 + r(), 'b', .5, 'n'); }
+      // o forte: muralha com torres nos cantos, pátio e salão
+      ret(44, 14, 63, 29, 'p'); ret(45, 15, 62, 28, 'k'); for (const [x, y] of [[43, 13], [61, 13], [43, 27], [61, 27]]) ret(x, y, x + 2, y + 2, 'p');
+      ret(52, 29, 54, 29, 'k'); casa(48, 16, 11, 7, 's', 'k'); por('altar', 52, 17); por('braseiro', 50, 18); por('braseiro', 56, 18); por('mesa', 51, 20); por('mesa', 55, 20);
+      for (const [x, y] of [[46, 25], [60, 25], [47, 16], [60, 16]]) por('estandarte', x, y); por('barril', 46, 27); por('caixote', 60, 27); por('caixote', 59, 27);
+      caminho([[53, 30], [50, 40], [36, 46], [22, 44]], 2, 'r', 'n'); caminho([[53, 13], [59, 6], [59, 0]], 1.8, 'r', 'nb');
+      // acampamento
+      for (let y = 0; y < 60; y++) for (let x = 0; x < 80; x++) { const dd = Math.hypot(x + .5 - 16, (y + .5 - 44) * 1.1); if (dd < 4.6 && n(x * 2, y * 2) > .42 && get(x, y) === 'n') set(x, y, 'r'); if (dd > 5.4 && dd < 6.4 && get(x, y) === 'n' && !(x > 19)) set(x, y, 'c'); }
+      por('fogueira', 16, 44); for (const [x, y] of [[12, 40], [17, 40], [11, 45], [18, 45]]) por('tenda', x, y); por('estandarte', 16, 39); por('barricada', 22, 42); por('barricada', 22, 46);
+      // campo da última batalha
+      for (let i = 0; i < 6; i++) bolha(30 + r() * 14, 48 + r() * 8, 2, 1.4, 'd', .5, 'n');
+      espalha(16, 'ossos', (c, x, y) => (c === 'n' || c === 'd') && x > 26 && x < 48 && y > 44); espalha(6, 'estandarte', (c, x, y) => c === 'n' && x > 26 && x < 48 && y > 44); espalha(6, 'barricada', (c, x, y) => c === 'n' && x > 26 && x < 48 && y > 42 && get(x + 1, y) === 'n'); espalha(6, 'entulho', c => c === 'd');
+      espalha(70, 'pinheiro', (c, x, y) => c === 'n' && (n(x * .5 + 20, y * .5) > .55)); espalha(16, 'rocha', (c, x, y) => c === 'n' && vizinho(x, y, 'b')); espalha(8, 'toco', c => c === 'n');
+      for (const [x, y] of [[64, 43], [70, 50]]) { casa(x, y, 4, 3, 's', 'm'); } espalha(3, 'barril', (c, x, y) => c === 'n' && Math.hypot(x - 66, y - 46) < 9);
+    } },
+  { id: 'vetrheim-acampamento', grupo: 'Vetrheim', nome: 'O acampamento de guerra', onde: 'Kósmos Sul · Vetrheim', cols: 28, linhas: 20, bioma: 'vetrheim', luz: 'entardecer',
+    texto: 'Um acampamento Frostborn entre a serra e o lago congelado. A muralha baixa e as barricadas viram para o sul, por onde vem o inimigo.',
+    fazer: L => {
+      const { get, set, bolha, caminho, por, espalha, n } = L;
+      for (let x = 0; x < 28; x++) { const cr = 2 + Math.round((n(x * 1.4, 3) - .5) * 3); for (let y = 0; y < cr; y++) set(x, y, 'b'); }
+      bolha(22, 13, 4.6, 3.6, 'i', .3); set(23, 14, 'a');
+      for (let y = 0; y < 20; y++) for (let x = 0; x < 28; x++) { const d = Math.hypot(x + .5 - 12, (y + .5 - 10) * 1.1); if (d < 4.6 && n(x * 2, y * 2) > .42) set(x, y, 'r'); if (d > 5.4 && d < 6.4 && get(x, y) === 'n' && !(y > 13 && x >= 10 && x <= 14)) set(x, y, 'c'); }
+      caminho([[12, 14], [12.5, 17], [12, 20]], 2, 'r', 'nc');
+      por('fogueira', 12, 10);
+      for (const [x, y] of [[8, 6], [14, 6], [7, 11], [15, 11]]) por('tenda', x, y);
+      por('braseiro', 10, 14); por('braseiro', 14, 14);
+      for (const [x, y] of [[12, 5], [9, 9], [16, 9]]) por('estandarte', x, y);
+      por('barricada', 9, 17); por('barricada', 14, 17);
+      for (const [t, x, y] of [['caixote', 10, 6], ['barril', 11, 6], ['caixote', 17, 8], ['bau', 6, 9], ['saco', 9, 13], ['barril', 15, 13], ['mesa', 11, 8]]) por(t, x, y);
+      espalha(9, 'pinheiro', (c, x, y) => c === 'n' && (x < 5 || x > 18 && y < 9));
+      espalha(5, 'rocha', (c, x, y) => c === 'n' && (x < 6 || y > 16)); espalha(2, 'toco', c => c === 'n'); espalha(2, 'ossos', (c, x, y) => c === 'n' && y > 15);
+    } },
+  { id: 'vetrheim-salao', grupo: 'Vetrheim', nome: 'O salão do forte', onde: 'Kósmos Sul · Vetrheim', cols: 26, linhas: 18, bioma: 'vetrheim', luz: 'entardecer', base: 'p',
+    texto: 'O salão do forte, com as mesas compridas e os braseiros. O chefe come de frente para a porta, de costas para a parede.',
+    fazer: L => {
+      const { ret, set, por } = L;
+      ret(1, 1, 24, 16, 'k'); set(12, 17, 'k'); set(13, 17, 'k'); ret(1, 1, 24, 3, 'm');
+      por('altar', 12, 2);
+      for (const y of [6, 11]) for (const x of [4, 8, 16, 20]) por('mesa', x, y);
+      for (const [x, y] of [[2, 5], [23, 5], [2, 12], [23, 12]]) por('braseiro', x, y);
+      for (const [x, y] of [[6, 1], [19, 1], [1, 8], [24, 8]]) por('estandarte', x, y);
+      for (const [t, x, y] of [['barril', 2, 15], ['barril', 3, 15], ['caixote', 22, 15], ['bau', 23, 15], ['estante', 9, 1], ['estante', 15, 1], ['pilar', 7, 14], ['pilar', 18, 14], ['pilar', 7, 4], ['pilar', 18, 4]]) por(t, x, y);
+    } },
+];
+const LUGAR_CACHE = {};
+function mapaDoLugar(id) {
+  const l = LUGARES.find(x => x.id === id); if (!l) return null;
+  if (!LUGAR_CACHE[id]) LUGAR_CACHE[id] = fazerLugar(l.cols, l.linhas, l.base || MAPA_BIOMAS[l.bioma][1], [...id].reduce((a, c) => a * 31 + c.charCodeAt(0) >>> 0, 7), l.fazer);
+  return { ...l, ...LUGAR_CACHE[id] };
+}
+
 
 /* ---------- tabuleiro de combate ---------- */
 // Um quadrado = 1,5 m. Peças, névoa, terreno e turno ficam no Supabase; a tela pergunta a cada 1,2 s
 // só a versão do tabuleiro e baixa o resto quando ela muda.
 const TQ = 48, METRO = 1.5;
-const TERRENOS = [['g', 'Grama'], ['r', 'Terra'], ['s', 'Areia'], ['k', 'Pedra'], ['m', 'Tábuas'], ['o', 'Caverna'], ['a', 'Água rasa'], ['f', 'Água funda'], ['l', 'Lama'], ['v', 'Mato alto'], ['d', 'Entulho'], ['c', 'Mureta'], ['b', 'Rocha'], ['p', 'Parede'], ['x', 'Abismo'], ['.', 'Chão do ambiente']];
+const TERRENOS = [['g', 'Grama'], ['r', 'Terra'], ['s', 'Areia'], ['k', 'Pedra'], ['m', 'Tábuas'], ['o', 'Caverna'], ['a', 'Água rasa'], ['f', 'Água funda'], ['l', 'Lama'], ['v', 'Mato alto'], ['d', 'Entulho'], ['c', 'Mureta'], ['b', 'Rocha'], ['p', 'Parede'], ['x', 'Abismo'], ['n', 'Neve'], ['i', 'Gelo'], ['e', 'Lava'], ['h', 'Terra queimada'], ['q', 'Metal'], ['.', 'Chão do ambiente']];
 const FORMAS = [['circulo', 'Raio'], ['cone', 'Cone'], ['linha', 'Linha']];
 const TAMANHOS_AREA = [3, 4.5, 6, 9, 12, 18];
 const FASES = ['Antes dos inimigos', 'Inimigos e aliados', 'Depois dos inimigos'];
@@ -5770,6 +6378,12 @@ function gerarCena() {
   TB.antes = { cols: TB.t.cols, linhas: TB.t.linhas, terreno: TB.t.terreno, nevoa: TB.t.nevoa, cena: TB.t.cena };
   aplicarCena({ cols, linhas, terreno, nevoa: '0'.repeat(cols * linhas), cena: { bioma: TB.bioma, semente, props } }, `mapa de ${MAPA_BIOMAS[TB.bioma][0].toLowerCase()} gerado`);
 }
+// lugar pronto do mundo: abre como qualquer mapa (e dá para desfazer)
+function abrirLugar(id) {
+  const l = mapaDoLugar(id); if (!l) return;
+  TB.antes = { cols: TB.t.cols, linhas: TB.t.linhas, terreno: TB.t.terreno, nevoa: TB.t.nevoa, cena: TB.t.cena };
+  aplicarCena({ cols: l.cols, linhas: l.linhas, terreno: l.terreno, nevoa: '0'.repeat(l.cols * l.linhas), cena: { bioma: l.bioma, luz: l.luz, lugar: l.id, props: l.props.map(p => ({ ...p })) } }, l.grupo + ': ' + l.nome.toLowerCase());
+}
 async function aplicarCena(n, ok) {
   TB.t = { ...TB.t, ...n };
   const tirarImg = TB.temFundo;
@@ -5781,7 +6395,9 @@ async function aplicarCena(n, ok) {
   }, ok + (tirarImg ? '; a imagem de fundo saiu para o mapa aparecer' : ''), ['terreno', 'nevoa', 'cena']);
   // ninguém fica dentro de parede, rocha ou água funda
   if (!TB) return;
-  const ruim = (p, x, y) => { for (let yy = y; yy < y + p.tam; yy++) for (let xx = x; xx < x + p.tam; xx++) { const t = TB.t.terreno[yy * TB.t.cols + xx]; if (t === undefined || 'pbfx'.includes(t)) return true; } return TB.pecas.some(o => o !== p && x < o.x + o.tam && x + p.tam > o.x && y < o.y + o.tam && y + p.tam > o.y); };
+  // objetos que fecham o quadrado (farol, pilar, estátua, tenda…) também empurram as peças para fora
+  const cheio = new Set(); for (const o of (TB.t.cena && TB.t.cena.props) || []) { const d = MAPA_PROPS[o.t]; if (!d || !/bloqueia|cobertura total/.test(d[1])) continue; const [w, h] = propTam(o.t); for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) cheio.add((o.x + dx) + ',' + (o.y + dy)); }
+  const ruim = (p, x, y) => { for (let yy = y; yy < y + p.tam; yy++) for (let xx = x; xx < x + p.tam; xx++) { const t = TB.t.terreno[yy * TB.t.cols + xx]; if (t === undefined || 'pbfxe'.includes(t) || cheio.has(xx + ',' + yy)) return true; } return TB.pecas.some(o => o !== p && x < o.x + o.tam && x + p.tam > o.x && y < o.y + o.tam && y + p.tam > o.y); };
   for (const p of TB.pecas) {
     let x = clamp(p.x, 0, TB.t.cols - p.tam), y = clamp(p.y, 0, TB.t.linhas - p.tam);
     if (ruim(p, x, y)) { busca: for (let raio = 1; raio < 30; raio++) for (let dy = -raio; dy <= raio; dy++) for (let dx = -raio; dx <= raio; dx++) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx + p.tam > TB.t.cols || ny + p.tam > TB.t.linhas || ruim(p, nx, ny)) continue; x = nx; y = ny; break busca; } }
@@ -6058,9 +6674,13 @@ function desenharAdd() {
 }
 function desenharCena() {
   const box = $('#tb-cena', root); if (!box || box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
+  const lg = LUGARES.find(l => l.id === TB.lugar), grupos = [...new Set(LUGARES.map(l => l.grupo))];
   box.innerHTML = `<h3>Cenário</h3>
-    <p class="fx-lbl">Gerar um mapa</p>
-    <div class="chips">${Object.entries(MAPA_BIOMAS).map(([v, [n]]) => `<button class="chip" type="button" data-tb="bioma" data-v="${v}" aria-pressed="${TB.bioma === v}">${n}</button>`).join('')}</div>
+    <p class="fx-lbl">Lugares do mundo</p>
+    ${grupos.map(gr => `<p class="fx-hint"><b>${esc(gr)}</b> · ${esc(LUGARES.find(l => l.grupo === gr).onde)}</p><div class="chips">${LUGARES.filter(l => l.grupo === gr).map(l => `<button class="chip" type="button" data-tb="lugar" data-v="${l.id}" aria-pressed="${TB.lugar === l.id}">${esc(l.nome)}</button>`).join('')}</div>`).join('')}
+    ${lg ? `<div class="tb-lugar"><p><b>${esc(lg.grupo)}: ${esc(lg.nome.toLowerCase())}</b> · ${lg.cols} × ${lg.linhas} quadrados</p><p class="fx-hint">${esc(lg.texto)}</p><div class="fx-add"><button class="fx-btn" type="button" data-tb="abrir-lugar">Abrir este lugar</button>${TB.antes ? '<button class="fx-btn small" type="button" data-tb="desfazer-mapa">Desfazer</button>' : ''}</div></div>` : '<p class="fx-hint">Escolha um lugar para ver o que tem nele.</p>'}
+    <p class="fx-lbl">Ou gere um mapa</p>
+    <div class="chips">${Object.entries(MAPA_BIOMAS).filter(([, b]) => !b[3]).map(([v, [n]]) => `<button class="chip" type="button" data-tb="bioma" data-v="${v}" aria-pressed="${TB.bioma === v}">${n}</button>`).join('')}</div>
     <div class="fx-add tb-gerar"><label class="fx-f"><span>Tamanho</span><select id="tb-tam-gerar">${[['16x12', 'pequeno, 16 × 12'], ['24x16', 'médio, 24 × 16'], ['32x22', 'grande, 32 × 22'], ['40x28', 'enorme, 40 × 28'], ['20x28', 'em pé, 20 × 28']].map(([v, n]) => `<option value="${v}"${TB.tamGerar === v ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
       <button class="fx-btn" type="button" data-tb="gerar">Gerar mapa</button>${TB.antes ? '<button class="fx-btn small" type="button" data-tb="desfazer-mapa">Desfazer</button>' : ''}</div>
     <p class="fx-hint">Troca o terreno e os objetos; as peças continuam no mapa, longe de paredes, abismo e água funda. Gere de novo para outra versão, e retoque com Terreno e Objetos.</p>
@@ -6180,6 +6800,8 @@ function tbClique(e) {
   if (a === 'objeto') { TB.objeto = b.dataset.v; return desenharOpcoes(); }
   if (a === 'bioma') { TB.bioma = b.dataset.v; return desenharCena(); }
   if (a === 'gerar') return gerarCena();
+  if (a === 'lugar') { TB.lugar = b.dataset.v; return desenharCena(); }
+  if (a === 'abrir-lugar' && TB.lugar) return abrirLugar(TB.lugar);
   if (a === 'luz') { TB.t.cena = { ...TB.t.cena, luz: b.dataset.v }; desenharTerreno(); desenharCena(); return tbEscreve(() => api('PATCH', 'tabuleiros?mesa_id=eq.' + TB.id, { cena: TB.t.cena }), 'luz: ' + MAPA_LUZ[b.dataset.v][0].toLowerCase(), ['cena']); }
   if (a === 'desfazer-mapa' && TB.antes) { const v = TB.antes; TB.antes = null; return aplicarCena(v, 'mapa anterior de volta'); }
   if (a === 'nevoa-modo') { TB.nevoaModo = b.dataset.v; return desenharOpcoes(); }
