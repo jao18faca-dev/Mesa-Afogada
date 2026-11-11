@@ -6931,9 +6931,100 @@ const TOKENS = (() => {
      <circle cx="64.4" cy="51" r="1.9" fill="none" stroke="#e1b74a" stroke-width="1.1"/>
      <path d="M30 70 C40 64 60 64 70 70 L68 80 C58 74 42 74 32 80 Z" fill="#5c2c22"/>`);
 
+  const dente = (x, y, h, s = 1) => `<path d="M${x - 1.6 * s} ${y} L${x} ${y + h} L${x + 1.6 * s} ${y} Z" fill="#ece5cf"/>`;
+  const dentes = (x0, x1, y, h, n, inv) => Array.from({ length: n }, (_, i) => { const x = x0 + (x1 - x0) * (i + .5) / n; return inv ? `<path d="M${x - 1.7} ${y} L${x} ${y - h} L${x + 1.7} ${y} Z" fill="#ece5cf"/>` : dente(x, y, h); }).join('');
+
+  const tubarrao = svg('tu', fundo('tu', '#2c4552', '#0a1216') +
+    `<linearGradient id="tup" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7f97a3"/><stop offset=".55" stop-color="#55707e"/><stop offset=".56" stop-color="#d9d4c4"/><stop offset="1" stop-color="#a9a291"/></linearGradient>`,
+    `<path d="M4 100 C6 74 22 64 50 62 C78 64 94 74 96 100 Z" fill="#4c6470"/><path d="M30 76 C36 70 64 70 70 76 L66 100 L34 100 Z" fill="#3d2f24"/>
+     <path d="M48 6 L58 26 L44 26 Z" fill="#4f6976"/>
+     <path d="M22 50 C20 30 34 20 50 20 C66 20 80 30 78 50 C78 64 66 72 50 72 C34 72 22 64 22 50 Z" fill="url(#tup)"/>
+     <path d="M28 54 C36 64 64 64 72 54 C68 66 60 70 50 70 C40 70 32 66 28 54 Z" fill="#2a0f0c"/>
+     ${dentes(31, 69, 55.5, 4.5, 9)}${dentes(34, 66, 68, 3.6, 7, 1)}
+     <circle cx="33" cy="41" r="3.2" fill="#0b0c0d"/><circle cx="67" cy="41" r="3.2" fill="#0b0c0d"/><circle cx="33.9" cy="40.1" r=".9" fill="#d5e4ea"/><circle cx="67.9" cy="40.1" r=".9" fill="#d5e4ea"/>
+     <path d="M74 46 l4 1 M74 50 l4 .6 M74 54 l3.6 .2 M26 46 l-4 1 M26 50 l-4 .6 M26 54 l-3.6 .2" stroke="#2f434d" stroke-width="1.1" stroke-linecap="round"/>
+     <path d="M36 30 Q50 26 64 30" fill="none" stroke="#a8bcc5" stroke-width="1" opacity=".5"/>
+     <path d="M40 66 l-3 6 M58 64 l4 7" stroke="#6d2018" stroke-width="1.2" opacity=".7"/>`);
+
+  const lula = svg('lu', fundo('lu', '#3a3f45', '#0b0c0e') +
+    `<radialGradient id="lup" cx="45%" cy="30%" r="70%"><stop offset="0" stop-color="#9a9488"/><stop offset=".6" stop-color="#6a655c"/><stop offset="1" stop-color="#34312c"/></radialGradient>`,
+    `${[[-38, 30], [-22, 22], [-8, 26], [8, 26], [22, 22], [38, 30]].map(([dx, c], i) => `<path d="M${50 + dx * .35} 58 C${50 + dx * .7} ${70 + i % 2 * 4} ${50 + dx * 1.1} ${80} ${50 + dx * 1.25} ${100}" fill="none" stroke="#5c574f" stroke-width="${7 - Math.abs(dx) / 14}" stroke-linecap="round"/><path d="M${50 + dx * 1.05} 84 l${dx > 0 ? 3 : -3} -2 M${50 + dx * .9} 76 l${dx > 0 ? 3 : -3} -2" stroke="#d8d1bd" stroke-width="1.3" stroke-linecap="round"/>`).join('')}
+     <path d="M30 56 C24 30 36 6 50 4 C64 6 76 30 70 56 C64 64 36 64 30 56 Z" fill="url(#lup)"/>
+     <path d="M36 20 Q50 14 64 20 M33 32 Q50 26 67 32" fill="none" stroke="#4a463f" stroke-width="1" opacity=".6"/>
+     <g fill="#4a463f" opacity=".7"><circle cx="42" cy="26" r="1.6"/><circle cx="58" cy="22" r="1.3"/><circle cx="52" cy="36" r="1.8"/><circle cx="62" cy="40" r="1.2"/><circle cx="40" cy="42" r="1.4"/></g>
+     <ellipse cx="38" cy="52" rx="5" ry="4" fill="#d9b25a"/><ellipse cx="62" cy="52" rx="5" ry="4" fill="#d9b25a"/>
+     <rect x="34.5" y="51" width="7" height="2.2" rx="1" fill="#0d0a06"/><rect x="58.5" y="51" width="7" height="2.2" rx="1" fill="#0d0a06"/>`);
+
+  const debulhador = svg('de', fundo('de', '#5a4a33', '#15100a') +
+    `<linearGradient id="dep" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e7a5a"/><stop offset="1" stop-color="#4a3b26"/></linearGradient>`,
+    `<path d="M78 8 C92 18 96 34 90 44 L84 40 C88 30 84 20 76 14 Z" fill="#cfc6b0"/><path d="M60 40 C70 30 76 20 78 10" fill="none" stroke="#5b4a31" stroke-width="5" stroke-linecap="round"/>
+     <path d="M0 100 L0 80 C20 74 80 74 100 80 L100 100 Z" fill="#b59a6a"/>
+     <path d="M10 82 C10 54 28 40 50 40 C72 40 90 54 90 82 C80 90 20 90 10 82 Z" fill="url(#dep)"/>
+     ${[[22, 56], [36, 48], [50, 46], [64, 48], [78, 56], [28, 68], [44, 62], [56, 62], [72, 68]].map(([x, y]) => `<path d="M${x - 7} ${y + 4} L${x} ${y - 4} L${x + 7} ${y + 4} Z" fill="#a08a64" stroke="#3a2d1b" stroke-width="1"/>`).join('')}
+     <path d="M30 80 C40 86 60 86 70 80 C66 88 58 92 50 92 C42 92 34 88 30 80 Z" fill="#20160c"/>${dentes(34, 66, 81.5, 4, 8)}
+     <circle cx="34" cy="74" r="2.6" fill="#e2b33c"/><circle cx="66" cy="74" r="2.6" fill="#e2b33c"/><rect x="33.3" y="72" width="1.4" height="4" fill="#120c04"/><rect x="65.3" y="72" width="1.4" height="4" fill="#120c04"/>
+     <g fill="#d1bd8f" opacity=".5"><circle cx="8" cy="94" r="1"/><circle cx="20" cy="96" r="1.3"/><circle cx="84" cy="95" r="1.1"/><circle cx="94" cy="90" r=".9"/></g>`);
+
+  const coruja = svg('co', fundo('co', '#262a33', '#07080a') +
+    `<radialGradient id="cop" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#3d3a40"/><stop offset="1" stop-color="#151418"/></radialGradient><radialGradient id="coo" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#050505"/><stop offset=".8" stop-color="#121214"/><stop offset="1" stop-color="#2a2830"/></radialGradient>`,
+    `<path d="M2 100 C4 70 20 56 50 54 C80 56 96 70 98 100 Z" fill="#1d1c21"/>
+     ${Array.from({ length: 18 }, (_, i) => { const x = 8 + (i % 6) * 17 + (i > 5 && i < 12 ? 8 : 0), y = 70 + Math.floor(i / 6) * 10; return `<path d="M${x - 6} ${y} Q${x} ${y + 9} ${x + 6} ${y}" fill="none" stroke="#38353e" stroke-width="1.4"/>`; }).join('')}
+     <path d="M20 22 L30 34 L22 36 Z M80 22 L70 34 L78 36 Z" fill="#2c2a31"/>
+     <path d="M16 52 C14 30 30 20 50 20 C70 20 86 30 84 52 C82 70 68 78 50 78 C32 78 18 70 16 52 Z" fill="url(#cop)"/>
+     <path d="M22 48 C22 36 30 30 38 30 C46 30 50 38 50 46 C50 38 54 30 62 30 C70 30 78 36 78 48 C78 60 68 66 62 66 C56 66 50 60 50 54 C50 60 44 66 38 66 C32 66 22 60 22 48 Z" fill="#4a4651" opacity=".7"/>
+     <circle cx="37" cy="47" r="9" fill="url(#coo)"/><circle cx="63" cy="47" r="9" fill="url(#coo)"/>
+     <path d="M47 56 L50 66 L53 56 Q50 54 47 56 Z" fill="#6f6553"/>
+     ${Array.from({ length: 10 }, (_, i) => `<path d="M${26 + i * 5} ${36 - Math.abs(i - 4.5)} l1 3" stroke="#5c5763" stroke-width=".8"/>`).join('')}`);
+
+  const celtor = svg('ce', fundo('ce', '#2b3a33', '#090d0b') +
+    `<linearGradient id="cep" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8d8d7a"/><stop offset=".5" stop-color="#5a5c4c"/><stop offset="1" stop-color="#2c2e24"/></linearGradient><radialGradient id="cel" cx="50%" cy="50%" r="60%"><stop offset="0" stop-color="#6b8a4a" stop-opacity=".9"/><stop offset="1" stop-color="#3a4d24" stop-opacity="0"/></radialGradient>`,
+    `<path d="M2 100 C4 72 20 62 50 60 C80 62 96 72 98 100 Z" fill="url(#cep)"/>
+     <path d="M20 70 C30 64 40 66 50 66 C60 66 70 64 80 70 L82 78 C70 74 30 74 18 78 Z" fill="#4a4c3e"/>
+     <path d="M26 58 C24 30 34 14 50 14 C66 14 76 30 74 58 C70 66 30 66 26 58 Z" fill="url(#cep)"/>
+     <path d="M50 10 L50 62" stroke="#2d2f25" stroke-width="3"/><path d="M48 8 C48 4 52 4 52 8 L52 16 L48 16 Z" fill="#6b6c5a"/>
+     <path d="M30 38 L70 38 L68 44 L32 44 Z" fill="#070807"/>
+     <path d="M34 50 l0 8 M40 50 l0 9 M46 50 l0 9 M54 50 l0 9 M60 50 l0 9 M66 50 l0 8" stroke="#16170f" stroke-width="2"/>
+     <ellipse cx="38" cy="22" rx="10" ry="6" fill="url(#cel)"/><ellipse cx="68" cy="66" rx="14" ry="6" fill="url(#cel)"/><ellipse cx="22" cy="86" rx="12" ry="7" fill="url(#cel)"/>
+     <path d="M30 44 C29 50 31 54 30 58 M71 44 C72 50 70 54 71 60" stroke="#506b33" stroke-width="1.6" fill="none" opacity=".8"/>`);
+
+  const executor = svg('ex', fundo('ex', '#3c2c2a', '#0d0908') +
+    `<linearGradient id="exp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7e7670"/><stop offset=".5" stop-color="#4a4440"/><stop offset="1" stop-color="#1f1b19"/></linearGradient>`,
+    `<path d="M66 6 L94 6 L94 30 L66 30 Z" fill="#3b3633" stroke="#1a1716" stroke-width="1.5"/><path d="M78 30 L82 30 L84 100 L76 100 Z" fill="#4a3424"/>
+     <path d="M0 100 C0 70 16 58 50 56 C84 58 100 70 100 100 Z" fill="url(#exp)"/>
+     <path d="M8 66 C16 56 30 54 36 60 L30 76 C22 74 14 72 8 66 Z M92 66 C84 56 70 54 64 60 L70 76 C78 74 86 72 92 66 Z" fill="#5d5652" stroke="#1f1b19" stroke-width="1"/>
+     <path d="M30 56 C28 24 38 12 50 12 C62 12 72 24 70 56 Z" fill="url(#exp)" stroke="#1a1716" stroke-width="1.2"/>
+     <path d="M36 34 L64 34 L62 40 L38 40 Z" fill="#0a0707"/><rect x="47" y="34" width="6" height="22" fill="#0a0707"/>
+     <circle cx="43" cy="37" r="1.4" fill="#d24a2a"/><circle cx="57" cy="37" r="1.4" fill="#d24a2a"/>
+     ${[[34, 46], [66, 46], [36, 24], [64, 24], [20, 80], [80, 80], [50, 72]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.6" fill="#8d847d"/>`).join('')}
+     <path d="M40 60 C44 66 56 66 60 60" fill="none" stroke="#2c2725" stroke-width="2"/>`);
+
+  const megalodonte = svg('mg', fundo('mg', '#1c3a4d', '#050b10') +
+    `<radialGradient id="mgp" cx="50%" cy="20%" r="80%"><stop offset="0" stop-color="#7d93a0"/><stop offset="1" stop-color="#2d3e48"/></radialGradient>`,
+    `<path d="M0 0 L100 0 L100 34 C80 26 20 26 0 34 Z" fill="url(#mgp)"/><path d="M0 100 L100 100 L100 78 C80 86 20 86 0 78 Z" fill="#b8b2a2"/>
+     <path d="M0 34 C20 26 80 26 100 34 L100 78 C80 86 20 86 0 78 Z" fill="#3a0c0a"/>
+     <path d="M0 40 C20 32 80 32 100 40 L100 74 C80 80 20 80 0 74 Z" fill="#14070a"/>
+     ${dentes(2, 98, 32.5, 12, 11)}${dentes(6, 94, 79, 11, 10, 1)}
+     ${dentes(14, 86, 40, 6, 9)}${dentes(18, 82, 72, 6, 8, 1)}
+     <path d="M30 56 Q50 50 70 56" fill="none" stroke="#2a0a0a" stroke-width="3" opacity=".8"/>
+     <circle cx="12" cy="14" r="3" fill="#0a0c0d"/><circle cx="88" cy="14" r="3" fill="#0a0c0d"/><circle cx="12.8" cy="13.2" r=".8" fill="#cfe0e8"/><circle cx="88.8" cy="13.2" r=".8" fill="#cfe0e8"/>
+     <path d="M30 18 Q50 12 70 18" fill="none" stroke="#a9bcc6" stroke-width="1" opacity=".45"/>`);
+
+  const primadonte = svg('pr', fundo('pr', '#3d4440', '#0c0e0d') +
+    `<radialGradient id="prp" cx="50%" cy="38%" r="65%"><stop offset="0" stop-color="#4f4642"/><stop offset="1" stop-color="#231e1c"/></radialGradient><linearGradient id="prg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6a8a4"/><stop offset="1" stop-color="#5f625e"/></linearGradient>`,
+    `<path d="M0 100 C0 64 18 50 50 48 C82 50 100 64 100 100 Z" fill="url(#prg)"/>
+     ${Array.from({ length: 22 }, (_, i) => { const x = 6 + (i % 11) * 8.8, y = 64 + Math.floor(i / 11) * 14; return `<path d="M${x} ${y} q2 6 -1 10" fill="none" stroke="#7d807b" stroke-width="1.2"/>`; }).join('')}
+     <path d="M18 46 C14 22 32 8 50 8 C68 8 86 22 82 46 C82 58 70 66 50 66 C30 66 18 58 18 46 Z" fill="url(#prg)"/>
+     <path d="M30 40 C30 28 40 24 50 24 C60 24 70 28 70 40 C70 56 62 64 50 64 C38 64 30 56 30 40 Z" fill="url(#prp)"/>
+     <path d="M30 34 C36 28 44 30 50 32 C56 30 64 28 70 34 L70 37 C62 33 56 35 50 36 C44 35 38 33 30 37 Z" fill="#171312"/>
+     <circle cx="41" cy="39.5" r="2.4" fill="#d39a33"/><circle cx="59" cy="39.5" r="2.4" fill="#d39a33"/><circle cx="41" cy="39.5" r="1.2" fill="#140c04"/><circle cx="59" cy="39.5" r="1.2" fill="#140c04"/>
+     <path d="M44 48 C46 46 54 46 56 48 C55 51 45 51 44 48 Z" fill="#171312"/><circle cx="47.5" cy="48.4" r="1" fill="#000"/><circle cx="52.5" cy="48.4" r="1" fill="#000"/>
+     <path d="M38 56 C44 60 56 60 62 56 C58 62 42 62 38 56 Z" fill="#3a0f0c"/>${dente(42, 56.6, 4)}${dente(58, 56.6, 4)}`);
+
   return [
     ['irmao cassio', cassio], ['capanga', capanga], ['saltador-da-lama', saltador], ['saltador', saltador],
     ['dona ilma', ilma], ['ilma', ilma], ['rato', rato],
+    ['tubarrao', tubarrao], ['lula de recife', lula], ['lula', lula], ['debulhador', debulhador], ['coruja da profundeza', coruja], ['coruja', coruja],
+    ['guarda celtor', celtor], ['celtor', celtor], ['executor', executor], ['megalodonte', megalodonte], ['primadonte', primadonte],
   ].map(([k, s]) => [k, 'url("data:image/svg+xml,' + encodeURIComponent(s) + '")']);
 })();
 const tirarAcento = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
