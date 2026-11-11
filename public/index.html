@@ -3225,6 +3225,7 @@ function merge(base, x) {
     else base[k] = v;
   }
   if (x.pericias) for (const k of Object.keys(x.pericias)) if (base.pericias[k]) Object.assign(base.pericias[k], x.pericias[k]);
+  if (base.sintonia === '' && Array.isArray(base.mantras) && base.mantras.some(n => (DATA.fisicos || []).some(f => f.nome === n))) base.sintonia = 'sem';
   return base;
 }
 
@@ -3235,6 +3236,7 @@ let ME = null; // perfil aberto neste aparelho
 const aspect = () => DATA.aspectos.find(a => a.id === S.aspecto);
 const style = () => DATA.estilos.find(e => e.id === S.estilo);
 const tune = () => DATA.sintonias.find(e => e.id === S.sintonia);
+const semSin = () => S.sintonia === 'sem';
 function aspectBonus() {
   const out = {}; const a = aspect(); if (!a) return out;
   (a.stats['Atributos'] || '').replace(/([+−-]\d+)\s+(Fort|For|Agi|Int|Von|Car)/g, (_, n, k) => { out[ABBR[k]] = num(n.replace('−', '-')); });
@@ -3257,7 +3259,7 @@ function C() {
     sk[n] = num(p.outros) + at + (tr ? Math.trunc(lvl / 2) + prof : 0);
     usadas += ((p.mt || p.es) && !auto[n] ? 1 : 0) + (p.es ? 1 : 0);
   });
-  const escolhas = 2 + 1 + Math.max(0, m.int) + Math.floor((lvl + 1) / 4) + (S.sintonia ? 0 : 1);
+  const escolhas = 2 + 1 + Math.max(0, m.int) + Math.floor((lvl + 1) / 4) + (semSin() ? 1 : 0);
   const trv = {};
   TRS.forEach(([k, nm]) => { const t = S.trs[k] || {}; trv[k] = m[k] + Math.trunc(lvl / 2) + (t.t ? M : 0) + num(t.o); sk['TR de ' + nm] = trv[k]; });
   const trsUsados = TRS.filter(([k]) => S.trs[k] && S.trs[k].t).length;
@@ -3304,7 +3306,7 @@ function C() {
 function autoTreino() {
   const out = {};
   if (S.estilo) out[S.estilo === 'estilo-fogo' ? 'Pontaria' : 'Luta'] = 'Estilo';
-  if (S.sintonia) out['Musicalidade'] = 'Sintonia';
+  if (S.sintonia && !semSin()) out['Musicalidade'] = 'Sintonia';
   return out;
 }
 function slotCap(e, p) {
@@ -3522,7 +3524,7 @@ function build() {
           <label class="fx-f" data-o="caminhoBox"><span data-o="caminhoLbl">Caminho do Aspecto</span><select id="f-cam" data-b="caminhoAspecto" data-r></select></label>
           <label class="fx-f"><span>Origem</span><select id="f-ori" data-b="origem" data-r>${opt('', '—', S.origem)}${DATA.origens.map(o => opt(o.id, o.nome, S.origem)).join('')}</select></label>
           <label class="fx-f"><span>Estilo de Luta</span><select id="f-est" data-b="estilo" data-r>${opt('', '—', S.estilo)}${DATA.estilos.map(o => opt(o.id, o.nome, S.estilo)).join('')}</select></label>
-          <label class="fx-f"><span>Sintonia</span><select id="f-sin" data-b="sintonia" data-r>${opt('', 'nenhuma (mantras físicos)', S.sintonia)}${DATA.sintonias.map(o => opt(o.id, o.nome, S.sintonia)).join('')}</select></label>
+          <label class="fx-f"><span>Sintonia</span><select id="f-sin" data-b="sintonia" data-r>${opt('', '— escolha —', S.sintonia)}${opt('sem', 'Sem Sintonia (mantras físicos)', S.sintonia)}${DATA.sintonias.map(o => opt(o.id, o.nome, S.sintonia)).join('')}</select></label>
           <label class="fx-f" data-o="sin2Box"><span>Segunda Sintonia</span><select id="f-sin2" data-b="sintonia2" data-r>${opt('', 'nenhuma', S.sintonia2)}${DATA.sintonias.map(o => opt(o.id, o.nome, S.sintonia2)).join('')}</select></label>
           ${ehMestre() ? `<label class="fx-f so-mestre"><span>Juramento · só o Mestre</span><select id="f-jur" data-b="juramento" data-r>${opt('', 'nenhum (Pathfinder)', S.juramento)}${jurs().map(o => opt(o.id, o.nome, S.juramento)).join('')}</select></label>
           <label class="fx-f so-mestre" data-o="jurDegBox"><span>Degrau · só o Mestre</span><select id="f-jdeg" data-b="jurDeg" data-r>${[1, 2, 3].map(n => opt(String(n), ['I', 'II', 'III'][n - 1], String(S.jurDeg))).join('')}</select></label>` : ''}
@@ -3712,7 +3714,7 @@ function refresh() {
   const t = tune();
   O('habs').innerHTML = habs.join('') || '<p class="fx-empty">Escolha Aspecto, Origem e Estilo e as habilidades deles aparecem aqui.</p>';
   const fontes = Object.entries(c.auto).map(([n, f]) => `${n} (${f})`).join(', ');
-  O('origemHint').textContent = `Escolhas usadas: ${c.usadas} de ${c.escolhas} (2 da Origem, 1 + Inteligência, e uma nos níveis 3, 7, 11, 15 e 19; especialista conta uma a mais${S.sintonia ? '' : '; sem Sintonia, mais uma: Atletismo ou Acrobacia'}).` + (fontes ? ` Treinadas sem custo: ${fontes}.` : '') + (o ? ` Origem ${o.nome}: ${o.per}. Equipamento inicial: ${o.equip}` : '');
+  O('origemHint').textContent = `Escolhas usadas: ${c.usadas} de ${c.escolhas} (2 da Origem, 1 + Inteligência, e uma nos níveis 3, 7, 11, 15 e 19; especialista conta uma a mais${!semSin() ? '' : '; sem Sintonia, mais uma: Atletismo ou Acrobacia'}).` + (fontes ? ` Treinadas sem custo: ${fontes}.` : '') + (o ? ` Origem ${o.nome}: ${o.per}. Equipamento inicial: ${o.equip}` : '');
   renderTracks(c);
   pips('impeto', 3, S.impeto, v => { S.impeto = v; }, 'Ímpeto');
   pipsMorte();
@@ -3791,15 +3793,15 @@ function renderArmas(c) {
 function renderMantras() {
   const t = tune();
   { const lv = C().lvl, tem = S.mantras.length + S.extras.filter(x => (x.nome || '').trim()).length, deve = lv + 2;
-    O('manSub').textContent = `${t ? '' : 'mantras físicos · '}você conhece ${tem} de ${deve}: 3 no começo e mais 1 por nível`; }
+    O('manSub').textContent = !t && !semSin() ? 'escolha uma Sintonia, ou Sem Sintonia' : `${t ? '' : 'mantras físicos · '}você conhece ${tem} de ${deve}: 3 no começo e mais 1 por nível`; }
   const known = new Set(S.mantras);
-  const lista = t ? t.mantras : (DATA.fisicos || []);
+  const lista = t ? t.mantras : semSin() ? (DATA.fisicos || []) : [];
   O('mantras').innerHTML = lista.length ? lista.map((m, i) => `<div class="fx-card${known.has(m.nome) ? ' on' : ''}">
       <h4>${esc(m.nome)} <small>${esc(m.cat || '')}</small></h4>
       <span class="meta">${[m.dano && m.dano !== '—' ? (/^dano/i.test(m.dano) ? m.dano : 'dano ' + m.dano) : '', m.alc, m.custo, (m.pa || 1) + ' PA', m.dur].filter(Boolean).map(esc).join(' · ')}</span>
       ${m.ef ? `<p>${m.ef}</p>` : `<p>${esc(m.flavor || '')}</p>`}
       <label><input type="checkbox" id="m-k-${i}" data-mk="${esc(m.nome)}" ${known.has(m.nome) ? 'checked' : ''}> conheço este</label></div>`).join('')
-    : '<p class="fx-empty">Sem Sintonia, sem mantras. Escolha uma lá em cima.</p>';
+    : '<p class="fx-empty">Escolha uma Sintonia lá em cima, ou "Sem Sintonia" para os mantras físicos.</p>';
   O('extras').innerHTML = S.extras.map((m, i) => `<div class="fx-card on"><h4><input class="fx-in" id="x-n-${i}" data-l="extras.${i}.nome" value="${esc(m.nome)}" aria-label="Nome do mantra"><button class="x" type="button" data-del="extras" data-i="${i}" aria-label="Apagar mantra">×</button></h4>
     <textarea id="x-t-${i}" data-l="extras.${i}.texto" aria-label="Anotação do mantra" placeholder="dano, alcance, custo, efeito">${esc(m.texto)}</textarea></div>`).join('') || '<p class="fx-empty">Quando aprender um mantra de estrela ou achar uma folha, anote aqui.</p>';
 }
@@ -3864,7 +3866,7 @@ function wire() {
       const n = el.dataset.mk;
       S.mantras = el.checked ? [...new Set([...S.mantras, n])] : S.mantras.filter(x => x !== n);
       el.closest('.fx-card').classList.toggle('on', el.checked);
-      changed(false);
+      changed(true);
     }
   });
   root.addEventListener('change', e => { if (e.target.id === 'fx-import') { importFile(e); return; } if (e.target.dataset.l && /^armas\.\d+\.nome$/.test(e.target.dataset.l)) { autoArma(+e.target.dataset.l.split('.')[1]); } });
@@ -4243,7 +4245,7 @@ function summary(f) {
   const keep = S; S = merge(blank(), f || {});
   const c = C(), a = aspect(), st = style(), t = tune();
   const cur = (k, mx) => S[k].atual === '' ? mx : num(S[k].atual);
-  const out = { nome: S.nome || 'sem nome', jogador: S.jogador, nivel: c.lvl, aspecto: a ? a.nome : '', estilo: st ? st.nome : '', sintonia: t ? t.nome : '',
+  const out = { nome: S.nome || 'sem nome', jogador: S.jogador, nivel: c.lvl, aspecto: a ? a.nome : '', estilo: st ? st.nome : '', sintonia: t ? t.nome : S.sintonia === 'sem' ? 'Sem Sintonia' : '',
     pv: cur('pv', c.pvMax), pvMax: c.pvMax, postura: cur('postura', c.postMax), postMax: c.postMax, san: cur('san', c.sanMax), sanMax: c.sanMax,
     ether: cur('ether', c.etMax), etMax: c.etMax, defesa: c.defesa, rd: c.rd, atencao: c.atencao, ini: c.ini, mov: c.mov, condicoes: S.condicoes, itens: S.itens.length, armas: S.armas.length };
   S = keep; return out;
