@@ -937,6 +937,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx .tb-aviso{border:1px solid #b8933c;background:rgba(184,147,60,.1);padding:10px 12px;margin:0 0 12px;border-radius:4px}
 .fx .tb-aviso pre{white-space:pre-wrap;word-break:break-word;font-size:11px;background:rgba(0,0,0,.35);padding:8px;margin:8px 0;user-select:all}
 
+.fx .tb-disco.tk{background-size:cover!important;background-position:center!important}
+.fx .tb-disco.tk b{position:absolute;right:-6%;bottom:-6%;font-family:var(--f-display);font-size:calc(var(--tam,1) * 10px);min-width:1.5em;height:1.5em;display:grid;place-items:center;border-radius:50%;background:#0b0f11;color:#f4ecd8;border:1px solid var(--c)}
+.fx .tb-disco.tk b:empty{display:none}
+
 .party{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
 a.fx-btn{text-decoration:none;display:inline-block}
 </style>
@@ -6843,6 +6847,110 @@ function mapaDoLugar(id) {
   return { ...l, ...LUGAR_CACHE[id] };
 }
 
+/* Tokens desenhados para o tabuleiro. A peça usa o desenho quando o nome dela começa com o nome do token
+   ("Saltador-da-Lama 3" usa o do Saltador-da-Lama). Sem banco novo: o desenho vem daqui, pelo nome. */
+const TOKENS = (() => {
+  const fundo = (id, a, b) => `<radialGradient id="${id}f" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
+  const pele = (id, a, b) => `<radialGradient id="${id}p" cx="45%" cy="35%" r="65%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
+  const olho = (x, y, s = 1) => `<ellipse cx="${x}" cy="${y}" rx="${2.6 * s}" ry="${1.5 * s}" fill="#1a1412"/><circle cx="${x + .7 * s}" cy="${y - .4 * s}" r="${.55 * s}" fill="#e9e1cf" opacity=".85"/>`;
+  const svg = (id, defs, corpo) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs>${defs}<clipPath id="${id}c"><circle cx="50" cy="50" r="50"/></clipPath><radialGradient id="${id}v" cx="50%" cy="45%" r="60%"><stop offset=".65" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient></defs><g clip-path="url(#${id}c)"><rect width="100" height="100" fill="url(#${id}f)"/>${corpo}<rect width="100" height="100" fill="url(#${id}v)"/></g></svg>`;
+
+  const cassio = svg('ca', fundo('ca', '#3b4450', '#0f1216') + pele('ca', '#e6d6c4', '#9c8573') +
+    `<linearGradient id="caq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8d939b"/><stop offset="1" stop-color="#3e434a"/></linearGradient><radialGradient id="cal" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff8dc"/><stop offset=".4" stop-color="#f3d77a" stop-opacity=".8"/><stop offset="1" stop-color="#f3d77a" stop-opacity="0"/></radialGradient>`,
+    `<circle cx="80" cy="22" r="16" fill="url(#cal)"/><rect x="77.6" y="22" width="4.8" height="80" rx="2" fill="#6b5a3e"/><circle cx="80" cy="22" r="4.6" fill="#fff6d6"/>
+     <path d="M8 100 C10 74 24 64 50 62 C76 64 90 74 92 100 Z" fill="url(#caq)"/>
+     <path d="M26 60 C22 30 34 12 50 12 C66 12 78 30 74 60 C68 70 32 70 26 60 Z" fill="#4c525a"/>
+     <path d="M34 58 C31 36 38 24 50 24 C62 24 69 36 66 58 C62 66 38 66 34 58 Z" fill="#1d2126"/>
+     <path d="M38 44 C38 32 43 27 50 27 C57 27 62 32 62 44 C62 56 57 63 50 64 C43 63 38 56 38 44 Z" fill="url(#cap)"/>
+     <path d="M41 41.5 L47 40.5 M53 40.5 L59 41.5" stroke="#3a2a22" stroke-width="1.3" stroke-linecap="round"/>
+     ${olho(44.5, 44.5, .85)}${olho(55.5, 44.5, .85)}
+     <path d="M50 45 L48.6 53 L51.2 53.4" fill="none" stroke="#8a6f5f" stroke-width="1"/>
+     <path d="M45.5 57.5 Q50 58.6 54.5 57.5" fill="none" stroke="#6b4a40" stroke-width="1.2" stroke-linecap="round"/>
+     <path d="M40 50 Q41 58 46 61" fill="none" stroke="#8b7363" stroke-width=".8" opacity=".6"/><path d="M60 50 Q59 58 54 61" fill="none" stroke="#8b7363" stroke-width=".8" opacity=".6"/>
+     <path d="M36 66 L50 74 L64 66 L62 72 L50 80 L38 72 Z" fill="#2c3036"/>
+     <path d="M50 70 l1.6 3.4 3.7.4-2.8 2.5.8 3.6-3.3-1.9-3.3 1.9.8-3.6-2.8-2.5 3.7-.4z" fill="#d9dde3" stroke="#7c848e" stroke-width=".4"/>
+     <path d="M70 74 C74 70 82 70 84 76 C85 82 80 86 74 85 C69 84 67 78 70 74 Z" fill="#f2efe8" stroke="#a9a59c" stroke-width=".8"/>`);
+
+  const capanga = svg('cg', fundo('cg', '#4a3f36', '#141110') + pele('cg', '#c99a76', '#7c5640') +
+    `<linearGradient id="cgq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#77746e"/><stop offset="1" stop-color="#2f2d2a"/></linearGradient>`,
+    `<path d="M70 92 L88 18 C89 13 95 14 94 19 L80 94 Z" fill="#5a3d26"/><path d="M84 30 L92 27 M83 36 L91 33" stroke="#3a2617" stroke-width="1.6"/>
+     <path d="M4 100 C6 72 22 62 50 60 C78 62 94 72 96 100 Z" fill="url(#cgq)"/>
+     <path d="M30 63 C34 70 66 70 70 63 L74 74 C62 80 38 80 26 74 Z" fill="#55524c"/>
+     <path d="M33 42 C33 26 40 18 50 18 C60 18 67 26 67 42 C67 58 60 66 50 67 C40 66 33 58 33 42 Z" fill="url(#cgp)"/>
+     <path d="M33 38 C34 24 42 18 50 18 C58 18 66 24 67 38 C62 30 56 28 50 28 C44 28 38 30 33 38 Z" fill="#2d241e"/>
+     <path d="M36 52 C38 62 44 66 50 67 C56 66 62 62 64 52 C60 58 56 60 50 60 C44 60 40 58 36 52 Z" fill="#3a2e26" opacity=".55"/>
+     <path d="M38.5 38.5 L47 39.5 M53 39.5 L61.5 38.5" stroke="#2a1d16" stroke-width="2.2" stroke-linecap="round"/>
+     ${olho(43.5, 43, .95)}${olho(56.5, 43, .95)}
+     <path d="M50 43 Q47 50 48.5 53 Q51 54.5 53 52.5" fill="none" stroke="#6b4632" stroke-width="1.3"/><path d="M50 46 l1.5 -1.5" stroke="#6b4632" stroke-width="1"/>
+     <path d="M44 58 Q50 56.6 56 58" fill="none" stroke="#4d2f22" stroke-width="1.5" stroke-linecap="round"/>
+     <path d="M60 33 L64 41" stroke="#9c6b52" stroke-width="1.1"/>`);
+
+  const saltador = svg('sa', fundo('sa', '#3d4a3a', '#0d120d') +
+    `<radialGradient id="sap" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#8a8c5a"/><stop offset=".6" stop-color="#5a5d36"/><stop offset="1" stop-color="#2b2d18"/></radialGradient><radialGradient id="sao" cx="40%" cy="35%" r="60%"><stop offset="0" stop-color="#e8d27a"/><stop offset=".7" stop-color="#b88a2a"/><stop offset="1" stop-color="#5a3d10"/></radialGradient>`,
+    `<path d="M2 100 C4 70 20 54 50 52 C80 54 96 70 98 100 Z" fill="#3e4126"/>
+     <path d="M8 66 C8 44 26 30 50 30 C74 30 92 44 92 66 C92 82 74 90 50 90 C26 90 8 82 8 66 Z" fill="url(#sap)"/>
+     <circle cx="33" cy="30" r="12" fill="url(#sap)"/><circle cx="67" cy="30" r="12" fill="url(#sap)"/>
+     <circle cx="33" cy="29" r="8.4" fill="url(#sao)"/><circle cx="67" cy="29" r="8.4" fill="url(#sao)"/>
+     <ellipse cx="33" cy="29.5" rx="1.8" ry="6" fill="#120c06"/><ellipse cx="67" cy="29.5" rx="1.8" ry="6" fill="#120c06"/>
+     <circle cx="35.4" cy="26" r="1.5" fill="#fff6d0" opacity=".85"/><circle cx="69.4" cy="26" r="1.5" fill="#fff6d0" opacity=".85"/>
+     <path d="M14 66 C26 78 74 78 86 66 C80 74 66 80 50 80 C34 80 20 74 14 66 Z" fill="#1b1a0c"/>
+     <path d="M14 66 C26 76 74 76 86 66" fill="none" stroke="#232412" stroke-width="2.4" stroke-linecap="round"/>
+     <path d="M30 72 l2 4 2-3.8 M44 74.5 l2 4 2-4 M56 74.5 l2 4 2-4 M66 72 l2 3.8 2-4" fill="#e9e2c8"/>
+     <path d="M30 72 l2 4 2-3.8 M44 74.5 l2 4 2-4 M56 74.5 l2 4 2-4 M66 72 l2 3.8 2-4" fill="none" stroke="#e9e2c8" stroke-width=".9"/>
+     <g fill="#2e3018" opacity=".7"><circle cx="24" cy="52" r="2.4"/><circle cx="76" cy="50" r="2"/><circle cx="62" cy="44" r="1.6"/><circle cx="40" cy="45" r="1.8"/><circle cx="50" cy="56" r="1.4"/><circle cx="82" cy="60" r="1.6"/><circle cx="18" cy="62" r="1.5"/></g>
+     <path d="M30 40 Q50 34 70 40" fill="none" stroke="#b9b77e" stroke-width="1.2" opacity=".35"/>
+     <path d="M46 52 l1 2 M54 52 l-1 2" stroke="#1c1d0e" stroke-width="1.4" stroke-linecap="round"/>`);
+
+  const ilma = svg('il', fundo('il', '#2f4a4f', '#0b1416') + pele('il', '#d7ab89', '#86593f') +
+    `<linearGradient id="ilq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d6b5a"/><stop offset="1" stop-color="#262c24"/></linearGradient>`,
+    `<path d="M10 96 L86 8 C88 5 93 8 91 11 L16 100 Z" fill="#7a5a36"/><path d="M80 12 C86 4 98 8 96 16 L88 26 C84 26 78 20 80 12 Z" fill="#6a4c2d"/>
+     <path d="M6 100 C8 74 22 64 50 62 C78 64 92 74 94 100 Z" fill="url(#ilq)"/>
+     <path d="M36 66 C40 72 60 72 64 66" fill="none" stroke="#c8b48a" stroke-width="2" opacity=".5"/>
+     <path d="M34 44 C34 28 41 20 50 20 C59 20 66 28 66 44 C66 58 59 66 50 67 C41 66 34 58 34 44 Z" fill="url(#ilp)"/>
+     <path d="M30 46 C26 22 40 12 50 12 C60 12 74 22 70 46 C68 36 64 28 58 25 C54 30 46 30 42 25 C36 28 32 36 30 46 Z" fill="#7e2a22"/>
+     <path d="M30 46 C30 54 31 60 34 64 L36 50 Z M70 46 C70 54 69 60 66 64 L64 50 Z" fill="#6b241d"/>
+     <path d="M37 30 C39 27 44 26 47 27 M53 27 C56 26 61 27 63 30" stroke="#d9d4ca" stroke-width="1.4" fill="none" opacity=".9"/>
+     <path d="M39.5 40 L46.5 39.6 M53.5 39.6 L60.5 40" stroke="#cfc8bb" stroke-width="1.6" stroke-linecap="round"/>
+     ${olho(43.5, 43.6, .85)}${olho(56.5, 43.6, .85)}
+     <path d="M39 46.5 Q43.5 48 47 46.4 M53 46.4 Q56.5 48 61 46.5" fill="none" stroke="#7a4f38" stroke-width=".8"/>
+     <path d="M50 44 Q48 51 49 53 Q51 54 52.6 53" fill="none" stroke="#7b5038" stroke-width="1.1"/>
+     <path d="M44.5 58 Q50 59.6 55.5 58" fill="none" stroke="#5e3426" stroke-width="1.3" stroke-linecap="round"/>
+     <path d="M38 52 Q40 56 42 57 M62 52 Q60 56 58 57 M45 61.5 Q50 63 55 61.5" fill="none" stroke="#7a4f38" stroke-width=".7" opacity=".8"/>`);
+
+  const rato = svg('ra', fundo('ra', '#3e3a2c', '#100f0b') + pele('ra', '#c5a07e', '#7a5a41') +
+    `<linearGradient id="raq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4334"/><stop offset="1" stop-color="#1a1813"/></linearGradient>`,
+    `<path d="M6 100 C8 74 22 64 50 62 C78 64 92 74 94 100 Z" fill="url(#raq)"/>
+     <path d="M24 64 C18 34 32 10 50 10 C68 10 82 34 76 64 C70 56 66 46 64 38 C58 30 42 30 36 38 C34 46 30 56 24 64 Z" fill="#5a4b34"/>
+     <path d="M36 44 C36 30 42 24 50 24 C58 24 64 30 64 44 C64 56 58 64 50 66 C42 64 36 56 36 44 Z" fill="url(#rap)"/>
+     <path d="M36 38 C40 30 46 28 50 28 C54 28 60 30 64 38 C60 34 56 32 50 32 C44 32 40 34 36 38 Z" fill="#1b1814"/>
+     <path d="M40 40.5 L47 41.5 M53 41.5 L60 39.5" stroke="#2a1d16" stroke-width="1.5" stroke-linecap="round"/>
+     ${olho(44, 45, .8)}<path d="M53.6 45 Q56.5 46.2 59.4 45" fill="none" stroke="#1a1412" stroke-width="1.4" stroke-linecap="round"/>
+     <path d="M55 37 L60.5 52" stroke="#a46a55" stroke-width="1.2"/>
+     <path d="M50 45 Q48 51 49 53.5 Q51 54.5 52.6 53" fill="none" stroke="#6e4a35" stroke-width="1.1"/>
+     <path d="M44.5 58.5 Q50 59 55.8 56.4" fill="none" stroke="#4f2f22" stroke-width="1.3" stroke-linecap="round"/>
+     <circle cx="64.4" cy="51" r="1.9" fill="none" stroke="#e1b74a" stroke-width="1.1"/>
+     <path d="M30 70 C40 64 60 64 70 70 L68 80 C58 74 42 74 32 80 Z" fill="#5c2c22"/>`);
+
+  return [
+    ['irmao cassio', cassio], ['capanga', capanga], ['saltador-da-lama', saltador], ['saltador', saltador],
+    ['dona ilma', ilma], ['ilma', ilma], ['rato', rato],
+  ].map(([k, s]) => [k, 'url("data:image/svg+xml,' + encodeURIComponent(s) + '")']);
+})();
+const tirarAcento = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+function tokenDe(nome) {
+  const n = tirarAcento(nome).replace(/\s+\d+$/, '');
+  const t = TOKENS.find(([k]) => n === k || n.startsWith(k + ' '));
+  return t ? t[1] : '';
+}
+// as peças da primeira aventura, prontas para pôr no tabuleiro
+const AVENTURA_PECAS = [
+  ['Irmão Cássio', [{ nome: 'Irmão Cássio', tipo: 'inimigo', tam: 1, pv: 18, pv_max: 18 }]],
+  ['2 Capangas', [1, 2].map(i => ({ nome: 'Capanga ' + i, tipo: 'inimigo', tam: 1, pv: 1, pv_max: 1 }))],
+  ['4 Saltadores-da-Lama', [1, 2, 3, 4].map(i => ({ nome: 'Saltador-da-Lama ' + i, tipo: 'inimigo', tam: 1, pv: 1, pv_max: 1 }))],
+  ['Dona Ilma', [{ nome: 'Dona Ilma', tipo: 'aliado', tam: 1, pv: 14, pv_max: 14 }]],
+  ['Rato', [{ nome: 'Rato', tipo: 'aliado', tam: 1, pv: 14, pv_max: 14 }]],
+];
+
 
 /* ---------- tabuleiro de combate ---------- */
 // Um quadrado = 1,5 m. Peças, névoa, terreno e turno ficam no Supabase; a tela pergunta a cada 1,2 s
@@ -7411,10 +7519,12 @@ function desenharPecas() {
     const nome = nomeDe(p), vida = vidaDe(p), cor = corOk(p.cor || COR_TIPO[p.tipo]);
     const cls = 'tb-peca t-' + p.tipo + (p.id === TB.sel ? ' sel' : '') + (agora.has(p.id) ? ' vez' : '') + (p.oculta ? ' oculta' : '') + (minha(p) ? ' minha' : '') + (vida === 0 ? ' caida' : '') + (el.classList.contains('arrastando') ? ' arrastando' : '');
     if (el.className !== cls) el.className = cls;
-    const sig = nome + '|' + cor + '|' + p.tam + '|' + (vida === null ? '' : vida.toFixed(3));
+    const tk = tokenDe(nome);
+    const sig = nome + '|' + cor + '|' + p.tam + '|' + (vida === null ? '' : vida.toFixed(3)) + '|' + (tk ? 1 : 0);
     if (el._sig !== sig) {
       el._sig = sig; el.style.setProperty('--tam', p.tam); el.style.setProperty('--c', cor);
-      $('b', el).textContent = sigla(nome); $('.tb-nome', el).textContent = nome; el.title = nome;
+      const disco = $('.tb-disco', el); disco.style.backgroundImage = tk || ''; disco.classList.toggle('tk', !!tk);
+      $('b', el).textContent = tk ? ((String(nome).match(/\s(\d+)$/) || [])[1] || '') : sigla(nome); $('.tb-nome', el).textContent = nome; el.title = nome;
       const vi = $('.tb-vida', el); vi.hidden = vida === null; if (vida !== null) vi.firstChild.style.transform = `scaleX(${vida})`;
     }
     if (!(TB.arrasto && TB.arrasto.id === p.id)) { const tr = `translate3d(${p.x * TQ}px,${p.y * TQ}px,0)`; if (el.style.transform !== tr) el.style.transform = tr; }
@@ -7651,6 +7761,10 @@ function desenharAdd() {
       </div>
       <div class="fx-add"><label class="tb-chk"><input type="checkbox" id="tbn-chefe"> Chefe</label><label class="tb-chk"><input type="checkbox" id="tbn-oculta"> escondido</label></div>
       <div class="fx-add"><button class="fx-btn" type="button" data-tb="por-novo">Pôr no tabuleiro</button></div>
+    </details>
+    <details class="tb-novo"><summary class="fx-lbl">Peças da aventura: A Maré Certa</summary>
+      <div class="chips">${AVENTURA_PECAS.map(([n], i) => `<button class="chip" type="button" data-tb="por-aventura" data-v="${i}">${esc(n)}</button>`).join('')}</div>
+      <p class="fx-hint">Põem as peças com o desenho, o nome e os PV da folha nº 950.</p>
     </details>`;
   const sig = fora.map(f => f.id + ':' + ((TB.sum[f.id] && TB.sum[f.id].nome) || f.nome)).join('|');
   const el = $('#tb-add-pjs', box); if (el.dataset.sig === sig && el.childElementCount) return; el.dataset.sig = sig;
@@ -7811,6 +7925,9 @@ function tbClique(e) {
     const fs = a === 'por-pj' ? TB.fichas.filter(f => f.id === b.dataset.f) : TB.fichas.filter(f => !TB.pecas.some(x => x.ficha_id === f.id));
     return porPecas(fs.map(f => ({ ficha_id: f.id, nome: (TB.sum[f.id] && TB.sum[f.id].nome) || f.nome || '', tipo: 'pj', cor: COR_TIPO.pj, tam: 1 })));
   }
+  if (a === 'por-aventura') { const g = AVENTURA_PECAS[+b.dataset.v]; if (!g) return;
+    const usados = new Set(TB.pecas.map(p => p.nome));
+    return porPecas(g[1].map(o => { let nome = o.nome; if (usados.has(nome)) { const raiz = nome.replace(/\s+\d+$/, ''); let n = 2; while (usados.has(raiz + ' ' + n)) n++; nome = raiz + ' ' + n; } usados.add(nome); return { ...o, nome, cor: COR_TIPO[o.tipo], chefe: false, oculta: false }; })); }
   if (a === 'por-novo') {
     const nome = $('#tbn-nome', root).value.trim() || 'Inimigo', tipo = $('#tbn-tipo', root).value, tam = +$('#tbn-tam', root).value || 1;
     const pv = $('#tbn-pv', root).value === '' ? null : Math.max(0, Math.round(num($('#tbn-pv', root).value)));
