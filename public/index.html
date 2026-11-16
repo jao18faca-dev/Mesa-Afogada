@@ -5175,7 +5175,7 @@ const MAPA_ORGANICO = new Set('faeslrohgvnid');      // bordas irregulares (roch
 const MAPA_BLOQ = new Set('pbu');
 const VARIANTES = { g: 'G', s: 'S', o: 'O', r: 'R', k: 'K' };   // terreno → mancha que aparece por cima dele em alguns lugares                 // seguram a luz
 const MAPA_ALTO = new Set('pbcu');
-const MAPA_DENTRO = new Set(['caverna', 'gruta', 'santuario', 'laboratorio']);   // lugares fechados: sem sol, sem mato nas frestas                // fazem sombra no chão
+const MAPA_DENTRO = new Set(['caverna', 'gruta', 'santuario', 'laboratorio', 'profundezas']);   // lugares fechados: sem sol, sem mato nas frestas                // fazem sombra no chão
 const MAPA_AGUA = new Set('af');
 const MAPA_PROPS = {
   arvore: ['Árvore', 'meia cobertura'], palmeira: ['Palmeira', 'meia cobertura'], arbusto: ['Arbusto', 'terreno difícil'], rocha: ['Rocha', 'meia cobertura'],
@@ -5202,7 +5202,7 @@ const LUZES = { tridente: [4, [255, 64, 40], .75], fogueira: [6, [255, 160, 80],
 const MAPA_LUZ = { dia: ['Dia', 0, [0, 0, 0]], entardecer: ['Entardecer', .32, [46, 20, 58]], noite: ['Noite', .58, [6, 12, 36]], escuro: ['Escuro', .74, [5, 8, 24]] };
 const MAPA_BIOMAS = { praia: ['Praia', 's', 'dia'], floresta: ['Floresta', 'g', 'dia'], cais: ['Cais', 'f', 'entardecer'], ruinas: ['Ruínas', 'g', 'dia'], caverna: ['Caverna', 'o', 'escuro'], gruta: ['Gruta luminosa', 'o', 'escuro'], santuario: ['Santuário', 'x', 'escuro'],
   // só para os lugares prontos do mundo (não têm gerador)
-  farol: ['Farol', 'f', 'noite', 1], vetrheim: ['Vertheim', 'n', 'entardecer', 1], ermos: ['Ermos do Trovão', 'h', 'entardecer', 1], climatica: ['Climática', 'r', 'entardecer', 1], laboratorio: ['Laboratório', 'q', 'escuro', 1] };
+  farol: ['Farol', 'f', 'noite', 1], vetrheim: ['Vertheim', 'n', 'entardecer', 1], ermos: ['Ermos do Trovão', 'h', 'entardecer', 1], climatica: ['Climática', 'r', 'entardecer', 1], laboratorio: ['Laboratório', 'q', 'escuro', 1], profundezas: ['Profundezas', 'o', 'escuro', 1] };
 
 function mapaRng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const mapaHash = (x, y, k = 0) => { const s = Math.sin(x * 127.1 + y * 311.7 + k * 74.7) * 43758.5453; return s - Math.floor(s); };
@@ -5664,6 +5664,7 @@ function campoSinal(dentro, cols, linhas) {
 const PALETA = {
   padrao: { sombra: [14, 16, 34], fundo: [18, 18, 30], risco: [9, 10, 18], borda: [205, 208, 228], fundoAgua: [4, 20, 38], beira: [190, 235, 235] },
   gruta: { sombra: [8, 10, 40], fundo: [12, 14, 48], risco: [5, 6, 22], borda: [150, 200, 255], fundoAgua: [4, 10, 44], beira: [110, 230, 250] },
+  profundezas: { sombra: [6, 14, 30], fundo: [8, 18, 34], risco: [3, 8, 16], borda: [120, 220, 230], fundoAgua: [2, 14, 30], beira: [90, 220, 210] },
   santuario: { sombra: [22, 8, 22], fundo: [26, 14, 28], risco: [10, 5, 12], borda: [230, 185, 170], fundoAgua: [10, 14, 30], beira: [190, 220, 230] },
   vetrheim: { sombra: [30, 44, 80], fundo: [24, 30, 50], risco: [10, 14, 26], borda: [220, 235, 255], fundoAgua: [8, 26, 50], beira: [210, 240, 255] },
   ermos: { sombra: [24, 12, 40], fundo: [22, 16, 34], risco: [10, 6, 18], borda: [200, 185, 255], fundoAgua: [10, 14, 40], beira: [190, 200, 240] },
@@ -5780,7 +5781,7 @@ function desenharMapa0(g, t, cena, W, H, k, rapido, parte, reg, jan) {
     }), 'screen');
   }
   // cor do lugar e bordas escurecidas
-  const tinta = { gruta: 'rgba(70,100,255,.32)', santuario: 'rgba(150,60,110,.18)', caverna: 'rgba(80,70,140,.18)', vetrheim: 'rgba(120,160,255,.2)', ermos: 'rgba(120,80,220,.22)', laboratorio: 'rgba(60,150,170,.16)', climatica: 'rgba(200,110,70,.14)', farol: 'rgba(60,90,200,.16)' }[bioma];
+  const tinta = { profundezas: 'rgba(30,140,160,.26)', gruta: 'rgba(70,100,255,.32)', santuario: 'rgba(150,60,110,.18)', caverna: 'rgba(80,70,140,.18)', vetrheim: 'rgba(120,160,255,.2)', ermos: 'rgba(120,80,220,.22)', laboratorio: 'rgba(60,150,170,.16)', climatica: 'rgba(200,110,70,.14)', farol: 'rgba(60,90,200,.16)' }[bioma];
   if (tinta) { g.save(); g.globalCompositeOperation = 'soft-light'; g.fillStyle = tinta; g.fillRect(0, 0, W, H); g.restore(); }
   if (bioma === 'praia') { g.save(); g.globalCompositeOperation = 'soft-light'; const lg = g.createLinearGradient(0, 0, W, H); lg.addColorStop(0, 'rgba(255,225,170,.45)'); lg.addColorStop(1, 'rgba(255,225,170,0)'); g.fillStyle = lg; g.fillRect(0, 0, W, H); g.restore(); }
   const vg = g.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.hypot(W, H) * .6);
@@ -7484,6 +7485,139 @@ const LUGARES = [
       for (const [x, y] of [[2, 5], [23, 5], [2, 12], [23, 12]]) por('braseiro', x, y);
       for (const [x, y] of [[6, 1], [19, 1], [1, 8], [24, 8]]) por('estandarte', x, y);
       for (const [t, x, y] of [['barril', 2, 15], ['barril', 3, 15], ['caixote', 22, 15], ['bau', 23, 15], ['estante', 9, 1], ['estante', 15, 1], ['pilar', 7, 14], ['pilar', 18, 14], ['pilar', 7, 4], ['pilar', 18, 4]]) por(t, x, y);
+    } },
+  // ================= Scyphozia (Profundezas, primeira camada) =================
+  { id: 'scyphozia-mapa', grupo: 'Scyphozia', nome: 'A primeira camada', onde: 'Profundezas · primeira camada', cols: 160, linhas: 120, escala: 25, bioma: 'profundezas', luz: 'noite', base: 'x',
+    texto: 'Scyphozia vista de cima: uma caverna do tamanho de um país, com bolhas subindo do chão e o Vazio comendo as bordas. No meio, a Cidade Afogada de Celtor e a Catedral do Interstício. A nordeste, o Castelo da Luz, no fim da Calçada; a oeste, a Agulha da Carruagem da Ignição; a sudoeste, os Ermos de Celtor e a Forja Fria. Dois Sinos Negros em cantos opostos. Quem pula no Vazio com saúde bastante cai na segunda camada; quem não tem, não cai em lugar nenhum.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, telhados, r, n, rotulo } = L;
+      // o chão da caverna, torto, e pilares de rocha no meio
+      bolha(80, 60, 74, 55, 'o', .28);
+      // a beira do chão é penhasco: entulho caindo para o Vazio
+      for (let y = 0; y < 120; y++) for (let x = 0; x < 160; x++) if (get(x, y) === 'o' && vizinho(x, y, 'x')) set(x, y, 'd');
+      for (let i = 0; i < 16; i++) { const x = 10 + r() * 140, y = 8 + r() * 104; if (Math.hypot(x - 80, y - 58) > 34) bolha(x, y, 2 + r() * 4, 1.5 + r() * 3, 'b', .5, 'o'); }
+      // o Vazio: recortes enormes nas bordas
+      for (const [x, y, rx, ry] of [[6, 62, 14, 22], [150, 16, 16, 12], [72, 116, 22, 9], [156, 78, 10, 16], [30, 4, 18, 7]]) { bolha(x, y, rx, ry, 'x', .45); bolha(x, y, rx + 2, ry + 2, 'd', .5, 'o'); }
+      // poças e lagos de água parada, com borda rasa
+      for (const [x, y, rx, ry] of [[46, 22, 7, 4], [116, 96, 6, 4], [24, 78, 5, 3.5], [100, 18, 4, 3]]) { bolha(x, y, rx + 1.6, ry + 1.4, 'a', .35, 'o'); bolha(x, y, rx, ry, 'f', .35, 'oa'); }
+      // a Cidade Afogada: muralha em anel, portões a oeste e a leste, telhados e ruas inundadas
+      const cx = 80, cy = 58;
+      for (let y = 0; y < 120; y++) for (let x = 0; x < 160; x++) { const d = Math.hypot((x + .5 - cx) / 27, (y + .5 - cy) / 20) + (n(x * 1.5, y * 1.5) - .5) * .04; if (d < 1 && 'od'.includes(get(x, y))) set(x, y, d > .93 ? 'p' : 'k'); }
+      ret(cx - 29, cy - 1, cx - 24, cy + 1, 'k'); ret(cx + 24, cy - 1, cx + 29, cy + 1, 'k');
+      caminho([[cx - 26, cy], [cx + 26, cy]], 1, 'k'); caminho([[cx, cy - 19], [cx, cy + 19]], 1, 'k');
+      telhados(cx - 25, cy - 18, cx + 25, cy + 18, (x, y) => get(x, y) === 'k' && Math.abs(x - cx) > 1 && Math.abs(y - cy) > 1 && Math.hypot(x - cx, y - cy) > 7.5, { lw: 3, lh: 3, verde: 0 });
+      for (let i = 0; i < 14; i++) { const x = cx - 24 + r() * 48, y = cy - 17 + r() * 34; bolha(x, y, 1.5 + r() * 2, 1 + r() * 1.4, 'a', .4, 'k'); }
+      // a Catedral do Interstício, no centro
+      ret(cx - 5, cy - 4, cx + 5, cy + 4, 'p'); ret(cx - 4, cy - 3, cx + 4, cy + 3, 'k'); set(cx - 5, cy, 'k'); set(cx + 5, cy, 'k');
+      por('pilar', cx - 2, cy - 2); por('pilar', cx + 2, cy - 2); por('pilar', cx - 2, cy + 2); por('pilar', cx + 2, cy + 2); por('runas', cx - 1, cy - 1);
+      // os sinos da cidade (curam e devolvem Sanidade)
+      for (const [x, y] of [[cx - 14, cy - 9], [cx + 13, cy + 10], [cx + 15, cy - 11]]) { ret(x - 1, y - 1, x + 1, y + 1, 'k'); por('altar', x, y); }
+      // a Calçada da Luz até o Castelo, numa ponta de pedra no meio do Vazio
+      bolha(130, 30, 14, 11, 'x', .3); bolha(131, 29, 6, 5, 'k', .2);
+      caminho([[cx + 28, cy - 1], [104, 48], [118, 38], [127, 32]], .9, 'k');
+      ret(128, 26, 134, 31, 'p'); ret(129, 27, 133, 30, 'k'); set(131, 31, 'k'); por('chama', 130, 28); por('lanterna', 128, 32); por('lanterna', 134, 32);
+      // a Agulha da Carruagem: base da Ignição, metal e máquina
+      bolha(28, 40, 9, 7, 'q', .25, 'od'); ret(26, 37, 30, 42, 'p'); ret(27, 38, 29, 41, 'q'); set(28, 42, 'q');
+      por('maquina', 20, 36); por('maquina', 33, 44); por('braseiro', 23, 44); por('tocha', 31, 35);
+      // os Ermos de Celtor e a Forja Fria
+      bolha(36, 92, 20, 12, 'd', .45, 'o');
+      for (let i = 0; i < 26; i++) { const x = 18 + r() * 38, y = 82 + r() * 20; if (get(Math.floor(x), Math.floor(y)) === 'd') por(r() < .5 ? 'coluna' : 'ossos', Math.floor(x), Math.floor(y)); }
+      ret(40, 94, 44, 97, 'p'); ret(41, 95, 43, 96, 'k'); set(42, 94, 'k'); por('chama', 42, 95);
+      // o Templo dos Corações, ao norte
+      ret(72, 9, 88, 17, 'k', 'odb'); for (let x = 73; x <= 87; x += 3) { por('pilar', x, 10); por('pilar', x, 16); } por('altar', 79, 13); por('estatua', 76, 13); por('estatua', 84, 13);
+      // os dois Sinos Negros, em cantos opostos (atraem os monstros corrompidos)
+      for (const [x, y] of [[16, 18], [144, 102]]) { bolha(x, y, 5, 4, 'o', .3); bolha(x, y, 2.5, 2, 'k', .2); por('altar', x, y); }
+      // o santuário de Yun'Shul
+      bolha(140, 58, 5, 4, 'k', .3, 'od'); por('runas', 138, 56);
+      // a toca da Viúva, sala escondida no extremo sudeste
+      bolha(148, 92, 8, 6, 'b', .3); bolha(150, 92, 3.5, 2.5, 'o', .2, 'b'); caminho([[147, 92], [138, 90]], .6, 'o', 'bdx'); espalha(5, 'teia', (c, x, y) => c === 'o' && Math.hypot(x - 150, y - 92) < 4);
+      // acampamentos dos Mergulhadores
+      for (const [x, y] of [[54, 30], [112, 84], [58, 82]]) { bolha(x, y, 3.5, 2.6, 'r', .3, 'o'); por('tenda', x - 1, y - 1); por('fogueira', x + 2, y); por('caixote', x - 2, y + 1); }
+      // luz das Profundezas: fungos, cogumelos, cristais; estalagmites e ossos
+      espalha(30, 'cogumelo', (c, x, y) => c === 'o'); espalha(14, 'fungo', (c, x, y) => c === 'o' && !vizinho(x, y, 'kpx'));
+      espalha(16, 'cristal', (c, x, y) => c === 'o' && vizinho(x, y, 'b')); espalha(50, 'estalagmite', (c, x, y) => c === 'o');
+      espalha(30, 'ossos', (c, x, y) => c === 'o' || c === 'd'); espalha(20, 'rocha', (c, x, y) => c === 'd' && vizinho(x, y, 'x'));
+      rotulo(80, 4, 'Scyphozia', { g: 1 });
+      rotulo(cx, cy - 22, 'a Cidade Afogada', { ir: 'scyphozia-cidade' });
+      rotulo(cx, cy + 6, 'Catedral do Interstício', { ir: 'scyphozia-catedral' });
+      rotulo(cx - 13, cy - 13, 'Distrito Varicosa'); rotulo(cx - 14, cy + 14, 'Distrito Militar'); rotulo(cx + 14, cy + 15, 'Distrito do Comércio');
+      rotulo(131, 22, 'Castelo da Luz'); rotulo(114, 44, 'Calçada da Luz');
+      rotulo(28, 32, 'Agulha da Carruagem'); rotulo(36, 106, 'Ermos de Celtor'); rotulo(42, 100, 'a Forja Fria');
+      rotulo(80, 20, 'Templo dos Corações'); rotulo(16, 25, 'Sino Negro'); rotulo(144, 96, 'Sino Negro');
+      rotulo(140, 64, 'santuário de Yun’Shul'); rotulo(150, 87, 'a toca da Viúva (Surge)', { m: 1 });
+      rotulo(54, 25, 'acampamento dos Mergulhadores', { ir: 'scyphozia-acampamento' }); rotulo(112, 79, 'acampamento'); rotulo(58, 77, 'acampamento');
+      rotulo(10, 62, 'o Vazio'); rotulo(150, 30, 'o Vazio'); rotulo(72, 112, 'o Vazio'); rotulo(154, 78, 'o Vazio');
+      rotulo(72, 108, 'para a segunda camada (com saúde bastante)', { m: 1 });
+    } },
+  { id: 'scyphozia-cidade', grupo: 'Scyphozia', nome: 'A Cidade Afogada', onde: 'Profundezas · primeira camada', cols: 160, linhas: 120, escala: 5, bioma: 'profundezas', luz: 'escuro', base: 'o',
+    texto: 'A antiga capital de Celtor, inteira debaixo do mar e mesmo assim seca. Muralha em anel com dois portões, oeste e leste. Ao norte, o Distrito Varicosa, de casas apertadas e ruas alagadas; a sudoeste, o Distrito Militar, com quartéis e a ronda dos Executores; a sudeste, o Distrito do Comércio, com as bancas abandonadas. No centro, a praça e a Catedral do Interstício. Os sinos das praças curam e devolvem Sanidade a quem os toca.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, telhados, r, n, rotulo } = L;
+      const cx = 80, cy = 60;
+      for (let y = 0; y < 120; y++) for (let x = 0; x < 160; x++) { const d = Math.hypot((x + .5 - cx) / 74, (y + .5 - cy) / 54) + (n(x * 1.2, y * 1.2) - .5) * .03; if (d < 1) set(x, y, d > .965 ? 'p' : 'k'); }
+      ret(4, cy - 2, 12, cy + 2, 'k'); ret(148, cy - 2, 156, cy + 2, 'k');
+      // avenidas: a grande, de portão a portão, e as que descem do norte ao sul
+      caminho([[6, cy], [154, cy]], 2.2, 'k'); caminho([[cx, 8], [cx, 112]], 1.8, 'k');
+      caminho([[30, 22], [52, 40], [cx, cy]], 1.2, 'k'); caminho([[130, 22], [108, 40], [cx, cy]], 1.2, 'k');
+      // a praça e a Catedral
+      bolha(cx, cy, 18, 14, 'k', .1); ret(cx - 8, cy - 7, cx + 8, cy + 7, 'p'); ret(cx - 7, cy - 6, cx + 7, cy + 6, 'k'); set(cx - 8, cy, 'k'); set(cx + 8, cy, 'k'); ret(cx - 8, cy - 1, cx - 8, cy + 1, 'k'); ret(cx + 8, cy - 1, cx + 8, cy + 1, 'k');
+      for (const dx of [-4, 0, 4]) { por('pilar', cx + dx, cy - 4); por('pilar', cx + dx, cy + 4); } por('runas', cx - 2, cy - 2);
+      for (const [x, y] of [[cx - 15, cy - 11], [cx + 15, cy + 11]]) por('estatua', x, y);
+      // Varicosa (norte): casas apertadas, ruas alagadas, trepadeira nas paredes
+      telhados(14, 8, 146, cy - 17, (x, y) => get(x, y) === 'k' && Math.abs(x - cx) > 2 && Math.abs(y - cy) > 3, { lw: 4, lh: 3, verde: 0 });
+      for (let i = 0; i < 26; i++) bolha(16 + r() * 128, 10 + r() * 30, 2 + r() * 3, 1 + r() * 2, 'a', .4, 'k');
+      espalha(40, 'cogumelo', (c, x, y) => c === 'k' && y < cy - 17 && vizinho(x, y, 'u'));
+      // Militar (sudoeste): quartéis maiores, barricadas e estandartes rasgados
+      telhados(14, cy + 17, cx - 4, 112, (x, y) => get(x, y) === 'k' && Math.abs(y - cy) > 3, { lw: 7, lh: 5, verde: 0 });
+      espalha(18, 'barricada', (c, x, y) => c === 'k' && x < cx - 3 && y > cy + 15); espalha(12, 'estandarte', (c, x, y) => c === 'k' && x < cx - 3 && y > cy + 15);
+      // Comércio (sudeste): bancas, caixotes e sacos largados
+      telhados(cx + 4, cy + 17, 146, 112, (x, y) => get(x, y) === 'k' && Math.abs(y - cy) > 3 && (x + y) % 9 !== 0, { lw: 3, lh: 3, verde: 0 });
+      espalha(24, 'barraca', (c, x, y) => c === 'k' && x > cx + 3 && y > cy + 15); espalha(30, 'caixote', (c, x, y) => c === 'k' && x > cx + 3 && y > cy + 12); espalha(20, 'saco', (c, x, y) => c === 'k' && x > cx + 3 && y > cy + 12);
+      // o anel do meio, em volta da praça
+      telhados(14, cy - 16, 146, cy + 16, (x, y) => get(x, y) === 'k' && Math.abs(y - cy) > 3 && Math.abs(x - cx) > 2 && Math.hypot((x - cx) / 1.3, y - cy) > 19, { lw: 4, lh: 4, verde: 0 });
+      // os sinos das praças
+      for (const [x, y] of [[44, 32], [118, 30], [46, 88], [116, 90]]) { bolha(x, y, 4, 3, 'k', .1); por('altar', x, y); }
+      // poças, entulho, ossos e lanternas apagadas
+      espalha(40, 'entulho', (c, x, y) => c === 'k' && !vizinho(x, y, 'p') && r() < .5); espalha(40, 'ossos', c => c === 'k'); espalha(30, 'lanterna', (c, x, y) => c === 'k' && vizinho(x, y, 'u'));
+      espalha(30, 'fungo', (c, x, y) => c === 'o');
+      rotulo(cx, 3, 'a Cidade Afogada', { g: 1 });
+      rotulo(cx, cy - 9, 'Catedral do Interstício', { ir: 'scyphozia-catedral' });
+      rotulo(cx, 24, 'Distrito Varicosa'); rotulo(40, 104, 'Distrito Militar'); rotulo(120, 104, 'Distrito do Comércio');
+      rotulo(9, cy - 4, 'portão oeste'); rotulo(151, cy - 4, 'portão leste');
+      rotulo(44, 28, 'sino'); rotulo(118, 26, 'sino'); rotulo(46, 84, 'sino'); rotulo(116, 86, 'sino');
+      rotulo(40, cy + 8, 'ronda dos Executores', { m: 1 });
+    } },
+  { id: 'scyphozia-catedral', grupo: 'Scyphozia', nome: 'A Catedral do Interstício', onde: 'Profundezas · primeira camada', cols: 60, linhas: 46, bioma: 'profundezas', luz: 'escuro', base: 'b',
+    texto: 'Duas entradas, uma a oeste e outra a leste, levam à nave. No fim dela, o elevador sobe até a Provação, onde esperam as três Vozes: a do Ódio, a da Inimizade e a da Autoridade. Pilares de pedra celtor, bancos virados, água pelo tornozelo nas laterais.',
+    fazer: L => {
+      const { get, set, ret, bolha, por, espalha, vizinho, rotulo, r } = L;
+      ret(4, 6, 55, 39, 'p'); ret(5, 7, 54, 38, 'k');
+      ret(0, 21, 4, 24, 'k'); ret(55, 21, 59, 24, 'k');
+      // laterais alagadas
+      ret(6, 8, 13, 37, 'a', 'k'); ret(46, 8, 53, 37, 'a', 'k');
+      for (let y = 10; y <= 35; y += 5) { por('pilar', 15, y); por('pilar', 44, y); }
+      // bancos virados (barricadas) na nave
+      for (let y = 12; y <= 32; y += 4) { por('barricada', 20, y); por('barricada', 25, y); por('barricada', 33, y); por('barricada', 38, y); }
+      // o elevador e as três Vozes
+      ret(26, 8, 33, 11, 'q'); por('runas', 28, 8);
+      por('altar', 18, 9); por('altar', 40, 9); por('estatua', 29, 14);
+      for (const [x, y] of [[17, 23], [42, 23]]) por('chama', x, y);
+      espalha(10, 'ossos', (c, x, y) => c === 'k'); espalha(12, 'entulho', (c, x, y) => c === 'k' && vizinho(x, y, 'p')); espalha(8, 'cogumelo', c => c === 'a');
+      rotulo(30, 2, 'Catedral do Interstício', { g: 1 });
+      rotulo(30, 5, 'o elevador para a Provação'); rotulo(12, 5, 'a Voz do Ódio', { m: 1 }); rotulo(48, 5, 'a Voz da Autoridade', { m: 1 }); rotulo(30, 18, 'a Voz da Inimizade', { m: 1 });
+      rotulo(6, 20, 'entrada oeste'); rotulo(54, 20, 'entrada leste');
+    } },
+  { id: 'scyphozia-acampamento', grupo: 'Scyphozia', nome: 'Um acampamento de Mergulhadores', onde: 'Profundezas · primeira camada', cols: 40, linhas: 30, bioma: 'profundezas', luz: 'escuro', base: 'o',
+    texto: 'Uma plataforma de pedra na beira do Vazio, onde os Mergulhadores descansam entre uma busca e outra. Tendas, um aquecedor, armários trancados (só abrem para quem é da casa) e uma fogueira que nunca deixam apagar.',
+    fazer: L => {
+      const { get, set, ret, bolha, caminho, por, espalha, vizinho, rotulo, r } = L;
+      bolha(-2, 15, 9, 18, 'x', .4); bolha(41, 26, 8, 7, 'x', .35); bolha(20, 31, 14, 3, 'b', .4);
+      bolha(22, 13, 11, 8, 'r', .3, 'o');
+      por('fogueira', 21, 13); por('tenda', 15, 8); por('tenda', 26, 7); por('tenda', 28, 15);
+      por('braseiro', 17, 16); por('estante', 12, 13); por('estante', 12, 15); por('bau', 25, 18); por('caixote', 30, 11); por('barril', 31, 12); por('saco', 14, 18); por('lanterna', 9, 10); por('lanterna', 33, 18);
+      espalha(10, 'estalagmite', (c, x, y) => c === 'o'); espalha(14, 'cogumelo', (c, x, y) => c === 'o'); espalha(4, 'fungo', (c, x, y) => c === 'o' && x > 30); espalha(6, 'rocha', (c, x, y) => c === 'o' && vizinho(x, y, 'x'));
+      rotulo(20, 2, 'acampamento dos Mergulhadores', { g: 1 });
+      rotulo(12, 11, 'armários'); rotulo(17, 18, 'aquecedor'); rotulo(4, 26, 'o Vazio');
     } },
 ];
 const LUGAR_CACHE = {};
