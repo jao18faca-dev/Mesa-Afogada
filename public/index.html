@@ -797,6 +797,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .fx .ms-segredo .lin{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .fx .ms-segredo .lin > span:first-child{color:#e0b46a;min-width:6.5em}
 .fx .ms-segredo select{max-width:100%}
+.fx .ms-esc{display:inline-block;margin-top:8px;padding:3px 9px;border:1px dashed rgba(224,180,106,.6);border-radius:3px;color:#e0b46a;font-size:.8rem;letter-spacing:.04em}
+.fx .fx-add{display:flex;flex-wrap:wrap;gap:8px}
+.fx .fx-btn.perigo{border-color:#c0503c;color:#f0a090}
 
 /* ================================================================ tabuleiro */
 .page.tb-page{max-width:min(1560px,100%)}
@@ -4798,7 +4801,9 @@ async function renderMesa(id) {
 async function loadMesaFichas() {
   if (!MESA) return;
   try {
-    const fichas = await api('GET', 'fichas?select=id,nome,dados,dono,atualizado&mesa_id=eq.' + MESA.m.id + '&order=nome.asc');
+    let fichas;
+    try { fichas = await api('GET', 'fichas?select=id,nome,dados,dono,atualizado,escondida&mesa_id=eq.' + MESA.m.id + '&order=nome.asc'); MESA.semEsc = false; }
+    catch (e) { fichas = await api('GET', 'fichas?select=id,nome,dados,dono,atualizado&mesa_id=eq.' + MESA.m.id + '&order=nome.asc'); MESA.semEsc = true; }
     const ids = [...new Set(fichas.map(f => f.dono))].filter(i => !MESA.nomes[i]);
     if (ids.length) { const ps = await api('GET', 'perfis?select=id,nome&id=in.(' + ids.join(',') + ')'); ps.forEach(p => { MESA.nomes[p.id] = p.nome; }); }
     MESA.fichas = fichas;
@@ -4810,10 +4815,12 @@ async function loadMesaFichas() {
     }
     const el = $('#ms-fichas', root); if (!el) return;
     // nada mudou desde a última olhada: não redesenha (redesenhar a cada 5 s fechava o menu de quem estava escolhendo)
-    const sig = fichas.map(f => f.id + ':' + f.atualizado + ':' + ((f.dados && f.dados.atualizado) || 0) + ':' + (MESA.nomes[f.dono] || '') + ':' + JSON.stringify((MESA.jur || {})[f.id] || '') + ':' + ((MESA.bad || {})[f.id] || 0)).join('|');
+    const sig = fichas.map(f => f.id + ':' + (f.escondida ? 'e' : '') + ':' + f.atualizado + ':' + ((f.dados && f.dados.atualizado) || 0) + ':' + (MESA.nomes[f.dono] || '') + ':' + JSON.stringify((MESA.jur || {})[f.id] || '') + ':' + ((MESA.bad || {})[f.id] || 0)).join('|');
     if (sig === MESA.sig && el.childElementCount) return;
     MESA.sig = sig;
-    el.innerHTML = fichas.map(f => fichaCard(f, (MESA.mestre ? segredoMesa(f) : '') + ((MESA.mestre || f.dono === me()) ? `<div class="fx-add"><a class="fx-btn" href="#ficha/${esc(f.id)}">${MESA.mestre && f.dono !== me() ? 'Mexer na ficha' : 'Abrir'}</a></div>` : ''), MESA.nomes[f.dono] || '')).join('')
+    el.innerHTML = fichas.map(f => fichaCard(f, (f.escondida ? '<span class="ms-esc">escondida: os outros jogadores não veem</span>' : '') + (MESA.mestre ? segredoMesa(f) : '') + ((MESA.mestre || f.dono === me()) ? `<div class="fx-add"><a class="fx-btn" href="#ficha/${esc(f.id)}">${MESA.mestre && f.dono !== me() ? 'Mexer na ficha' : 'Abrir'}</a>
+        <button class="fx-btn" type="button" data-esc="${esc(f.id)}" data-v="${f.escondida ? '0' : '1'}">${f.escondida ? 'Mostrar aos jogadores' : 'Esconder dos jogadores'}</button>
+        <button class="fx-btn" type="button" data-tirar="${esc(f.id)}">Tirar da mesa</button></div>` : ''), MESA.nomes[f.dono] || '')).join('')
       || '<p class="fx-empty">Nenhuma ficha nesta mesa ainda. Cada jogador escolhe a mesa na lista de fichas dele.</p>';
     const alvo = $('#cat-alvo', root);
     if (alvo) { const cur = alvo.value; alvo.innerHTML = fichas.map(f => `<option value="${esc(f.id)}"${f.id === cur ? ' selected' : ''}>${esc((f.dados && f.dados.nome) || f.nome || 'sem nome')} · ${esc(MESA.nomes[f.dono] || '')}</option>`).join('') || '<option value="">nenhuma ficha na mesa</option>'; }
@@ -4884,6 +4891,23 @@ root.addEventListener('click', async e => {
   const act = t.dataset.act;
   if (t.dataset.modo) { const em = ($('#lg-email', root) || {}).value; renderLogin('', t.dataset.modo); const el = $('#lg-email', root); if (em && el) el.value = em; const f = $('#lg-form input', root); if (f) f.focus(); return; }
   if (t.dataset.bad && MESA) return mudarSegredoMesa(t.dataset.bad, 'bad', +t.dataset.d);
+  if (t.dataset.tirar && MESA) {
+    // dois toques: o primeiro pede confirmação
+    if (!t.dataset.certo) { t.dataset.certo = '1'; t.textContent = 'Tirar mesmo?'; t.classList.add('perigo'); setTimeout(() => { if (t.isConnected) { delete t.dataset.certo; t.textContent = 'Tirar da mesa'; t.classList.remove('perigo'); } }, 4000); return; }
+    const fid = t.dataset.tirar, f = (MESA.fichas || []).find(x => x.id === fid);
+    try { await api('POST', 'rpc/tirar_da_mesa', { f: fid }); pst('ficha tirada da mesa'); }
+    catch (err) {
+      if (f && f.dono === me()) { try { await api('PATCH', 'fichas?id=eq.' + fid, { mesa_id: null }); pst('ficha tirada da mesa'); } catch (e2) { pst('não tirou: ' + e2.message); } }
+      else pst(/function|função|schema cache/i.test(err.message) ? 'para o Mestre tirar fichas dos outros, rode supabase/fichas_mesa.sql no Supabase' : 'não tirou: ' + err.message);
+    }
+    MESA.sig = null; return loadMesaFichas();
+  }
+  if (t.dataset.esc && MESA) {
+    if (MESA.semEsc) return pst('para esconder fichas, rode supabase/fichas_mesa.sql no Supabase');
+    try { await api('PATCH', 'fichas?id=eq.' + t.dataset.esc, { escondida: t.dataset.v === '1' }); pst(t.dataset.v === '1' ? 'ficha escondida dos outros jogadores' : 'ficha à vista de todos na mesa'); }
+    catch (err) { pst('não mudou: ' + err.message); }
+    MESA.sig = null; return loadMesaFichas();
+  }
   if (act === 'sair') return logout();
   if (act === 'voltar') { if (saveT && CUR) await save(); location.hash = CUR && CUR.mesa_id && CUR.dono !== me() ? '#mesa/' + CUR.mesa_id : '#fichas'; return; }
   if (act === 'nova-ficha') return novaFicha();
